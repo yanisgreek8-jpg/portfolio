@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prozymi Bakehouse — Slow sourdough, baked in Patra since 2016</title>
+<meta name="description" content="A small stone-oven bakehouse in Patra. Naturally leavened bread, 24-hour fermentation, delivered to 14 cafés across Achaia.">
+<meta property="og:title" content="Prozymi Bakehouse">
+<meta property="og:description" content="Slow sourdough, baked in Patra since 2016.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%231C1512'/><text x='16' y='23' font-size='20' font-family='serif' fill='%23C8923D' text-anchor='middle'>P</text></svg>">
+<style>
+  :root{
+    --cream:#FAF7F2;
+    --cream-2:#F1EADE;
+    --ink:#1C1512;
+    --ink-soft:#5B4B3E;
+    --crust:#C8923D;
+    --crust-deep:#9A6C22;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Manrope',system-ui,sans-serif;
+    font-size:17px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 32px;}
+  .serif{font-family:'Fraunces',Georgia,serif;font-weight:400;letter-spacing:-0.02em;line-height:1.02;}
+  .eyebrow{
+    font-size:12px;letter-spacing:0.22em;text-transform:uppercase;
+    font-weight:600;color:var(--crust-deep);
+  }
+  a{color:inherit;text-decoration:none;}
+  .rule{height:1px;background:rgba(28,21,18,.14);}
+
+  /* header */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    backdrop-filter:blur(14px);
+    background:rgba(250,247,242,.82);
+    border-bottom:1px solid rgba(28,21,18,.08);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:76px;}
+  .logo{font-family:'Fraunces',serif;font-size:23px;letter-spacing:.01em;}
+  .logo span{color:var(--crust-deep);}
+  .nav-links{display:flex;gap:38px;font-size:14.5px;font-weight:500;}
+  .nav-links a{position:relative;padding-bottom:3px;}
+  .nav-links a::after{
+    content:'';position:absolute;left:0;bottom:0;width:0;height:1px;
+    background:var(--crust-deep);transition:width .3s ease;
+  }
+  .nav-links a:hover::after{width:100%;}
+  .btn{
+    display:inline-block;padding:14px 30px;font-size:14.5px;font-weight:600;
+    letter-spacing:.02em;border:1px solid var(--ink);background:var(--ink);color:var(--cream);
+    transition:transform .2s ease, background .2s ease, box-shadow .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(28,21,18,.18);background:#000;}
+  .btn-ghost{background:transparent;color:var(--ink);}
+  .btn-ghost:hover{background:var(--ink);color:var(--cream);}
+
+  /* hero */
+  .hero{padding:190px 0 110px;position:relative;overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:72px;align-items:end;}
+  h1{font-size:clamp(46px,6.6vw,88px);}
+  .hero p.lead{
+    margin-top:30px;max-width:30em;font-size:19px;color:var(--ink-soft);
+  }
+  .hero-actions{display:flex;gap:16px;margin-top:44px;flex-wrap:wrap;}
+  .loaf{width:100%;height:auto;display:block;}
+  .hero-meta{display:flex;gap:56px;margin-top:88px;}
+  .hero-meta div .n{font-family:'Fraunces',serif;font-size:42px;line-height:1;}
+  .hero-meta div .l{font-size:13px;color:var(--ink-soft);margin-top:8px;letter-spacing:.04em;}
+
+  /* sections */
+  section{padding:120px 0;}
+  .sec-head{display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:start;margin-bottom:72px;}
+  h2{font-size:clamp(34px,4.2vw,54px);}
+  .muted{color:var(--ink-soft);}
+
+  .dark{background:var(--ink);color:var(--cream-2);}
+  .dark h2,.dark .logo{color:var(--cream);}
+  .dark .eyebrow{color:var(--crust);}
+  .dark .rule{background:rgba(250,247,242,.14);}
+  .dark .muted{color:rgba(241,234,222,.66);}
+
+  /* product grid */
+  .bakes{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(28,21,18,.12);border:1px solid rgba(28,21,18,.12);}
+  .bake{background:var(--cream);padding:40px 32px 36px;transition:background .25s ease, transform .25s ease;}
+  .bake:hover{background:var(--cream-2);}
+  .bake .art{height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:28px;}
+  .bake h3{font-family:'Fraunces',serif;font-size:24px;font-weight:400;margin-bottom:10px;}
+  .bake p{font-size:14.5px;color:var(--ink-soft);line-height:1.6;min-height:66px;}
+  .bake .price{margin-top:20px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--crust-deep);}
+
+  /* process */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:48px;}
+  .step .num{font-family:'Fraunces',serif;font-size:15px;color:var(--crust);letter-spacing:.2em;}
+  .step h3{font-family:'Fraunces',serif;font-weight:400;font-size:27px;margin:20px 0 14px;}
+  .step p{font-size:15px;}
+  .step .bar{height:1px;background:rgba(250,247,242,.2);margin-top:28px;position:relative;}
+  .step .bar::after{content:'';position:absolute;left:0;top:0;height:1px;width:26%;background:var(--crust);}
+
+  /* quote */
+  blockquote{font-family:'Fraunces',serif;font-size:clamp(26px,3.4vw,42px);line-height:1.28;font-weight:300;max-width:20em;}
+  .cite{margin-top:40px;font-size:14px;letter-spacing:.06em;color:var(--ink-soft);}
+
+  /* visit */
+  .visit{display:grid;grid-template-columns:1fr 1fr;gap:88px;align-items:center;}
+  .info-row{display:flex;justify-content:space-between;padding:22px 0;border-bottom:1px solid rgba(28,21,18,.12);font-size:15.5px;}
+  .info-row span:first-child{color:var(--ink-soft);}
+  .info-row span:last-child{font-weight:600;}
+
+  footer{background:var(--ink);color:rgba(241,234,222,.6);padding:72px 0 44px;font-size:14px;}
+  .foot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap;padding-bottom:48px;}
+  .foot-links{display:flex;gap:30px;}
+  .foot-bot{padding-top:28px;border-top:1px solid rgba(250,247,242,.12);display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s cubic-bezier(.2,.7,.3,1),transform .8s cubic-bezier(.2,.7,.3,1);}
+  .reveal.in{opacity:1;transform:none;}
+
+  @media(max-width:980px){
+    .hero-grid,.sec-head,.visit{grid-template-columns:1fr;gap:44px;}
+    .bakes{grid-template-columns:repeat(2,1fr);}
+    .steps{grid-template-columns:repeat(2,1fr);gap:40px;}
+    .nav-links{display:none;}
+    .hero{padding:140px 0 80px;}
+    section{padding:84px 0;}
+    .hero-meta{gap:32px;margin-top:56px;flex-wrap:wrap;}
+  }
+  @media(max-width:560px){
+    .wrap{padding:0 22px;}
+    .bakes{grid-template-columns:1fr;}
+    .steps{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="logo">Prozymi<span>.</span></a>
+    <nav class="nav-links">
+      <a href="#bakes">The bakes</a>
+      <a href="#method">Method</a>
+      <a href="#wholesale">Wholesale</a>
+      <a href="#visit">Visit</a>
+    </nav>
+    <a href="#visit" class="btn">Order for pickup</a>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Patra · Achaia · est. 2016</p>
+        <h1 class="serif" style="margin-top:26px;">Bread that takes<br>twenty&#8209;four hours<br>and no shortcuts.</h1>
+        <p class="lead">Wild yeast, stone-milled Greek flour, a 400&nbsp;°C deck oven and one baker who starts at 3 a.m. Eleven loaves, baked fresh daily, never par-baked and never frozen.</p>
+        <div class="hero-actions">
+          <a href="#bakes" class="btn">See today's bakes</a>
+          <a href="#wholesale" class="btn btn-ghost">Wholesale enquiries</a>
+        </div>
+      </div>
+      <div>
+        <svg class="loaf" viewBox="0 0 420 380" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Illustration of a scored sourdough loaf">
+          <circle cx="210" cy="190" r="168" fill="#F1EADE"/>
+          <ellipse cx="210" cy="206" rx="140" ry="108" fill="#E4D2B4"/>
+          <ellipse cx="210" cy="200" rx="140" ry="108" fill="#D8BC90"/>
+          <path d="M96 190c34-30 78-46 114-46s80 16 114 46" stroke="#9A6C22" stroke-width="2" opacity=".5"/>
+          <path d="M148 148c14 34 24 70 28 110" stroke="#8A5E18" stroke-width="3" stroke-linecap="round"/>
+          <path d="M210 136c2 38 2 78-2 118" stroke="#8A5E18" stroke-width="3" stroke-linecap="round"/>
+          <path d="M272 148c-14 34-24 70-28 110" stroke="#8A5E18" stroke-width="3" stroke-linecap="round"/>
+          <path d="M138 152c18 6 32 20 38 38" stroke="#C8923D" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <path d="M282 152c-18 6-32 20-38 38" stroke="#C8923D" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <ellipse cx="210" cy="312" rx="150" ry="14" fill="#1C1512" opacity=".07"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="hero-meta">
+      <div><div class="n serif">11</div><div class="l">loaves on the board</div></div>
+      <div><div class="n serif">24h</div><div class="l">cold fermentation</div></div>
+      <div><div class="n serif">14</div><div class="l">cafés we supply</div></div>
+      <div><div class="n serif">3am</div><div class="l">oven goes in</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="bakes" class="reveal">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">The board</p>
+        <h2 class="serif" style="margin-top:20px;">Eleven things,<br>done properly.</h2>
+      </div>
+      <p class="muted" style="padding-top:12px;">We bake a short list on purpose. Every loaf below comes out of the same starter we have kept alive since the first winter on Riga Feraiou street. When a batch sells out, it is gone until tomorrow — we would rather run out than bake twice.</p>
+    </div>
+
+    <div class="bakes">
+      <article class="bake">
+        <div class="art">
+          <svg width="96" height="96" viewBox="0 0 96 96" fill="none"><ellipse cx="48" cy="54" rx="40" ry="30" fill="#E4D2B4"/><path d="M26 44c12-10 32-14 44-8" stroke="#9A6C22" stroke-width="2" stroke-linecap="round"/><path d="M36 34c6 12 8 26 8 38" stroke="#8A5E18" stroke-width="2.5" stroke-linecap="round"/><path d="M60 34c-6 12-8 26-8 38" stroke="#8A5E18" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Country sourdough</h3>
+        <p>85% stone-milled wheat, 15% rye. Thick blistered crust, open crumb, keeps four days.</p>
+        <div class="price">€4.20 · 900 g</div>
+      </article>
+      <article class="bake">
+        <div class="art">
+          <svg width="96" height="96" viewBox="0 0 96 96" fill="none"><rect x="20" y="34" width="56" height="40" rx="6" fill="#D8BC90"/><path d="M28 34V26M44 34V24M60 34V26" stroke="#9A6C22" stroke-width="2.5" stroke-linecap="round"/><path d="M28 50h40M28 60h40" stroke="#9A6C22" stroke-width="1.5" opacity=".7"/></svg>
+        </div>
+        <h3>Olive &amp; oregano</h3>
+        <p>Kalamata olives from Aigio, wild oregano, a slow overnight rise. Best torn, not sliced.</p>
+        <div class="price">€5.00 · 700 g</div>
+      </article>
+      <article class="bake">
+        <div class="art">
+          <svg width="96" height="96" viewBox="0 0 96 96" fill="none"><path d="M24 62c0-18 10-30 24-30s24 12 24 30z" fill="#E4D2B4"/><path d="M20 62h56" stroke="#9A6C22" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="48" r="3" fill="#8A5E18"/><circle cx="54" cy="52" r="3" fill="#8A5E18"/><circle cx="48" cy="40" r="2.5" fill="#8A5E18"/></svg>
+        </div>
+        <h3>Walnut &amp; fig</h3>
+        <p>Autumn only. Figs dried on the roof in September, walnuts cracked the same morning.</p>
+        <div class="price">€6.40 · 650 g</div>
+      </article>
+      <article class="bake">
+        <div class="art">
+          <svg width="96" height="96" viewBox="0 0 96 96" fill="none"><circle cx="48" cy="52" r="26" fill="#D8BC90"/><circle cx="48" cy="52" r="9" fill="#FAF7F2"/><path d="M48 26v8M70 52h-8M48 78v-8M26 52h8" stroke="#9A6C22" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </div>
+        <h3>Koulouri Patras</h3>
+        <p>Sesame ring, crisp outside, chewy inside. Out of the oven at 6:40, gone by nine.</p>
+        <div class="price">€1.10 · each</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="method" class="dark reveal">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Method</p>
+        <h2 class="serif" style="margin-top:20px;">Four days,<br>one loaf.</h2>
+      </div>
+      <p class="muted" style="padding-top:12px;">Industrial bread is finished in ninety minutes with commercial yeast and a dough improver. Ours takes four days because fermentation is what makes bread digestible, keeps it fresh without additives, and gives it the sour edge you actually came for.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">01 —</div>
+        <h3>Feed</h3>
+        <p class="muted">The starter is refreshed twice a day, every day, at the same hours. It has not been allowed to go hungry since 2016.</p>
+        <div class="bar"></div>
+      </div>
+      <div class="step">
+        <div class="num">02 —</div>
+        <h3>Autolyse</h3>
+        <p class="muted">Flour and water rest alone for two hours before salt touches them. The gluten builds itself; we barely knead.</p>
+        <div class="bar"></div>
+      </div>
+      <div class="step">
+        <div class="num">03 —</div>
+        <h3>Cold rise</h3>
+        <p class="muted">Twenty-four hours at 4&nbsp;°C. Slow and cold is where the flavour comes from — there is no shortcut for time.</p>
+        <div class="bar"></div>
+      </div>
+      <div class="step">
+        <div class="num">04 —</div>
+        <h3>Deck oven</h3>
+        <p class="muted">Loaded by hand onto stone at 400&nbsp;°C with a burst of steam. Twelve minutes covered, thirty open.</p>
+        <div class="bar"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="wholesale" class="reveal">
+  <div class="wrap">
+    <div class="visit">
+      <div>
+        <p class="eyebrow">Wholesale</p>
+        <h2 class="serif" style="margin:20px 0 28px;">We deliver to fourteen kitchens across Achaia, six days a week.</h2>
+        <p class="muted">Standing orders are placed by 4 p.m. the day before and arrive between 6:30 and 8:00 a.m. Minimum order is twelve units. Crates, invoicing and a monthly account come as standard — no contracts, no minimum term.</p>
+        <a href="#visit" class="btn" style="margin-top:36px;">Request a price list</a>
+      </div>
+      <div>
+        <div class="info-row"><span>Delivery window</span><span>06:30 — 08:00</span></div>
+        <div class="info-row"><span>Order cut-off</span><span>16:00 previous day</span></div>
+        <div class="info-row"><span>Minimum order</span><span>12 units</span></div>
+        <div class="info-row"><span>Delivery zone</span><span>Patra, Rio, Aigio</span></div>
+        <div class="info-row"><span>Payment terms</span><span>Monthly account</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dark reveal" style="padding:140px 0;">
+  <div class="wrap">
+    <blockquote class="serif">“We stopped baking in-house the week we found them. Their country loaf outsells everything else on our counter — and we have never once had a late crate.”</blockquote>
+    <div class="cite">Dimitra Anagnostou — owner, Kafeneio Tessera, Rio · customer since 2019</div>
+  </div>
+</section>
+
+<section id="visit" class="reveal">
+  <div class="wrap">
+    <div class="visit">
+      <div>
+        <p class="eyebrow">Visit</p>
+        <h2 class="serif" style="margin:20px 0 28px;">Riga Feraiou 42,<br>Patra 26221</h2>
+        <p class="muted">The shop is small and the queue is real after eight. Pickup orders can be reserved the night before by phone — we hold them until noon.</p>
+        <div style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="tel:+302610000000" class="btn">+30 2610 000 000</a>
+          <a href="mailto:hello@prozymi.gr" class="btn btn-ghost">hello@prozymi.gr</a>
+        </div>
+      </div>
+      <div>
+        <div class="info-row"><span>Tuesday — Friday</span><span>06:30 — 15:00</span></div>
+        <div class="info-row"><span>Saturday</span><span>06:30 — 14:00</span></div>
+        <div class="info-row"><span>Sunday</span><span>07:00 — 12:00</span></div>
+        <div class="info-row"><span>Monday</span><span>Closed — starter rests</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div>
+        <div class="logo" style="color:var(--cream);">Prozymi<span style="color:var(--crust);">.</span></div>
+        <p style="margin-top:14px;max-width:24em;">A stone-oven bakehouse on Riga Feraiou street. Eleven loaves, one starter, no freezer.</p>
+      </div>
+      <div class="foot-links">
+        <a href="#bakes">The bakes</a>
+        <a href="#method">Method</a>
+        <a href="#wholesale">Wholesale</a>
+        <a href="#visit">Visit</a>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 Prozymi Bakehouse · VAT EL000000000</span>
+      <span>Patra, Greece</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+<!-- portfolio badge -->
+<style>
+  #yk-badge{position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;align-items:center;gap:9px;
+    padding:9px 15px 9px 12px;border-radius:999px;background:rgba(11,13,16,.88);color:#F2F4F7;
+    border:1px solid rgba(255,255,255,.18);backdrop-filter:saturate(140%) blur(10px);
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;font-size:13px;font-weight:600;
+    letter-spacing:-.01em;text-decoration:none;line-height:1;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .18s ease,border-color .18s ease;}
+  #yk-badge:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.4);}
+  #yk-badge b{color:#E8B341;font-weight:600;}
+  #yk-badge svg{opacity:.65;}
+  @media(max-width:520px){#yk-badge{right:10px;bottom:10px;font-size:12px;padding:8px 13px 8px 10px;}}
+</style>
+<a id="yk-badge" href="../" title="Back to portfolio">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span>Concept project by <b>Yanis&nbsp;K.</b></span>
+</a>
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Series A pitch deck | Yanis K.</title>
+<meta name="description" content="An 11-slide investor pitch deck designed from scratch: problem framing, market sizing, custom charts and pricing. Flip through it live or download the PDF.">
+<meta property="og:title" content="Meridian — Series A pitch deck">
+<meta property="og:description" content="An 11-slide investor deck designed from scratch. Flip through it live.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0D10'/><text x='16' y='22' font-size='16' font-family='Georgia,serif' fill='%23E8B341' text-anchor='middle'>Y</text></svg>">
+<style>
+  :root{
+    --bg:#0B0D10; --bg-2:#101419;
+    --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.20);
+    --fg:#F2F4F7; --fg-soft:#9AA3AE; --fg-dim:#6B7480;
+    --accent:#E8B341;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    background:var(--bg);color:var(--fg);
+    font-family:'Manrope',system-ui,sans-serif;font-size:16px;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;flex-direction:column;
+  }
+  a{color:inherit;text-decoration:none;}
+  .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;width:100%;}
+
+  header{border-bottom:1px solid var(--line);background:rgba(11,13,16,.9);position:sticky;top:0;z-index:20;}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:62px;gap:16px;}
+  .back{display:inline-flex;align-items:center;gap:9px;font-size:14px;color:var(--fg-soft);}
+  .back:hover{color:var(--fg);}
+  .title{font-size:14.5px;font-weight:600;letter-spacing:-0.01em;}
+  .title span{color:var(--fg-dim);font-weight:400;}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border-radius:999px;
+    font-size:13.5px;font-weight:600;transition:transform .18s ease,background .18s ease,border-color .18s ease;}
+  .btn-primary{background:var(--accent);color:#14100A;}
+  .btn-primary:hover{transform:translateY(-1px);background:#F0C15C;}
+  .btn-ghost{border:1px solid var(--line-2);}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.42);}
+  @media(max-width:700px){.title{display:none;}}
+
+  main{flex:1;padding:26px 0 18px;}
+
+  .stage-row{display:flex;align-items:center;justify-content:center;gap:14px;}
+  .stage{
+    position:relative;flex:0 1 auto;min-width:0;
+    width:min(100%, calc((100vh - 268px) * 1.7781));
+    aspect-ratio:1867/1050;
+    background:#05070a;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    box-shadow:0 22px 60px rgba(0,0,0,.55);
+  }
+  .stage img{width:100%;height:100%;object-fit:contain;display:block;}
+  .stage img.hidden{display:none;}
+  .arrow{
+    flex:0 0 auto;width:42px;height:42px;border-radius:50%;
+    border:1px solid var(--line-2);background:var(--bg-2);color:var(--fg);
+    display:grid;place-items:center;cursor:pointer;
+    transition:border-color .18s ease,transform .18s ease,opacity .18s ease;
+  }
+  .arrow:hover{border-color:rgba(255,255,255,.45);transform:scale(1.06);}
+  .arrow:disabled{opacity:.28;cursor:default;transform:none;}
+  @media(max-width:760px){.arrow{display:none;}}
+
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;flex-wrap:wrap;}
+  .counter{font-size:13.5px;color:var(--fg-dim);letter-spacing:.02em;}
+  .counter b{color:var(--fg);font-weight:600;}
+  .hint{font-size:12.5px;color:var(--fg-dim);}
+  .progress{height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:14px;}
+  .progress i{display:block;height:100%;background:var(--accent);width:9%;transition:width .3s ease;}
+
+  .thumbs{
+    display:flex;gap:9px;overflow-x:auto;padding:22px 0 6px;
+    scrollbar-width:thin;scrollbar-color:var(--line-2) transparent;
+  }
+  .thumbs::-webkit-scrollbar{height:6px;}
+  .thumbs::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:6px;}
+  .thumb{
+    flex:0 0 118px;aspect-ratio:1867/1050;border-radius:7px;overflow:hidden;
+    border:1px solid var(--line);cursor:pointer;background:#05070a;
+    opacity:.5;transition:opacity .18s ease,border-color .18s ease;
+  }
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb:hover{opacity:.85;}
+  .thumb.active{opacity:1;border-color:var(--accent);}
+
+  .about{border-top:1px solid var(--line);margin-top:34px;padding:34px 0 8px;}
+  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:38px;}
+  @media(max-width:820px){.about-grid{grid-template-columns:1fr;gap:26px;}}
+  .about h2{font-size:26px;margin-bottom:12px;letter-spacing:-0.01em;}
+  .about p{color:var(--fg-soft);line-height:1.68;font-size:15.5px;margin-bottom:14px;}
+  .specs{border:1px solid var(--line);border-radius:14px;padding:6px 20px;background:var(--bg-2);}
+  .spec{display:flex;justify-content:space-between;gap:14px;padding:13px 0;font-size:14.5px;}
+  .spec + .spec{border-top:1px solid var(--line);}
+  .spec span:first-child{color:var(--fg-dim);}
+  .spec span:last-child{font-weight:500;text-align:right;}
+
+  footer{border-top:1px solid var(--line);padding:26px 0 36px;margin-top:30px;
+    font-size:13px;color:var(--fg-dim);}
+  .foot{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="back" href="../">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      All work
+    </a>
+    <div class="title">Meridian <span>&middot; Series A pitch deck</span></div>
+    <a class="btn btn-primary" href="./meridian-pitch-deck.pdf" download>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2v8m0 0L4.5 6.5M8 10l3.5-3.5M3 13h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      PDF
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <div class="stage-row">
+      <button class="arrow" id="prev" aria-label="Previous slide">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="stage" id="stage"></div>
+      <button class="arrow" id="next" aria-label="Next slide">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <div class="progress"><i id="bar"></i></div>
+
+    <div class="bar">
+      <div class="counter">Slide <b id="cur">1</b> of 11</div>
+      <div class="hint">Use &larr; &rarr; keys, or tap a thumbnail below</div>
+    </div>
+
+    <div class="thumbs" id="thumbs"></div>
+
+    <div class="about">
+      <div class="about-grid">
+        <div>
+          <h2 class="serif">About this deck</h2>
+          <p>Meridian is an invented company — a treasury-analytics product for crypto funds — built so I could show a complete investor deck without touching a real client's confidential material. Every slide, chart and line of copy here is my own work.</p>
+          <p>The deck follows the structure investors actually expect: the problem stated plainly, why now, the product, market sizing, the risk model, traction, pricing and the ask. Charts are drawn to the same grid and colour system as the rest of the slides rather than pasted in from a spreadsheet.</p>
+          <p>Delivered the way I deliver every project: an editable PowerPoint file plus a print-ready PDF, so the team can update numbers themselves before the next meeting.</p>
+        </div>
+        <div class="specs">
+          <div class="spec"><span>Slides</span><span>11</span></div>
+          <div class="spec"><span>Format</span><span>16:9</span></div>
+          <div class="spec"><span>Deliverables</span><span>PPTX + PDF</span></div>
+          <div class="spec"><span>Typefaces</span><span>Unbounded, Manrope</span></div>
+          <div class="spec"><span>Charts</span><span>Custom-drawn</span></div>
+          <div class="spec"><span>Build time</span><span>~4 days</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>&copy; 2026 Yanis K. — Patra, Greece</span>
+    <span><a href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Hire me on Upwork</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var TOTAL = 11;
+  var stage  = document.getElementById('stage');
+  var thumbs = document.getElementById('thumbs');
+  var cur    = document.getElementById('cur');
+  var bar    = document.getElementById('bar');
+  var prev   = document.getElementById('prev');
+  var next   = document.getElementById('next');
+  var i = 0, imgs = [], tbs = [];
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  for (var n = 1; n <= TOTAL; n++){
+    var src = './slides/slide-' + pad(n) + '.jpg';
+
+    var im = document.createElement('img');
+    im.src = src;
+    im.alt = 'Meridian pitch deck, slide ' + n;
+    if (n > 1) im.className = 'hidden';
+    if (n > 2) im.loading = 'lazy';
+    stage.appendChild(im);
+    imgs.push(im);
+
+    var t = document.createElement('div');
+    t.className = 'thumb' + (n === 1 ? ' active' : '');
+    t.setAttribute('role','button');
+    t.setAttribute('aria-label','Go to slide ' + n);
+    var ti = document.createElement('img');
+    ti.src = src; ti.alt = ''; ti.loading = 'lazy';
+    t.appendChild(ti);
+    (function(idx){ t.addEventListener('click', function(){ go(idx); }); })(n - 1);
+    thumbs.appendChild(t);
+    tbs.push(t);
+  }
+
+  function go(n){
+    if (n < 0 || n >= TOTAL) return;
+    imgs[i].className = 'hidden';
+    tbs[i].classList.remove('active');
+    i = n;
+    imgs[i].className = '';
+    tbs[i].classList.add('active');
+    cur.textContent = i + 1;
+    bar.style.width = ((i + 1) / TOTAL * 100) + '%';
+    prev.disabled = (i === 0);
+    next.disabled = (i === TOTAL - 1);
+    var t = tbs[i];
+    var target = t.offsetLeft - (thumbs.clientWidth - t.offsetWidth) / 2;
+    var max = thumbs.scrollWidth - thumbs.clientWidth;
+    thumbs.scrollTo({left: Math.max(0, Math.min(target, max)), behavior:'smooth'});
+  }
+
+  prev.addEventListener('click', function(){ go(i - 1); });
+  next.addEventListener('click', function(){ go(i + 1); });
+  stage.addEventListener('click', function(){ go(i + 1 >= TOTAL ? 0 : i + 1); });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(i + 1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); go(i - 1); }
+    if (e.key === 'Home')       { e.preventDefault(); go(0); }
+    if (e.key === 'End')        { e.preventDefault(); go(TOTAL - 1); }
+  });
+
+  var sx = null;
+  stage.addEventListener('touchstart', function(e){ sx = e.changedTouches[0].clientX; }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if (sx === null) return;
+    var d = e.changedTouches[0].clientX - sx;
+    if (Math.abs(d) > 40) go(d < 0 ? i + 1 : i - 1);
+    sx = null;
+  }, {passive:true});
+
+  go(0);
+})();
+</script>
+
+</body>
+</html>

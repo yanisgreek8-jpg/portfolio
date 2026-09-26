@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian — Treasury analytics for onchain funds</title>
+<meta name="description" content="One console for every position across 14 chains. Live yield attribution, liquidation headroom and audit-ready reporting for crypto treasuries.">
+<meta property="og:title" content="Meridian — Treasury analytics for onchain funds">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230B0F0D'/><circle cx='16' cy='16' r='7' stroke='%233FBF8F' stroke-width='2.5' fill='none'/></svg>">
+<style>
+  :root{
+    --bg:#0A0D0C;
+    --bg-2:#101614;
+    --line:rgba(236,247,242,.10);
+    --fg:#ECF7F2;
+    --fg-dim:rgba(236,247,242,.56);
+    --jade:#3FBF8F;
+    --jade-deep:#1F4D3F;
+    --amber:#D8A657;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);color:var(--fg);
+    font-family:'Manrope',system-ui,sans-serif;font-size:16.5px;line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(900px 480px at 78% -8%, rgba(63,191,143,.13), transparent 60%),
+      radial-gradient(700px 420px at 4% 12%, rgba(31,77,63,.30), transparent 62%);
+    background-repeat:no-repeat;
+  }
+  .wrap{max-width:1220px;margin:0 auto;padding:0 32px;}
+  .display{font-family:'Unbounded',system-ui,sans-serif;font-weight:400;letter-spacing:-0.03em;line-height:1.08;}
+  .eyebrow{font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:var(--jade);}
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:13px;letter-spacing:.02em;}
+
+  header{position:fixed;inset:0 0 auto 0;z-index:60;background:rgba(10,13,12,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px;}
+  .brand{display:flex;align-items:center;gap:11px;font-family:'Unbounded',sans-serif;font-size:17px;letter-spacing:-.02em;}
+  .mark{width:26px;height:26px;border:2px solid var(--jade);border-radius:50%;position:relative;}
+  .mark::after{content:'';position:absolute;left:50%;top:-2px;bottom:-2px;width:2px;background:var(--jade);transform:translateX(-50%) rotate(28deg);}
+  .nav-links{display:flex;gap:34px;font-size:14.5px;color:var(--fg-dim);font-weight:500;}
+  .nav-links a:hover{color:var(--fg);}
+  .nav-cta{display:flex;gap:12px;align-items:center;}
+  .btn{display:inline-block;padding:13px 26px;font-size:14.5px;font-weight:600;border-radius:8px;border:1px solid transparent;transition:transform .2s,box-shadow .2s,background .2s,border-color .2s;}
+  .btn-p{background:var(--jade);color:#06231A;}
+  .btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(63,191,143,.28);}
+  .btn-s{border-color:var(--line);color:var(--fg);}
+  .btn-s:hover{border-color:rgba(236,247,242,.4);transform:translateY(-2px);}
+
+  .hero{padding:168px 0 96px;}
+  .pill{display:inline-flex;align-items:center;gap:10px;padding:7px 15px 7px 10px;border:1px solid var(--line);border-radius:999px;font-size:13px;color:var(--fg-dim);}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--jade);box-shadow:0 0 0 4px rgba(63,191,143,.18);}
+  h1{font-size:clamp(38px,5.4vw,70px);margin:30px 0 26px;max-width:15em;}
+  .hero .lead{font-size:19px;color:var(--fg-dim);max-width:34em;}
+  .hero-actions{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap;align-items:center;}
+  .note{font-size:13.5px;color:var(--fg-dim);}
+
+  /* dashboard mock */
+  .console{
+    margin-top:80px;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:linear-gradient(180deg,#0E1413,#0A0D0C);
+    box-shadow:0 40px 90px rgba(0,0,0,.6);
+  }
+  .console-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--line);}
+  .tl{width:10px;height:10px;border-radius:50%;background:rgba(236,247,242,.18);}
+  .console-title{margin-left:14px;font-size:13px;color:var(--fg-dim);}
+  .console-body{display:grid;grid-template-columns:1.35fr 1fr;gap:1px;background:var(--line);}
+  .panel{background:#0B100F;padding:30px 30px 34px;}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-bottom:32px;}
+  .kpi .k{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);}
+  .kpi .v{font-family:'Unbounded',sans-serif;font-size:27px;margin-top:8px;letter-spacing:-.03em;}
+  .kpi .d{font-size:12.5px;margin-top:5px;color:var(--jade);}
+  .kpi .d.warn{color:var(--amber);}
+  .chart{width:100%;height:auto;display:block;}
+  .rows{display:flex;flex-direction:column;}
+  .row{display:grid;grid-template-columns:1.4fr .8fr .8fr;gap:12px;padding:15px 0;border-bottom:1px solid var(--line);font-size:14px;align-items:center;}
+  .row:last-child{border-bottom:none;}
+  .row .name{display:flex;align-items:center;gap:10px;}
+  .chip{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:700;color:#06231A;}
+  .num{text-align:right;font-variant-numeric:tabular-nums;}
+  .bar{height:5px;border-radius:3px;background:rgba(236,247,242,.09);overflow:hidden;}
+  .bar i{display:block;height:100%;background:var(--jade);border-radius:3px;}
+
+  .logos{padding:64px 0 24px;}
+  .logos .strip{display:flex;gap:56px;align-items:center;flex-wrap:wrap;opacity:.5;font-family:'Unbounded',sans-serif;font-size:16px;letter-spacing:-.02em;}
+
+  section{padding:116px 0;}
+  h2{font-size:clamp(30px,3.9vw,48px);}
+  .sec-head{max-width:34em;margin-bottom:68px;}
+  .sec-head p{color:var(--fg-dim);margin-top:22px;font-size:18px;}
+
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .card{background:var(--bg-2);padding:40px 34px 44px;transition:background .25s;}
+  .card:hover{background:#141C19;}
+  .card .ic{width:40px;height:40px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;margin-bottom:26px;}
+  .card h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:19px;letter-spacing:-.02em;margin-bottom:12px;}
+  .card p{font-size:15px;color:var(--fg-dim);}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:86px;align-items:center;}
+  .checks{margin-top:34px;display:flex;flex-direction:column;gap:18px;}
+  .check{display:flex;gap:14px;font-size:15.5px;color:var(--fg-dim);}
+  .check b{color:var(--fg);font-weight:600;}
+
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  .plan{border:1px solid var(--line);border-radius:14px;padding:36px 32px 40px;background:var(--bg-2);display:flex;flex-direction:column;}
+  .plan.hot{border-color:rgba(63,191,143,.45);background:linear-gradient(180deg,rgba(63,191,143,.08),transparent 60%),var(--bg-2);}
+  .plan h3{font-family:'Unbounded',sans-serif;font-weight:400;font-size:18px;}
+  .plan .amt{font-family:'Unbounded',sans-serif;font-size:40px;letter-spacing:-.04em;margin:22px 0 4px;}
+  .plan .per{font-size:13.5px;color:var(--fg-dim);}
+  .plan ul{list-style:none;margin:28px 0 32px;display:flex;flex-direction:column;gap:13px;font-size:14.5px;color:var(--fg-dim);}
+  .plan li{display:flex;gap:11px;}
+  .plan .btn{text-align:center;margin-top:auto;}
+
+  .cta{border:1px solid var(--line);border-radius:18px;padding:76px 56px;text-align:center;background:radial-gradient(700px 300px at 50% 0%,rgba(63,191,143,.14),transparent 70%),var(--bg-2);}
+
+  footer{border-top:1px solid var(--line);padding:56px 0 40px;color:var(--fg-dim);font-size:14px;}
+  .foot{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap;padding-bottom:40px;}
+  .fcol{display:flex;flex-direction:column;gap:11px;}
+  .fcol .h{color:var(--fg);font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+  .foot-bot{border-top:1px solid var(--line);padding-top:26px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px;}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .8s cubic-bezier(.2,.7,.3,1),transform .8s cubic-bezier(.2,.7,.3,1);}
+  .reveal.in{opacity:1;transform:none;}
+
+  @media(max-width:1000px){
+    .console-body,.split{grid-template-columns:1fr;}
+    .feat,.price-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .hero{padding:132px 0 70px;}
+    section{padding:80px 0;}
+    .split{gap:48px;}
+    .cta{padding:56px 26px;}
+  }
+  @media(max-width:560px){ .wrap{padding:0 20px;} .kpis{grid-template-columns:1fr 1fr;gap:20px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="brand"><span class="mark"></span>Meridian</a>
+    <nav class="nav-links">
+      <a href="#product">Product</a>
+      <a href="#risk">Risk</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#docs">Docs</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#" class="btn btn-s">Sign in</a>
+      <a href="#pricing" class="btn btn-p">Book a demo</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <span class="pill"><span class="dot"></span> Now indexing Base, Arbitrum and Hyperliquid</span>
+    <h1 class="display">Every position, every chain, one honest number.</h1>
+    <p class="lead">Meridian reconciles your onchain treasury across 14 networks and 60 protocols — then tells you where the yield actually comes from and how far you are from a liquidation.</p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn btn-p">Book a 20-minute demo</a>
+      <a href="#product" class="btn btn-s">See a live console</a>
+      <span class="note">No wallet connection required for read-only.</span>
+    </div>
+
+    <div class="console">
+      <div class="console-bar">
+        <span class="tl"></span><span class="tl"></span><span class="tl"></span>
+        <span class="console-title mono">meridian / treasury · alpha-fund-ii · updated 12s ago</span>
+      </div>
+      <div class="console-body">
+        <div class="panel">
+          <div class="kpis">
+            <div class="kpi"><div class="k">Net asset value</div><div class="v">$48.2M</div><div class="d">▲ 1.84% · 30d</div></div>
+            <div class="kpi"><div class="k">Blended APY</div><div class="v">9.14%</div><div class="d">▲ 0.38pp · 7d</div></div>
+            <div class="kpi"><div class="k">Health factor</div><div class="v">1.62</div><div class="d warn">▼ 0.11 · 24h</div></div>
+          </div>
+          <svg class="chart" viewBox="0 0 640 210" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Net asset value over 90 days">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3FBF8F" stop-opacity=".34"/>
+                <stop offset="100%" stop-color="#3FBF8F" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g stroke="rgba(236,247,242,.08)">
+              <line x1="0" y1="40" x2="640" y2="40"/><line x1="0" y1="90" x2="640" y2="90"/>
+              <line x1="0" y1="140" x2="640" y2="140"/><line x1="0" y1="190" x2="640" y2="190"/>
+            </g>
+            <path d="M0 168 L48 160 L96 172 L144 140 L192 148 L240 118 L288 126 L336 96 L384 104 L432 74 L480 86 L528 58 L576 64 L640 38 L640 210 L0 210 Z" fill="url(#g)"/>
+            <path d="M0 168 L48 160 L96 172 L144 140 L192 148 L240 118 L288 126 L336 96 L384 104 L432 74 L480 86 L528 58 L576 64 L640 38" stroke="#3FBF8F" stroke-width="2.2" fill="none" stroke-linejoin="round"/>
+            <circle cx="640" cy="38" r="4.5" fill="#3FBF8F"/>
+            <g fill="rgba(236,247,242,.4)" font-size="11" font-family="monospace">
+              <text x="4" y="205">Jul</text><text x="212" y="205">Aug</text><text x="420" y="205">Sep</text><text x="598" y="205">Now</text>
+            </g>
+          </svg>
+        </div>
+        <div class="panel">
+          <div class="k" style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);margin-bottom:18px;">Yield attribution · 30d</div>
+          <div class="rows">
+            <div class="row">
+              <div class="name"><span class="chip" style="background:#3FBF8F;">A</span>Aave v3 · USDC</div>
+              <div class="num mono">$186.4k</div>
+              <div class="bar"><i style="width:82%"></i></div>
+            </div>
+            <div class="row">
+              <div class="name"><span class="chip" style="background:#D8A657;">P</span>Pendle · PT-sUSDe</div>
+              <div class="num mono">$121.9k</div>
+              <div class="bar"><i style="width:58%;background:#D8A657;"></i></div>
+            </div>
+            <div class="row">
+              <div class="name"><span class="chip" style="background:#7FB2FF;">U</span>Uniswap v4 · ETH/USDC</div>
+              <div class="num mono">$74.2k</div>
+              <div class="bar"><i style="width:36%;background:#7FB2FF;"></i></div>
+            </div>
+            <div class="row">
+              <div class="name"><span class="chip" style="background:#C08BE8;">M</span>Morpho · wstETH loop</div>
+              <div class="num mono">$52.7k</div>
+              <div class="bar"><i style="width:26%;background:#C08BE8;"></i></div>
+            </div>
+            <div class="row">
+              <div class="name"><span class="chip" style="background:#E8785B;">F</span>Fluid · cbBTC</div>
+              <div class="num mono">−$8.1k</div>
+              <div class="bar"><i style="width:9%;background:#E8785B;"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap logos">
+  <div class="strip">
+    <span>Northgate&nbsp;Capital</span><span>Thalia&nbsp;Labs</span><span>Kestrel&nbsp;DAO</span><span>Vector&nbsp;Nine</span><span>Orbit&nbsp;Treasury</span>
+  </div>
+</div>
+
+<section id="product" class="reveal">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The problem</p>
+      <h2 class="display" style="margin-top:20px;">Your treasury lives in nine spreadsheets and none of them agree.</h2>
+      <p>Most funds still reconcile onchain positions by hand at month end. Meridian replaces that with one indexed source of truth — priced, attributed and exportable.</p>
+    </div>
+    <div class="feat">
+      <article class="card">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 14l4-5 4 3 4-7 4 5" stroke="#3FBF8F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>True yield attribution</h3>
+        <p>Splits returns into fees, emissions, price and funding — so you can see which strategies actually earn and which are quietly subsidised by a token that is bleeding.</p>
+      </article>
+      <article class="card">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l7 3.5v5c0 4-3 6.5-7 7.5-4-1-7-3.5-7-7.5v-5L10 2z" stroke="#3FBF8F" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+        <h3>Liquidation headroom</h3>
+        <p>Every leveraged position stress-tested against a 12%, 25% and 40% drawdown, with the exact price at which each loop unwinds. Alerts hit Slack before they hit your PnL.</p>
+      </article>
+      <article class="card">
+        <div class="ic"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="#3FBF8F" stroke-width="1.5"/><path d="M6.5 10l2.5 2.5L14 7.5" stroke="#3FBF8F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Audit-ready exports</h3>
+        <p>Cost-basis, realised and unrealised PnL per lot, in a format your accountant will accept without a phone call. CSV, Xero and a signed JSON attestation.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="risk" class="reveal">
+  <div class="wrap">
+    <div class="split">
+      <div>
+        <p class="eyebrow">Risk engine</p>
+        <h2 class="display" style="margin:20px 0 22px;">Find the cliff before the market does.</h2>
+        <p style="color:var(--fg-dim);font-size:17.5px;">Meridian re-prices your whole book every block and runs the scenarios you would otherwise only run after something breaks.</p>
+        <div class="checks">
+          <div class="check"><span style="color:var(--jade);">—</span><span><b>Correlated-collateral modelling.</b> Looped LSTs are not diversified; we price them as one exposure, not four.</span></div>
+          <div class="check"><span style="color:var(--jade);">—</span><span><b>Oracle-lag simulation.</b> See what happens when the feed is 40 seconds stale and the pool is not.</span></div>
+          <div class="check"><span style="color:var(--jade);">—</span><span><b>Depeg paths.</b> Stablecoin exposure tested at 2%, 5% and 12% off peg, including secondary liquidity depth.</span></div>
+          <div class="check"><span style="color:var(--jade);">—</span><span><b>Counterparty concentration.</b> Flags when more than 30% of yield depends on a single contract.</span></div>
+        </div>
+      </div>
+      <div class="panel" style="border:1px solid var(--line);border-radius:14px;">
+        <div style="font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);">Scenario · ETH −25%</div>
+        <div class="rows" style="margin-top:20px;">
+          <div class="row" style="grid-template-columns:1.6fr 1fr;"><div>Health factor</div><div class="num mono" style="color:var(--amber);">1.62 → 1.19</div></div>
+          <div class="row" style="grid-template-columns:1.6fr 1fr;"><div>Positions at risk</div><div class="num mono">2 of 17</div></div>
+          <div class="row" style="grid-template-columns:1.6fr 1fr;"><div>Capital to unwind</div><div class="num mono">$3.1M</div></div>
+          <div class="row" style="grid-template-columns:1.6fr 1fr;"><div>Liquidation price · wstETH</div><div class="num mono">$1,842</div></div>
+          <div class="row" style="grid-template-columns:1.6fr 1fr;"><div>Time to act</div><div class="num mono" style="color:var(--jade);">~4h at current vol</div></div>
+        </div>
+        <div style="margin-top:26px;padding:16px 18px;border-radius:10px;background:rgba(216,166,87,.09);border:1px solid rgba(216,166,87,.24);font-size:14px;color:rgba(236,247,242,.78);">
+          Recommended: repay $0.9M on Morpho to restore a 1.45 floor.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="reveal">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Pricing</p>
+      <h2 class="display" style="margin-top:20px;">Priced per treasury, not per seat.</h2>
+      <p>Everything is read-only by default. Meridian never holds keys and never has withdrawal rights.</p>
+    </div>
+    <div class="price-grid">
+      <div class="plan">
+        <h3>Observer</h3>
+        <div class="amt">$0</div><div class="per">up to $1M tracked</div>
+        <ul>
+          <li><span style="color:var(--jade);">—</span> 3 wallets, 4 chains</li>
+          <li><span style="color:var(--jade);">—</span> Daily reconciliation</li>
+          <li><span style="color:var(--jade);">—</span> CSV export</li>
+          <li><span style="color:var(--jade);">—</span> Community support</li>
+        </ul>
+        <a href="#" class="btn btn-s">Start free</a>
+      </div>
+      <div class="plan hot">
+        <h3>Desk <span style="color:var(--jade);font-size:12px;letter-spacing:.14em;">· MOST CHOSEN</span></h3>
+        <div class="amt">$1,400</div><div class="per">per month · up to $50M tracked</div>
+        <ul>
+          <li><span style="color:var(--jade);">—</span> Unlimited wallets, 14 chains</li>
+          <li><span style="color:var(--jade);">—</span> Block-level pricing</li>
+          <li><span style="color:var(--jade);">—</span> Full risk engine &amp; Slack alerts</li>
+          <li><span style="color:var(--jade);">—</span> Xero + signed attestations</li>
+          <li><span style="color:var(--jade);">—</span> Shared channel with our team</li>
+        </ul>
+        <a href="#" class="btn btn-p">Book a demo</a>
+      </div>
+      <div class="plan">
+        <h3>Institution</h3>
+        <div class="amt">Custom</div><div class="per">$50M+ · multi-entity</div>
+        <ul>
+          <li><span style="color:var(--jade);">—</span> Entity-level consolidation</li>
+          <li><span style="color:var(--jade);">—</span> Custom protocol adapters</li>
+          <li><span style="color:var(--jade);">—</span> SSO, SOC 2 pack, DPA</li>
+          <li><span style="color:var(--jade);">—</span> On-call risk analyst</li>
+        </ul>
+        <a href="#" class="btn btn-s">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="docs" class="reveal" style="padding-top:40px;">
+  <div class="wrap">
+    <div class="cta">
+      <p class="eyebrow">Get started</p>
+      <h2 class="display" style="margin:22px auto 20px;max-width:16em;">Twenty minutes to see your own book, priced properly.</h2>
+      <p style="color:var(--fg-dim);max-width:32em;margin:0 auto 38px;">Send us a read-only address list. We index it before the call and walk you through what we found — whether or not you buy anything.</p>
+      <a href="#" class="btn btn-p">Book a demo</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div style="max-width:24em;">
+        <div class="brand" style="color:var(--fg);"><span class="mark"></span>Meridian</div>
+        <p style="margin-top:14px;">Treasury analytics for funds that hold assets onchain. Read-only by design.</p>
+      </div>
+      <div class="fcol"><span class="h">Product</span><a href="#product">Overview</a><a href="#risk">Risk engine</a><a href="#pricing">Pricing</a><a href="#">Changelog</a></div>
+      <div class="fcol"><span class="h">Developers</span><a href="#">API reference</a><a href="#">Adapters</a><a href="#">Status</a></div>
+      <div class="fcol"><span class="h">Company</span><a href="#">About</a><a href="#">Security</a><a href="#">Careers</a></div>
+    </div>
+    <div class="foot-bot">
+      <span>© 2026 Meridian Analytics Ltd.</span>
+      <span>Privacy · Terms · Not investment advice</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+<!-- portfolio badge -->
+<style>
+  #yk-badge{position:fixed;right:16px;bottom:16px;z-index:9999;display:flex;align-items:center;gap:9px;
+    padding:9px 15px 9px 12px;border-radius:999px;background:rgba(11,13,16,.88);color:#F2F4F7;
+    border:1px solid rgba(255,255,255,.18);backdrop-filter:saturate(140%) blur(10px);
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;font-size:13px;font-weight:600;
+    letter-spacing:-.01em;text-decoration:none;line-height:1;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .18s ease,border-color .18s ease;}
+  #yk-badge:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.4);}
+  #yk-badge b{color:#E8B341;font-weight:600;}
+  #yk-badge svg{opacity:.65;}
+  @media(max-width:520px){#yk-badge{right:10px;bottom:10px;font-size:12px;padding:8px 13px 8px 10px;}}
+</style>
+<a id="yk-badge" href="../" title="Back to portfolio">
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span>Concept project by <b>Yanis&nbsp;K.</b></span>
+</a>
+
+</body>
+</html>

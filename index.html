@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yanis K. — Presentation &amp; landing page design, Patra, Greece</title>
+<meta name="description" content="Live work samples: presentation decks and landing pages designed and hand-coded from scratch. Click any project to open the real, working page.">
+<meta property="og:title" content="Yanis K. — Presentation &amp; landing page design">
+<meta property="og:description" content="Live, clickable work samples — decks and landing pages you can actually open.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0D10'/><text x='16' y='22' font-size='16' font-family='Georgia,serif' fill='%23E8B341' text-anchor='middle'>Y</text></svg>">
+<style>
+  :root{
+    --bg:#0B0D10;
+    --bg-2:#101419;
+    --line:rgba(255,255,255,.10);
+    --line-2:rgba(255,255,255,.18);
+    --fg:#F2F4F7;
+    --fg-soft:#9AA3AE;
+    --fg-dim:#6B7480;
+    --accent:#E8B341;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Manrope',system-ui,-apple-system,sans-serif;
+    font-size:17px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+  .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400;letter-spacing:-0.01em;line-height:1.05;}
+  .eyebrow{
+    font-size:11px;letter-spacing:0.24em;text-transform:uppercase;
+    font-weight:600;color:var(--fg-dim);
+  }
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(11,13,16,.82);
+    backdrop-filter:saturate(140%) blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:66px;}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:600;font-size:15px;letter-spacing:-0.01em;}
+  .logo-mark{
+    width:30px;height:30px;border-radius:8px;
+    background:linear-gradient(145deg,#1b212a,#0e1217);
+    border:1px solid var(--line-2);
+    display:grid;place-items:center;
+    font-family:'Instrument Serif',serif;font-size:16px;color:var(--accent);
+  }
+  .nav-links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--fg-soft);}
+  .nav-links a:hover{color:var(--fg);}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 20px;border-radius:999px;
+    font-size:14px;font-weight:600;letter-spacing:-0.01em;
+    transition:transform .18s ease, background .18s ease, border-color .18s ease;
+  }
+  .btn-primary{background:var(--accent);color:#14100A;}
+  .btn-primary:hover{transform:translateY(-1px);background:#F0C15C;}
+  .btn-ghost{border:1px solid var(--line-2);color:var(--fg);}
+  .btn-ghost:hover{border-color:rgba(255,255,255,.4);transform:translateY(-1px);}
+  @media(max-width:760px){.nav-links a:not(.btn){display:none;}}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:118px 0 88px;}
+  .hero::before{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(760px 420px at 18% -8%, rgba(232,179,65,.13), transparent 62%),
+      radial-gradient(620px 420px at 88% 8%, rgba(76,120,255,.10), transparent 62%);
+  }
+  .hero-inner{position:relative;max-width:840px;}
+  h1{font-size:clamp(40px,6.4vw,74px);margin:20px 0 22px;}
+  h1 em{font-style:italic;color:var(--accent);}
+  .lede{font-size:clamp(17px,2.1vw,21px);color:var(--fg-soft);max-width:660px;line-height:1.62;}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px;}
+  .facts{
+    display:flex;flex-wrap:wrap;gap:0;margin-top:62px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  }
+  .fact{flex:1 1 180px;padding:22px 26px 22px 0;}
+  .fact + .fact{padding-left:26px;border-left:1px solid var(--line);}
+  .fact-n{font-family:'Instrument Serif',serif;font-size:32px;line-height:1;}
+  .fact-l{font-size:13px;color:var(--fg-dim);margin-top:7px;letter-spacing:.01em;}
+
+  /* ---------- section ---------- */
+  section{padding:88px 0;}
+  .sec-head{max-width:640px;margin-bottom:44px;}
+  .sec-head h2{font-size:clamp(28px,4vw,42px);margin:14px 0 14px;}
+  .sec-head p{color:var(--fg-soft);}
+
+  /* ---------- project cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:22px;}
+  .card{
+    position:relative;display:flex;flex-direction:column;
+    background:var(--bg-2);
+    border:1px solid var(--line);border-radius:18px;
+    overflow:hidden;
+    transition:transform .22s ease, border-color .22s ease;
+  }
+  .card:hover{transform:translateY(-4px);border-color:var(--line-2);}
+  .shot{
+    position:relative;aspect-ratio:16/10;overflow:hidden;
+    background:#0e1217;border-bottom:1px solid var(--line);
+  }
+  .shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1);}
+  .card:hover .shot img{transform:scale(1.035);}
+  .tag{
+    position:absolute;top:13px;left:13px;z-index:2;
+    padding:5px 11px;border-radius:999px;
+    font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    background:rgba(11,13,16,.78);border:1px solid var(--line-2);
+    backdrop-filter:blur(8px);color:var(--fg);
+  }
+  .card-body{padding:24px 24px 26px;display:flex;flex-direction:column;flex:1;}
+  .card-body h3{font-size:21px;font-weight:600;letter-spacing:-0.015em;margin-bottom:9px;}
+  .card-body p{font-size:15px;color:var(--fg-soft);line-height:1.62;flex:1;}
+  .meta{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0 20px;}
+  .chip{
+    font-size:11.5px;color:var(--fg-dim);
+    border:1px solid var(--line);border-radius:6px;padding:4px 9px;
+  }
+  .card-link{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:14px;font-weight:600;color:var(--accent);
+  }
+  .card-link svg{transition:transform .2s ease;}
+  .card:hover .card-link svg{transform:translateX(4px);}
+
+  /* ---------- process ---------- */
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .step{background:var(--bg);padding:28px 24px 30px;}
+  .step-n{font-family:'Instrument Serif',serif;font-size:15px;color:var(--accent);
+    border:1px solid var(--line-2);border-radius:999px;width:30px;height:30px;
+    display:grid;place-items:center;margin-bottom:16px;}
+  .step h4{font-size:16px;font-weight:600;margin-bottom:8px;letter-spacing:-0.01em;}
+  .step p{font-size:14.5px;color:var(--fg-soft);line-height:1.6;}
+
+  /* ---------- cta ---------- */
+  .cta{
+    position:relative;overflow:hidden;
+    border:1px solid var(--line);border-radius:22px;
+    background:linear-gradient(150deg,#12171d,#0c0f13);
+    padding:58px 46px;text-align:center;
+  }
+  .cta::before{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(520px 260px at 50% 0%, rgba(232,179,65,.15), transparent 66%);
+  }
+  .cta-inner{position:relative;}
+  .cta h2{font-size:clamp(26px,3.6vw,40px);margin-bottom:16px;}
+  .cta p{color:var(--fg-soft);max-width:520px;margin:0 auto 30px;}
+
+  footer{border-top:1px solid var(--line);padding:34px 0 46px;}
+  .foot{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;
+    font-size:13.5px;color:var(--fg-dim);}
+  .note{font-size:13px;color:var(--fg-dim);margin-top:26px;line-height:1.6;max-width:680px;}
+
+  @media(max-width:620px){
+    .hero{padding:78px 0 62px;}
+    section{padding:66px 0;}
+    .cta{padding:44px 24px;}
+    .fact + .fact{padding-left:20px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#top">
+      <span class="logo-mark">Y</span>
+      <span>Yanis&nbsp;K.</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#process">Process</a>
+      <a class="btn btn-primary" href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Hire on Upwork</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <div class="hero">
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Patra, Greece &middot; Presentation &amp; web design</p>
+      <h1 class="serif">Slides and pages that look like a <em>real company</em> made them.</h1>
+      <p class="lede">I design presentation decks and landing pages, then build them properly — no templates, no stock layouts. Everything below is live. Click it, scroll it, judge it for yourself.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#work">See the live work
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Upwork profile</a>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><div class="fact-n serif">3–6</div><div class="fact-l">days typical turnaround</div></div>
+        <div class="fact"><div class="fact-n serif">100%</div><div class="fact-l">hand-coded, no page builders</div></div>
+        <div class="fact"><div class="fact-n serif">EN&nbsp;/&nbsp;EL&nbsp;/&nbsp;RU</div><div class="fact-l">languages I work in</div></div>
+        <div class="fact"><div class="fact-n serif">PPTX&nbsp;+&nbsp;PDF</div><div class="fact-l">editable source files always</div></div>
+      </div>
+    </div>
+  </div>
+
+  <section id="work">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Selected work</p>
+        <h2 class="serif">Three live samples</h2>
+        <p>Concept projects built end to end to show how I work — the writing, the layout and the code are all mine.</p>
+      </div>
+
+      <div class="grid">
+
+        <a class="card" href="./deck/">
+          <div class="shot">
+            <span class="tag">Pitch deck</span>
+            <img src="./assets/thumb-deck.jpg" alt="Meridian pitch deck opening slide" loading="lazy">
+          </div>
+          <div class="card-body">
+            <h3>Meridian — Series&nbsp;A pitch deck</h3>
+            <p>An 11-slide investor deck for a fictional treasury-analytics product: problem framing, market sizing, charts built from real numbers and a clean pricing slide. Flip through it in the browser or download the PDF.</p>
+            <div class="meta"><span class="chip">11 slides</span><span class="chip">Custom charts</span><span class="chip">PPTX + PDF</span></div>
+            <span class="card-link">Open the deck
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="card" href="./meridian/">
+          <div class="shot">
+            <span class="tag">Landing page</span>
+            <img src="./assets/thumb-meridian.jpg" alt="Meridian SaaS landing page" loading="lazy">
+          </div>
+          <div class="card-body">
+            <h3>Meridian — SaaS landing page</h3>
+            <p>The matching product site for the same brand: dark technical aesthetic, live-looking dashboard mock, feature grid, pricing table and FAQ. Fully responsive, written from scratch in HTML and CSS.</p>
+            <div class="meta"><span class="chip">Responsive</span><span class="chip">Hand-coded</span><span class="chip">Dark UI</span></div>
+            <span class="card-link">Open the page
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="card" href="./prozymi/">
+          <div class="shot">
+            <span class="tag">Landing page</span>
+            <img src="./assets/thumb-prozymi.jpg" alt="Prozymi Bakehouse landing page" loading="lazy">
+          </div>
+          <div class="card-body">
+            <h3>Prozymi Bakehouse — local business site</h3>
+            <p>A warm, editorial site for a small sourdough bakery: menu, the story behind the bake, wholesale enquiry section and opening hours. Shows the opposite end of my range from the dark SaaS look.</p>
+            <div class="meta"><span class="chip">Editorial</span><span class="chip">Local business</span><span class="chip">Warm palette</span></div>
+            <span class="card-link">Open the page
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+      </div>
+
+      <p class="note">These are self-initiated concept projects, not client commissions — the companies are invented so I can show complete work without breaking anyone's confidentiality. The design, copy and code are entirely my own.</p>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">How it works</p>
+        <h2 class="serif">Four steps, no guessing</h2>
+        <p>You always know what happens next and what you get at the end of it.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">1</div>
+          <h4>Brief and questions</h4>
+          <p>You send the content and the goal. I come back with a short list of questions so nothing important is missed.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">2</div>
+          <h4>Structure first</h4>
+          <p>You approve a slide-by-slide outline or a page map before any design work starts. Cheap to change at this stage.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">3</div>
+          <h4>Design and build</h4>
+          <p>I design in your colours and fonts, or propose a direction if you have none yet. You see the first full draft.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">4</div>
+          <h4>Revisions and handoff</h4>
+          <p>Revisions are included. You get editable source files — PPTX and PDF, or the full HTML — not a locked export.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="cta">
+        <div class="cta-inner">
+          <p class="eyebrow">Available for new work</p>
+          <h2 class="serif">Need a deck or a page that holds up?</h2>
+          <p>Send me the content and the deadline. Fixed-price packages start at $15, and everything is booked and paid through Upwork, so you are protected.</p>
+          <a class="btn btn-primary" href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Message me on Upwork
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>&copy; 2026 Yanis K. — Patra, Greece</span>
+    <span><a href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Upwork profile</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
