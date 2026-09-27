@@ -424,7 +424,7 @@ tfoot td{padding:12px 16px;border-top:1px solid var(--line);font-weight:700;back
       <div class="vhead">
         <div>
           <h1 class="serif">Customers</h1>
-          <p>Nine wholesale accounts around Patra. Volume and revenue are counted from the last 30 days of delivered orders.</p>
+          <p id="cust-intro">Wholesale accounts around Patra. Volume and revenue are counted from the last 30 days of delivered orders.</p>
         </div>
       </div>
       <div class="cards" id="cust-body"></div>
@@ -549,6 +549,7 @@ function parseKey(s){ var a=s.split('-'); return new Date(+a[0], +a[1]-1, +a[2])
 function addDays(d,n){ var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); x.setDate(x.getDate()+n); return x; }
 function todayKey(){ return key(new Date()); }
 function money(n){ return '€' + n.toFixed(2); }
+function plural(n, word){ return n + ' ' + word + (n === 1 ? '' : 's'); }
 function money0(n){ return '€' + Math.round(n).toLocaleString('en-GB'); }
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
 function el(id){ return document.getElementById(id); }
@@ -683,7 +684,7 @@ function renderStats(){
   var pend = all.filter(function(o){ return o.status === 'draft'; }).length;
   el('stats').innerHTML =
     stat('Orders', all.length, pend ? pend + ' still a draft' : 'all confirmed') +
-    stat('Items ordered', units.toLocaleString('en-GB'), 'units across ' + new Set(all.reduce(function(a,o){ return a.concat(o.lines.map(function(l){return l.sku;})); },[])).size + ' products') +
+    stat('Items ordered', units.toLocaleString('en-GB'), 'units across ' + plural(new Set(all.reduce(function(a,o){ return a.concat(o.lines.map(function(l){return l.sku;})); },[])).size, 'product')) +
     stat('Value', money0(rev), 'wholesale, before VAT') +
     stat('Accounts', new Set(all.map(function(o){ return o.cust; })).size, 'of ' + CUSTOMERS.filter(function(c){return !c.paused;}).length + ' active');
 }
@@ -707,7 +708,7 @@ function renderOrders(){
   renderStatusFilter();
   var list = visibleOrders();
   var total = ordersOn(state.date).length;
-  el('listsub').textContent = total ? (list.length === total ? total + ' deliveries' : list.length + ' of ' + total + ' deliveries') : '';
+  el('listsub').textContent = total ? (list.length === total ? (total === 1 ? '1 delivery' : total + ' deliveries') : list.length + ' of ' + total + ' deliveries') : '';
 
   if(!list.length){
     el('orders-body').innerHTML = emptyState(total);
@@ -748,7 +749,7 @@ function emptyState(total){
   return '<div class="empty">' +
     '<svg width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><circle cx="21" cy="21" r="12"/><path d="M30 30l10 10"/></svg>' +
     '<h3 class="serif">No match</h3>' +
-    '<p>' + total + ' orders are booked for this date, but none of them match the current search and filter.</p>' +
+    '<p>' + total + ' order' + (total === 1 ? ' is' : 's are') + ' booked for this date, but ' + (total === 1 ? 'it does' : 'none of them') + ' not match the current search and filter.</p>' +
     '<button class="btn ghost" id="clearf">Clear search and filter</button></div>';
 }
 
@@ -816,16 +817,16 @@ function renderPlan(){
       '<div class="panel"><table><thead><tr>' +
         '<th>Product</th><th></th><th class="r">Units</th><th class="r">Batches</th><th class="r col-window">Flour</th>' +
       '</tr></thead><tbody>' + body + '</tbody><tfoot><tr>' +
-        '<td colspan="2">' + gr.length + ' products</td>' +
+        '<td colspan="2">' + plural(gr.length, 'product') + '</td>' +
         '<td class="r num">' + u + '</td>' +
         '<td class="r num">' + b + '</td>' +
         '<td class="r num col-window">' + f.toFixed(1) + ' kg</td>' +
       '</tr></tfoot></table></div></div>';
   });
   html += '<div class="stats">' +
-    stat('Total units', grandUnits.toLocaleString('en-GB'), 'across ' + rows.length + ' products') +
+    stat('Total units', grandUnits.toLocaleString('en-GB'), 'across ' + plural(rows.length, 'product')) +
     stat('Batches', grandBatches, 'oven loads to schedule') +
-    stat('Flour', grandFlour.toFixed(1) + ' kg', 'roughly ' + Math.ceil(grandFlour/25) + ' sacks') +
+    stat('Flour', grandFlour.toFixed(1) + ' kg', 'roughly ' + plural(Math.ceil(grandFlour/25), 'sack')) +
     stat('Orders counted', committedOn(state.date).length, 'confirmed and beyond') +
   '</div>';
   el('plan-body').innerHTML = html;
@@ -846,6 +847,9 @@ function sparkline(vals){
 }
 
 function renderCustomers(){
+  var activeCount = CUSTOMERS.filter(function(c){ return !c.paused; }).length;
+  el('cust-intro').textContent = plural(CUSTOMERS.length, 'wholesale account') + ' around Patra, ' + activeCount + ' of them active. '
+    + 'Volume and revenue are counted from the last 30 days of delivered orders.';
   var from = key(addDays(parseKey(todayKey()), -30)), to = todayKey();
   var html = CUSTOMERS.map(function(c){
     var hist = state.orders.filter(function(o){ return o.cust===c.id && o.date>=from && o.date<=to && o.status!=='cancelled'; });
@@ -901,7 +905,7 @@ function openOrder(id){
   el('d-body').innerHTML =
     '<div class="field"><label>Items</label><div class="lines">' + (lines || '<div class="line"><div class="nm"><small>No items left on this order.</small></div></div>') + '</div></div>' +
     '<div class="totals">' +
-      '<div><span>' + orderUnits(o) + ' units, ' + o.lines.length + ' products</span><span class="num">' + money(total) + '</span></div>' +
+      '<div><span>' + plural(orderUnits(o), 'unit') + ', ' + plural(o.lines.length, 'product') + '</span><span class="num">' + money(total) + '</span></div>' +
       '<div><span>VAT 13%</span><span class="num">' + money(vat) + '</span></div>' +
       '<div class="grand"><span>Total</span><span class="num">' + money(total+vat) + '</span></div>' +
     '</div>' +
@@ -972,7 +976,7 @@ function renderModalLines(){
   var t = 0, u = 0;
   draft.lines.forEach(function(l){ t += P[l.sku].price * l.qty; u += l.qty; });
   el('m-totals').innerHTML =
-    '<div><span>' + u + ' units</span><span class="num">' + money(t) + '</span></div>' +
+    '<div><span>' + plural(u, 'unit') + '</span><span class="num">' + money(t) + '</span></div>' +
     '<div><span>VAT 13%</span><span class="num">' + money(t*0.13) + '</span></div>' +
     '<div class="grand"><span>Total</span><span class="num">' + money(t*1.13) + '</span></div>';
 }
@@ -1019,7 +1023,7 @@ function render(){
   });
   el('badge-orders').textContent = ordersOn(state.date).filter(function(o){ return o.status!=='cancelled'; }).length;
   el('badge-plan').textContent = planFor(state.date).length;
-  el('badge-cust').textContent = CUSTOMERS.filter(function(c){ return !c.paused; }).length;
+  el('badge-cust').textContent = CUSTOMERS.length;
   renderCutoff();
   if(state.view === 'orders') renderOrders();
   if(state.view === 'plan') renderPlan();
@@ -1121,7 +1125,7 @@ document.addEventListener('input', function(e){
       var tot = orderTotal(o);
       var box = el('d-body').querySelector('.totals');
       if(box) box.innerHTML =
-        '<div><span>' + orderUnits(o) + ' units, ' + o.lines.length + ' products</span><span class="num">' + money(tot) + '</span></div>' +
+        '<div><span>' + plural(orderUnits(o), 'unit') + ', ' + plural(o.lines.length, 'product') + '</span><span class="num">' + money(tot) + '</span></div>' +
         '<div><span>VAT 13%</span><span class="num">' + money(tot*0.13) + '</span></div>' +
         '<div class="grand"><span>Total</span><span class="num">' + money(tot*1.13) + '</span></div>';
       render();
