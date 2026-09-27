@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Northbound Assistant — AI support &amp; sales chat for an online store</title>
+<meta name="description" content="An interactive demonstration of an AI support assistant for an ecommerce store: product questions, stock, delivery, order lookup, human handoff, and an owner dashboard where the answers are taught without a developer. Concept project by Ivan K.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Northbound Assistant — AI support &amp; sales chat for an online store">
+<meta property="og:description" content="Storefront with a working assistant widget, plus the owner dashboard behind it. Interactive demo — scripted responses, no live model connected.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230E1B16'/%3E%3Cpath d='M10 22V10l12 12V10' stroke='%2334C08A' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F4F1; --panel:#FFFFFF; --panel-2:#FAFAF8;
+  --ink:#14181A; --soft:#555E63; --faint:#8D959B;
+  --line:rgba(20,24,26,.12); --line-2:rgba(20,24,26,.06);
+  --brand:#14523E; --brand-2:#0E3A2B; --brand-wash:rgba(20,82,62,.09);
+  --mint:#34C08A; --mint-wash:rgba(52,192,138,.16);
+  --ai:#4B44D4; --ai-wash:rgba(75,68,212,.10);
+  --amber:#B0761C; --amber-wash:rgba(176,118,28,.14);
+  --red:#A5392C; --red-wash:rgba(165,57,44,.12);
+  --r:12px;
+  --shadow:0 1px 2px rgba(20,24,26,.05), 0 10px 30px -14px rgba(20,24,26,.28);
+  --shadow-lg:0 2px 6px rgba(20,24,26,.06), 0 26px 60px -20px rgba(20,24,26,.34);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--ink);
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400;letter-spacing:-.005em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- demo bar ---------- */
+.demobar{
+  background:#0E1B16;color:#E6EFEA;border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;top:0;z-index:80;
+}
+.demobar .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.db-tag{
+  display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--mint);white-space:nowrap;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--mint);flex:none}
+.dot.pulse{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+.db-text{font-size:12.5px;color:#9FB0A8;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs{display:flex;gap:2px;background:rgba(255,255,255,.07);border-radius:9px;padding:3px;flex:none}
+.tabs button{
+  padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:600;color:#9FB0A8;
+  transition:.14s;white-space:nowrap;
+}
+.tabs button:hover{color:#E6EFEA}
+.tabs button[aria-selected="true"]{background:#E9F3EE;color:#0E1B16}
+.view{display:none}
+.view.on{display:block}
+
+/* ---------- storefront ---------- */
+.shopnav{background:var(--panel);border-bottom:1px solid var(--line-2)}
+.shopnav .wrap{display:flex;align-items:center;justify-content:space-between;height:74px}
+.mark{display:flex;align-items:center;gap:11px}
+.mark svg{display:block}
+.mark b{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:23px;letter-spacing:-.01em}
+.shoplinks{display:flex;gap:28px;font-size:13.5px;color:var(--soft)}
+.shoplinks span{cursor:default}
+.cart{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft);
+  border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+.cart b{color:var(--ink)}
+
+.hero{background:var(--panel);border-bottom:1px solid var(--line-2)}
+.hero .wrap{padding:54px 28px 60px;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero h1{font-family:'Instrument Serif',Georgia,serif;font-weight:400;
+  font-size:52px;line-height:1.06;margin:0 0 18px;letter-spacing:-.015em}
+.hero h1 i{font-style:italic;color:var(--brand)}
+.hero p{margin:0;color:var(--soft);font-size:15.5px;max-width:460px}
+.hero-note{margin-top:26px;display:flex;gap:14px;align-items:flex-start;
+  background:var(--ai-wash);border:1px solid rgba(75,68,212,.18);border-radius:var(--r);padding:14px 16px;max-width:470px}
+.hero-note svg{flex:none;margin-top:1px}
+.hero-note div{font-size:12.8px;color:#3A3597;line-height:1.5}
+.hero-note b{color:#2C2782}
+.heroart{display:flex;justify-content:center}
+
+.section{padding:56px 0 64px}
+.sechead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px;gap:24px}
+.sechead h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:31px;margin:0;letter-spacing:-.01em}
+.sechead p{margin:5px 0 0;color:var(--faint);font-size:13.5px}
+.kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);margin-bottom:9px}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.card{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);
+  overflow:hidden;display:flex;flex-direction:column;transition:.16s}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.card .art{height:186px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);
+  border-bottom:1px solid var(--line-2);position:relative}
+.card .body{padding:15px 16px 17px;display:flex;flex-direction:column;flex:1}
+.card h3{margin:0 0 3px;font-size:14.5px;font-weight:600}
+.card .meta{font-size:12px;color:var(--faint);margin-bottom:9px}
+.card .notes{font-size:12.5px;color:var(--soft);flex:1;margin-bottom:13px}
+.card .foot{display:flex;align-items:center;justify-content:space-between}
+.price{font-size:15px;font-weight:600}
+.pill{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px}
+.pill.ok{background:var(--mint-wash);color:#166B4B}
+.pill.low{background:var(--amber-wash);color:var(--amber)}
+.pill.out{background:var(--red-wash);color:var(--red)}
+.stamp{position:absolute;top:11px;right:11px}
+
+.strip{background:var(--panel);border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.strip .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;padding:38px 28px}
+.strip h4{margin:0 0 5px;font-size:14px;font-weight:600}
+.strip p{margin:0;color:var(--soft);font-size:13px}
+
+.shopfoot{padding:40px 0 70px;color:var(--faint);font-size:12.5px;text-align:center}
+
+/* ---------- chat widget ---------- */
+.launcher{
+  position:fixed;right:26px;bottom:26px;z-index:70;
+  display:flex;align-items:center;gap:11px;
+  background:#0E1B16;color:#fff;border-radius:999px;padding:13px 20px 13px 15px;
+  box-shadow:var(--shadow-lg);transition:.18s;
+}
+.launcher:hover{transform:translateY(-2px)}
+.launcher span{font-size:13.5px;font-weight:600}
+.launcher .badge{position:absolute;top:-4px;left:-4px;width:12px;height:12px;border-radius:50%;
+  background:var(--mint);border:2.5px solid #0E1B16}
+.launcher.hide{opacity:0;pointer-events:none;transform:translateY(8px)}
+
+.chat{
+  position:fixed;right:26px;bottom:26px;z-index:75;width:392px;max-width:calc(100vw - 32px);
+  height:602px;max-height:calc(100vh - 110px);
+  background:var(--panel);border-radius:18px;box-shadow:var(--shadow-lg);
+  display:flex;flex-direction:column;overflow:hidden;
+  opacity:0;pointer-events:none;transform:translateY(14px) scale(.985);transition:.2s;
+}
+.chat.on{opacity:1;pointer-events:auto;transform:none}
+.chat-head{background:#0E1B16;color:#fff;padding:15px 16px;display:flex;align-items:center;gap:12px;flex:none}
+.avatar{width:38px;height:38px;border-radius:11px;background:linear-gradient(140deg,#1D6A4F,#34C08A);
+  display:flex;align-items:center;justify-content:center;flex:none}
+.chat-head .who{flex:1;min-width:0}
+.chat-head .who b{display:block;font-size:14px;font-weight:600}
+.chat-head .who small{display:block;font-size:11.5px;color:#93A79E;display:flex;align-items:center;gap:6px;margin-top:1px}
+.chat-head button{color:#93A79E;padding:6px;border-radius:7px;transition:.14s}
+.chat-head button:hover{color:#fff;background:rgba(255,255,255,.1)}
+
+.log{flex:1;overflow-y:auto;padding:18px 16px 8px;display:flex;flex-direction:column;gap:12px;
+  background:var(--panel-2);scroll-behavior:smooth}
+.log::-webkit-scrollbar{width:9px}
+.log::-webkit-scrollbar-thumb{background:rgba(20,24,26,.16);border-radius:9px;border:3px solid var(--panel-2)}
+.msg{max-width:84%;font-size:13.4px;line-height:1.55;border-radius:15px;padding:10px 13px;white-space:pre-wrap}
+.msg.bot{background:var(--panel);border:1px solid var(--line-2);align-self:flex-start;border-bottom-left-radius:5px}
+.msg.me{background:#0E1B16;color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+.msg b{font-weight:600}
+.msg.sys{align-self:center;max-width:100%;background:var(--ai-wash);border:1px solid rgba(75,68,212,.2);
+  color:#3A3597;font-size:11.8px;text-align:center;border-radius:9px;padding:8px 12px}
+.typing{align-self:flex-start;background:var(--panel);border:1px solid var(--line-2);
+  border-radius:15px;border-bottom-left-radius:5px;padding:13px 15px;display:flex;gap:5px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--faint);animation:bob 1.1s infinite}
+.typing i:nth-child(2){animation-delay:.14s}
+.typing i:nth-child(3){animation-delay:.28s}
+@keyframes bob{0%,60%,100%{opacity:.28;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+
+.prodcard{align-self:flex-start;max-width:84%;background:var(--panel);border:1px solid var(--line-2);
+  border-radius:15px;border-bottom-left-radius:5px;padding:11px;display:flex;gap:11px;align-items:center}
+.prodcard .pa{width:56px;height:56px;border-radius:9px;background:var(--panel-2);flex:none;
+  display:flex;align-items:center;justify-content:center}
+.prodcard b{display:block;font-size:13.2px;font-weight:600}
+.prodcard small{display:block;font-size:11.8px;color:var(--faint);margin:1px 0 4px}
+.prodcard .pp{font-size:13px;font-weight:600}
+
+.chips{padding:0 16px 10px;display:flex;flex-wrap:wrap;gap:7px;background:var(--panel-2);flex:none}
+.chips button{border:1px solid var(--line);background:var(--panel);border-radius:999px;
+  padding:7px 12px;font-size:12.3px;color:var(--soft);transition:.14s}
+.chips button:hover{border-color:var(--brand);color:var(--brand);background:var(--brand-wash)}
+
+.composer{border-top:1px solid var(--line-2);padding:11px 12px;display:flex;gap:9px;align-items:center;
+  background:var(--panel);flex:none}
+.composer input{flex:1;border:1px solid var(--line);border-radius:999px;padding:10px 15px;
+  font-size:13.4px;outline:none;transition:.14s;background:var(--panel-2)}
+.composer input:focus{border-color:var(--brand);background:var(--panel)}
+.composer button{width:38px;height:38px;border-radius:50%;background:#0E1B16;color:#fff;flex:none;
+  display:flex;align-items:center;justify-content:center;transition:.14s}
+.composer button:hover{background:var(--brand)}
+.chat-foot{font-size:10.5px;color:var(--faint);text-align:center;padding:0 12px 10px;background:var(--panel);flex:none}
+
+/* ---------- dashboard ---------- */
+.dash{padding:38px 0 80px}
+.dashhead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px}
+.dashhead h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:33px;margin:0}
+.dashhead p{margin:5px 0 0;color:var(--faint);font-size:13.5px;max-width:560px}
+.range{display:flex;gap:2px;background:var(--panel);border:1px solid var(--line-2);border-radius:9px;padding:3px}
+.range button{padding:6px 12px;border-radius:6px;font-size:12.3px;color:var(--faint)}
+.range button[aria-selected="true"]{background:var(--ink);color:#fff}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px}
+.stat{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:18px 19px}
+.stat .k{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.stat .v{font-family:'Instrument Serif',Georgia,serif;font-size:37px;line-height:1.1;margin:8px 0 3px}
+.stat .d{font-size:12.3px;color:var(--soft)}
+.stat .d em{font-style:normal;color:#166B4B;font-weight:600}
+
+.cols{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.panel-h{padding:15px 18px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;justify-content:space-between;gap:14px}
+.panel-h h3{margin:0;font-size:14px;font-weight:600}
+.panel-h span{font-size:12px;color:var(--faint)}
+.convo{padding:14px 18px;border-bottom:1px solid var(--line-2);display:flex;gap:13px;cursor:pointer;transition:.14s}
+.convo:last-child{border-bottom:none}
+.convo:hover{background:var(--panel-2)}
+.convo .ci{width:32px;height:32px;border-radius:9px;background:var(--panel-2);flex:none;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--soft)}
+.convo .cb{flex:1;min-width:0}
+.convo .cb .top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.convo .cb b{font-size:13.2px;font-weight:600}
+.convo .cb time{font-size:11.5px;color:var(--faint);flex:none}
+.convo .cb p{margin:2px 0 7px;font-size:12.6px;color:var(--soft);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tagrow{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:600;padding:2.5px 7px;border-radius:5px;background:var(--panel-2);
+  color:var(--soft);border:1px solid var(--line-2)}
+.tag.solved{background:var(--mint-wash);color:#166B4B;border-color:transparent}
+.tag.human{background:var(--amber-wash);color:var(--amber);border-color:transparent}
+.tag.sale{background:var(--ai-wash);color:#3A3597;border-color:transparent}
+
+.gap{padding:15px 18px;border-bottom:1px solid var(--line-2)}
+.gap:last-child{border-bottom:none}
+.gap q{display:block;font-size:13.2px;font-weight:600;quotes:none;margin-bottom:3px}
+.gap small{display:block;font-size:11.8px;color:var(--faint);margin-bottom:10px}
+.gap .teach{display:flex;gap:8px}
+.gap textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 11px;
+  font-size:12.8px;resize:vertical;min-height:62px;outline:none;background:var(--panel-2);margin-bottom:8px}
+.gap textarea:focus{border-color:var(--brand);background:var(--panel)}
+.btn{border-radius:8px;padding:8px 14px;font-size:12.5px;font-weight:600;transition:.14s}
+.btn.primary{background:var(--ink);color:#fff}
+.btn.primary:hover{background:var(--brand)}
+.btn.ghost{border:1px solid var(--line);color:var(--soft)}
+.btn.ghost:hover{border-color:var(--ink);color:var(--ink)}
+.gap.done{background:var(--mint-wash)}
+.gap.done .ok{font-size:12.4px;color:#166B4B;font-weight:600;display:flex;align-items:center;gap:7px}
+
+.kb{padding:13px 18px;border-bottom:1px solid var(--line-2);display:flex;gap:12px;align-items:flex-start}
+.kb:last-child{border-bottom:none}
+.kb .ki{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand);
+  background:var(--brand-wash);border-radius:5px;padding:3px 7px;flex:none;margin-top:1px}
+.kb b{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
+.kb p{margin:0;font-size:12.4px;color:var(--soft)}
+.kbnew{background:var(--mint-wash)}
+.kbmore{padding:12px 18px;font-size:12.2px;color:var(--faint);border-top:1px solid var(--line-2)}
+
+.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,14px);z-index:90;
+  background:#0E1B16;color:#fff;border-radius:11px;padding:13px 19px;font-size:13px;
+  box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.22s;
+  display:flex;align-items:center;gap:10px}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- how it's built ---------- */
+.build{padding:48px 0 90px}
+.build h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:37px;margin:0 0 10px;letter-spacing:-.01em}
+.build .lede{color:var(--soft);font-size:15.5px;max-width:620px;margin:0 0 36px}
+.diagram{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);
+  padding:30px 26px;margin-bottom:34px;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;min-width:760px}
+.bcols{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:22px}
+.bcard{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:20px 21px}
+.bcard h4{margin:0 0 4px;font-size:14px;font-weight:600}
+.bcard .n{font-family:'Instrument Serif',Georgia,serif;font-size:13px;color:var(--brand);margin-bottom:11px}
+.bcard ul{margin:0;padding-left:17px;color:var(--soft);font-size:13px}
+.bcard ul li{margin-bottom:6px}
+.bcard p{margin:0;color:var(--soft);font-size:13px}
+.note{background:var(--ai-wash);border:1px solid rgba(75,68,212,.18);border-radius:var(--r);
+  padding:18px 20px;color:#3A3597;font-size:13.2px;line-height:1.6}
+.note b{color:#2C2782}
+
+@media(max-width:1000px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .hero .wrap{grid-template-columns:1fr;gap:34px}
+  .heroart{order:-1}
+  .cols{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .bcols,.strip .wrap{grid-template-columns:1fr;gap:20px}
+}
+@media(max-width:620px){
+  .wrap{padding:0 18px}
+  .grid{grid-template-columns:1fr}
+  .hero h1{font-size:38px}
+  .shoplinks{display:none}
+  .db-text{display:none}
+  .chat{right:10px;bottom:10px;height:calc(100vh - 92px)}
+  .launcher{right:14px;bottom:14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ demo bar ============ -->
+<div class="demobar">
+  <div class="wrap">
+    <span class="db-tag"><i class="dot pulse"></i> Interactive demo</span>
+    <span class="db-text">Scripted responses — no live model is connected. Built by Ivan K. as a portfolio piece.</span>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-view="shop">Storefront</button>
+      <button role="tab" aria-selected="false" data-view="dash">Owner dashboard</button>
+      <button role="tab" aria-selected="false" data-view="build">How it's built</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ STOREFRONT ============ -->
+<div class="view on" id="v-shop">
+
+  <nav class="shopnav">
+    <div class="wrap">
+      <div class="mark">
+        <svg width="30" height="30" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#0E1B16"/><path d="M10 22V10l12 12V10" stroke="#34C08A" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <b>Northbound</b>
+      </div>
+      <div class="shoplinks"><span>Coffee</span><span>Subscriptions</span><span>Brewing</span><span>Our roastery</span></div>
+      <div class="cart">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+        Cart <b>0</b>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <div class="kicker">Small-batch roastery</div>
+        <h1>Coffee that answers<br><i>your questions</i> back.</h1>
+        <p>Eight single origins and blends, roasted to order. Every bag ships within 24 hours of the roast.</p>
+        <div class="hero-note">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#4B44D4" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/></svg>
+          <div><b>This is the demo.</b> Open the chat in the bottom-right corner and ask about a coffee, delivery, a return, or track order <b>NB-4821</b>. Then switch to <b>Owner dashboard</b> to see what the shop owner sees.</div>
+        </div>
+      </div>
+      <div class="heroart" id="heroart"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sechead">
+        <div>
+          <div class="kicker">The current roast list</div>
+          <h2>Eight coffees on the shelf</h2>
+        </div>
+        <p>Updated every Tuesday</p>
+      </div>
+      <div class="grid" id="shopgrid"></div>
+    </div>
+  </section>
+
+  <section class="strip">
+    <div class="wrap">
+      <div><h4>Roasted to order</h4><p>Nothing sits in a warehouse. We roast on Monday and Thursday and ship the same day.</p></div>
+      <div><h4>Free delivery over €45</h4><p>Two to four working days across the EU, five to seven to the UK and Switzerland.</p></div>
+      <div><h4>Not right? Send it back</h4><p>Thirty days, opened bags included. We would rather you drank something you like.</p></div>
+    </div>
+  </section>
+
+  <div class="shopfoot">Northbound Coffee Roasters — a fictional shop built to demonstrate the assistant. No products are for sale.</div>
+</div>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="view" id="v-dash">
+  <div class="wrap dash">
+    <div class="dashhead">
+      <div>
+        <div class="kicker">What the shop owner sees</div>
+        <h2>Assistant dashboard</h2>
+        <p>The point of this screen: the person who owns the shop can fix the assistant themselves. When it fails to answer something, the question lands here, and typing the answer once teaches it.</p>
+      </div>
+      <div class="range">
+        <button aria-selected="true">30 days</button>
+        <button aria-selected="false">90 days</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="k">Conversations</div><div class="v" id="s-convos">312</div><div class="d"><em>+18%</em> against last month</div></div>
+      <div class="stat"><div class="k">Closed without a human</div><div class="v" id="s-solved">78%</div><div class="d">244 of 312 conversations</div></div>
+      <div class="stat"><div class="k">Handed to a person</div><div class="v">41</div><div class="d">Mostly wholesale and damaged parcels</div></div>
+      <div class="stat"><div class="k">Median first reply</div><div class="v">4s</div><div class="d">Against 3h 20m by email</div></div>
+    </div>
+
+    <div class="cols">
+      <div class="panel">
+        <div class="panel-h"><h3>Recent conversations</h3><span id="convo-count">6 shown</span></div>
+        <div id="convolist"></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="panel">
+          <div class="panel-h">
+            <h3>It couldn't answer these</h3>
+            <span id="gapcount">3 waiting</span>
+          </div>
+          <div id="gaplist"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h"><h3>Knowledge base</h3><span id="kbcount">9 entries</span></div>
+          <div id="kblist"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HOW IT'S BUILT ============ -->
+<div class="view" id="v-build">
+  <div class="wrap build">
+    <div class="kicker">For the client, and for the client's developer</div>
+    <h2>How the real thing works</h2>
+    <p class="lede">The demo above runs on scripted answers so it never breaks and costs nothing to host. In a live shop the same interface sits on top of a language model. This is the whole architecture — there is no hidden part.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 860 380" width="100%" height="380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture: shopper to widget to your server to the language model, with catalogue, knowledge base, orders and human handoff.">
+        <defs>
+          <marker id="ar" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="#8D959B"/>
+          </marker>
+          <marker id="ar2" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto">
+            <path d="M0 0 L8 4 L0 8 z" fill="#4B44D4"/>
+          </marker>
+        </defs>
+
+        <!-- row 1 -->
+        <g>
+          <rect x="16" y="140" width="146" height="76" rx="11" fill="#FAFAF8" stroke="#14181A" stroke-opacity=".14"/>
+          <text x="89" y="172" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#14181A">Shopper</text>
+          <text x="89" y="192" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#8D959B">on your website</text>
+        </g>
+        <line x1="166" y1="178" x2="222" y2="178" stroke="#8D959B" stroke-width="1.6" marker-end="url(#ar)"/>
+
+        <g>
+          <rect x="226" y="132" width="158" height="92" rx="11" fill="#0E1B16"/>
+          <text x="305" y="164" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#fff">Chat widget</text>
+          <text x="305" y="184" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#93A79E">one script tag</text>
+          <text x="305" y="201" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#93A79E">on every page</text>
+        </g>
+        <line x1="388" y1="178" x2="444" y2="178" stroke="#8D959B" stroke-width="1.6" marker-end="url(#ar)"/>
+
+        <g>
+          <rect x="448" y="126" width="164" height="104" rx="11" fill="#FAFAF8" stroke="#14181A" stroke-opacity=".14"/>
+          <text x="530" y="157" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#14181A">Your server</text>
+          <text x="530" y="177" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#8D959B">holds the API key,</text>
+          <text x="530" y="194" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#8D959B">the rules and</text>
+          <text x="530" y="211" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#8D959B">the conversation log</text>
+        </g>
+        <line x1="616" y1="178" x2="672" y2="178" stroke="#4B44D4" stroke-width="1.8" marker-end="url(#ar2)"/>
+
+        <g>
+          <rect x="676" y="132" width="168" height="92" rx="11" fill="#EFEEFB" stroke="#4B44D4" stroke-opacity=".3"/>
+          <text x="760" y="164" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" font-weight="600" fill="#2C2782">Language model</text>
+          <text x="760" y="184" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#4B44D4">Claude API</text>
+          <text x="760" y="201" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" fill="#4B44D4">writes the reply</text>
+        </g>
+
+        <!-- feeders -->
+        <line x1="530" y1="122" x2="530" y2="78" stroke="#8D959B" stroke-width="1.6" marker-end="url(#ar)" transform="rotate(180 530 100)"/>
+        <g>
+          <rect x="360" y="24" width="150" height="56" rx="10" fill="#FFFFFF" stroke="#14181A" stroke-opacity=".12"/>
+          <text x="435" y="47" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#14181A">Product catalogue</text>
+          <text x="435" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#8D959B">Shopify, Woo, or a file</text>
+        </g>
+        <line x1="435" y1="80" x2="500" y2="124" stroke="#8D959B" stroke-width="1.5" marker-end="url(#ar)"/>
+
+        <g>
+          <rect x="552" y="24" width="150" height="56" rx="10" fill="#FFFFFF" stroke="#14181A" stroke-opacity=".12"/>
+          <text x="627" y="47" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#14181A">Knowledge base</text>
+          <text x="627" y="65" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#8D959B">you edit it yourself</text>
+        </g>
+        <line x1="612" y1="80" x2="558" y2="124" stroke="#8D959B" stroke-width="1.5" marker-end="url(#ar)"/>
+
+        <g>
+          <rect x="360" y="276" width="150" height="56" rx="10" fill="#FFFFFF" stroke="#14181A" stroke-opacity=".12"/>
+          <text x="435" y="299" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#14181A">Order system</text>
+          <text x="435" y="317" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#8D959B">read-only lookup</text>
+        </g>
+        <line x1="440" y1="276" x2="498" y2="234" stroke="#8D959B" stroke-width="1.5" marker-end="url(#ar)" transform="rotate(180 469 255)"/>
+
+        <g>
+          <rect x="552" y="276" width="176" height="56" rx="10" fill="#FDF6EA" stroke="#B0761C" stroke-opacity=".35"/>
+          <text x="640" y="299" text-anchor="middle" font-family="Inter,sans-serif" font-size="12.5" font-weight="600" fill="#8A5C14">Handoff to a person</text>
+          <text x="640" y="317" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#B0761C">email, Slack or helpdesk</text>
+        </g>
+        <line x1="570" y1="234" x2="614" y2="274" stroke="#B0761C" stroke-width="1.5" marker-end="url(#ar)"/>
+
+        <text x="16" y="360" font-family="Inter,sans-serif" font-size="11.5" fill="#8D959B">The key never reaches the browser. The model never writes to your orders — it can only read them.</text>
+      </svg>
+    </div>
+
+    <div class="bcols">
+      <div class="bcard">
+        <h4>What I need from you</h4>
+        <div class="n">Before the first day</div>
+        <ul>
+          <li>A link to the shop and access to add one script tag</li>
+          <li>Your product list in any form — export, spreadsheet, or the site itself</li>
+          <li>Delivery, returns and payment rules written out once, however roughly</li>
+          <li>Where an unanswered question should land: an inbox, Slack, or a helpdesk</li>
+          <li>Ten to twenty real questions customers actually ask</li>
+        </ul>
+      </div>
+      <div class="bcard">
+        <h4>How long it takes</h4>
+        <div class="n">Typical small shop</div>
+        <ul>
+          <li><b>Days 1–2</b> — widget on a staging page, answering from your rules</li>
+          <li><b>Days 3–5</b> — catalogue and order lookup connected</li>
+          <li><b>Days 6–7</b> — handoff, logging and the owner dashboard</li>
+          <li><b>Week 2</b> — live on a slice of traffic, tuned against real conversations</li>
+        </ul>
+      </div>
+      <div class="bcard">
+        <h4>What it costs to run</h4>
+        <div class="n">After launch, monthly</div>
+        <ul>
+          <li>Model usage is charged per conversation, not per seat — fractions of a cent each for a shop this size</li>
+          <li>Hosting for the small server: the cheapest tier at any provider</li>
+          <li>No licence, no per-agent fee, nothing to renew</li>
+          <li>You own the code and the conversation log</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Why the demo is scripted.</b> A live key in a public portfolio page gets drained by the first bot that finds it, and then the demo is broken for every client who opens it afterwards. So the interface, the flows and the dashboard here are real and clickable, and the sentences are pre-written. On a paid project the same interface is wired to the model on your own server, where the key stays private.
+    </div>
+  </div>
+</div>
+
+<!-- ============ widget ============ -->
+<button class="launcher" id="launcher">
+  <span style="position:relative;display:flex">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.8-.9L3 21l1.9-5a8.4 8.4 0 0 1 3.7-11.3 8.6 8.6 0 0 1 12.4 6.8z"/></svg>
+    <i class="badge"></i>
+  </span>
+  <span>Ask about the coffee</span>
+</button>
+
+<div class="chat" id="chat" role="dialog" aria-label="Store assistant">
+  <div class="chat-head">
+    <div class="avatar">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3.2"/></svg>
+    </div>
+    <div class="who">
+      <b>Nora</b>
+      <small><i class="dot" style="width:6px;height:6px"></i> Northbound assistant · replies instantly</small>
+    </div>
+    <button id="chatclose" aria-label="Close chat">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="log" id="log"></div>
+  <div class="chips" id="chips"></div>
+  <div class="composer">
+    <input id="input" placeholder="Ask anything about the coffee…" autocomplete="off">
+    <button id="send" aria-label="Send">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+    </button>
+  </div>
+  <div class="chat-foot">Demo — answers are scripted. Nothing is sent anywhere.</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Northbound Assistant — interactive demo
+   Everything below is deliberately dependency-free: one file,
+   no build step, no API key, no network calls.
+   ============================================================ */
+
+/* ---------- catalogue ---------- */
+const COFFEE = [
+  {id:'harbour', name:'Harbour Espresso', origin:'Brazil & Colombia', roast:'Dark', notes:'Chocolate, hazelnut, a thick crema', price:14.00, stock:'in',  c1:'#6B3F2A', c2:'#8C5537'},
+  {id:'yirga',   name:'Yirgacheffe G1',   origin:'Ethiopia',          roast:'Light', notes:'Jasmine, white peach, tea-like body', price:19.50, stock:'low', left:6, c1:'#C0603C', c2:'#DD8355'},
+  {id:'supremo', name:'Antioquia Supremo',origin:'Colombia',          roast:'Medium',notes:'Caramel, red apple, clean finish',    price:16.50, stock:'in',  c1:'#A8792F', c2:'#C79C4E'},
+  {id:'sidamo',  name:'Sidamo Natural',   origin:'Ethiopia',          roast:'Light', notes:'Blueberry, cocoa nib, syrupy',        price:21.00, stock:'out', c1:'#75476A', c2:'#94618A'},
+  {id:'decaf',   name:'Nariño Decaf',     origin:'Colombia',          roast:'Medium',notes:'Toffee, orange peel, no edge',        price:17.00, stock:'in',  c1:'#3A6553', c2:'#55856F'},
+  {id:'gayo',    name:'Sumatra Gayo',     origin:'Indonesia',         roast:'Dark',  notes:'Cedar, dark sugar, very low acidity', price:18.00, stock:'in',  c1:'#2E464F', c2:'#456570'},
+  {id:'guji',    name:'Guji Anaerobic',   origin:'Ethiopia',          roast:'Light', notes:'Strawberry, rose, a wild one',        price:24.00, stock:'low', left:3, c1:'#9C3752', c2:'#BC5470'},
+  {id:'filter',  name:'Morning Filter',   origin:'House blend',       roast:'Medium',notes:'Almond, honey, drinks all day',       price:15.00, stock:'in',  c1:'#7E6128', c2:'#9F7F41'}
+];
+
+const ORDERS = {
+  'NB-4821':{status:'On its way', line:'Two bags of Harbour Espresso, ground for a moka pot.', detail:'Handed to the carrier on Thursday morning, currently at the Berlin depot. Expected tomorrow before 18:00.'},
+  'NB-5107':{status:'Being packed', line:'One bag of Guji Anaerobic, whole bean.', detail:'Roasted this morning, packed this afternoon. It leaves tomorrow and normally lands two working days later.'},
+  'NB-3390':{status:'Delivered', line:'Subscription bag, Morning Filter.', detail:'Signed for last Tuesday at 11:04. If it never reached you, say so and I will put a person on it straight away.'}
+};
+
+function bag(c1,c2,w,h){
+  w=w||110;h=h||136;
+  return `<svg width="${w}" height="${h}" viewBox="0 0 110 136" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17 34h76a6 6 0 0 1 6 6v84a6 6 0 0 1-6 6H17a6 6 0 0 1-6-6V40a6 6 0 0 1 6-6z" fill="${c1}"/>
+    <path d="M17 34h76a6 6 0 0 1 6 6v20H11V40a6 6 0 0 1 6-6z" fill="${c2}"/>
+    <path d="M22 34c0-9 8-14 33-14s33 5 33 14" stroke="${c2}" stroke-width="5" stroke-linecap="round"/>
+    <rect x="25" y="74" width="60" height="38" rx="4" fill="#FFFFFF" fill-opacity=".92"/>
+    <rect x="33" y="84" width="44" height="4" rx="2" fill="${c1}" fill-opacity=".75"/>
+    <rect x="33" y="93" width="30" height="3" rx="1.5" fill="${c1}" fill-opacity=".4"/>
+    <rect x="33" y="100" width="36" height="3" rx="1.5" fill="${c1}" fill-opacity=".4"/>
+    <circle cx="55" cy="49" r="7" fill="#FFFFFF" fill-opacity=".85"/>
+  </svg>`;
+}
+
+/* ---------- storefront render ---------- */
+document.getElementById('heroart').innerHTML =
+  `<div style="display:flex;gap:14px;align-items:flex-end">
+     ${bag('#3A6553','#55856F',96,120)}
+     ${bag('#6B3F2A','#8C5537',124,154)}
+     ${bag('#9C3752','#BC5470',96,120)}
+   </div>`;
+
+document.getElementById('shopgrid').innerHTML = COFFEE.map(c=>{
+  const pill = c.stock==='in'  ? '<span class="pill ok">In stock</span>'
+             : c.stock==='low' ? `<span class="pill low">${c.left} left</span>`
+             :                   '<span class="pill out">Sold out</span>';
+  return `<article class="card">
+    <div class="art">${bag(c.c1,c.c2,92,114)}<div class="stamp">${pill}</div></div>
+    <div class="body">
+      <h3>${c.name}</h3>
+      <div class="meta">${c.origin} · ${c.roast} roast</div>
+      <div class="notes">${c.notes}</div>
+      <div class="foot"><span class="price">€${c.price.toFixed(2)}</span><span style="font-size:12px;color:var(--faint)">250 g</span></div>
+    </div>
+  </article>`;
+}).join('');
+
+/* ---------- knowledge base ---------- */
+let KB = [
+  {t:'Delivery', q:'How long does delivery take?', a:'Two to four working days inside the EU, five to seven to the UK and Switzerland. Free over €45, otherwise €4.90.'},
+  {t:'Returns',  q:'Can I return coffee I have opened?', a:'Yes. Thirty days, opened bags included. Say the word and a person will send you a prepaid label.'},
+  {t:'Grind',    q:'Do you grind it for me?', a:'We do, at no charge — espresso, moka, filter, French press or cold brew. Whole bean keeps its flavour longer, so that is the default.'},
+  {t:'Espresso', q:'Which one is best for espresso?', a:'Harbour Espresso is the one built for it: darker roast, chocolate and hazelnut, forgiving if your grinder is not perfect. Sumatra Gayo also works if you like it heavier and low in acid.'},
+  {t:'Decaf',    q:'Is the decaf any good?', a:'Nariño Decaf is washed with sugarcane ethyl acetate, not chemicals, so it tastes like coffee rather than like decaf. Toffee and orange peel.'},
+  {t:'Subscription', q:'How does the subscription work?', a:'You pick a bag and a rhythm — every one, two or four weeks. Change the coffee, skip a delivery or cancel at any point, no notice needed.'},
+  {t:'Freshness',q:'How fresh is it?', a:'We roast Monday and Thursday and ship the same day. The roast date is stamped on the back of every bag.'},
+  {t:'Wholesale',q:'Do you supply cafés?', a:'We do, from 6 kg a month. That one goes to a person rather than to me — I will take your details and they will come back within a working day.'},
+  {t:'Payment',  q:'What can I pay with?', a:'Cards, PayPal, Apple Pay, Google Pay, and bank transfer for wholesale accounts.'}
+];
+
+/* ---------- intent matching ---------- */
+const INTENTS = [
+  {id:'espresso', keys:['espresso','espreso','machine','crema','portafilter','strong'],
+   reply:()=>({text:'For espresso I would take <b>Harbour Espresso</b>. It is roasted darker, it tastes of chocolate and hazelnut, and it forgives a grinder that is not perfectly dialled in.\n\nIf you like it heavier and very low in acid, <b>Sumatra Gayo</b> pulls beautifully too.', cards:['harbour','gayo']})},
+
+  {id:'filter', keys:['filter','v60','pour over','pourover','chemex','drip','aeropress'],
+   reply:()=>({text:'For filter, two directions. <b>Morning Filter</b> is the easy one — almond and honey, drinks all day. <b>Yirgacheffe G1</b> is the interesting one — jasmine and white peach, tea-like.', cards:['filter','yirga']})},
+
+  {id:'fruity', keys:['fruity','fruit','berry','floral','funky','natural','wild','acidic','bright'],
+   reply:()=>({text:'Then <b>Guji Anaerobic</b> is what you want — strawberry and rose, properly wild. Only three bags left of this roast.\n\n<b>Sidamo Natural</b> is the calmer version of the same idea, but it is sold out until Thursday.', cards:['guji']})},
+
+  {id:'decaf', keys:['decaf','caffeine','pregnan','evening','sleep'],
+   reply:()=>({text:'<b>Nariño Decaf</b>. It is washed with sugarcane ethyl acetate rather than chemicals, so it still tastes like coffee — toffee and orange peel. In stock.', cards:['decaf']})},
+
+  {id:'stock', keys:['in stock','stock','available','availab','sold out','left','sidamo'],
+   reply:()=>({text:'Right now: everything is on the shelf except <b>Sidamo Natural</b>, which sold out and comes back on the Thursday roast. <b>Guji Anaerobic</b> is down to three bags and <b>Yirgacheffe</b> to six.\n\nI can put your name on the Sidamo and have a person tell you the moment it lands.'})},
+
+  {id:'delivery', keys:['deliver','shipping','ship','postage','how long','arrive','courier','dhl'],
+   reply:()=>({text:'Two to four working days inside the EU, five to seven to the UK and Switzerland. Free over €45, otherwise €4.90.\n\nWe roast on Monday and Thursday and the bag goes out the same day, so nothing sits around.'})},
+
+  {id:'returns', keys:['return','refund','money back','send it back','not happy','stale'],
+   reply:()=>({text:'Thirty days, and opened bags count — we would rather you drank something you actually like. Tell me the order number and a person will send you a prepaid label the same day.'})},
+
+  {id:'order', keys:['order','track','where is','parcel','package','nb-','status'],
+   reply:(raw)=>{
+     const m = raw.toUpperCase().match(/NB[-\s]?(\d{4})/);
+     if(m){
+       const key = 'NB-'+m[1];
+       const o = ORDERS[key];
+       if(o) return {text:`<b>${key}</b> — ${o.status}.\n${o.line}\n\n${o.detail}`};
+       return {text:`I cannot find <b>${key}</b>. Orders look like NB-4821. If you are sure of the number I will pass this to a person rather than keep guessing.`, escalate:'Order number not found'};
+     }
+     return {text:'Of course — what is the order number? It starts with NB and has four digits, and it is in the subject line of your confirmation.\n\n<b>Try NB-4821</b> if you are just looking around.'};
+   }},
+
+  {id:'grind', keys:['grind','ground','whole bean','beans','moka','french press','cold brew'],
+   reply:()=>({text:'We grind it for you at no charge — espresso, moka, filter, French press or cold brew, whichever you tell us. Whole bean keeps its flavour a good deal longer, so that is the default.'})},
+
+  {id:'subscription', keys:['subscri','every month','regular','recurring','pause','skip'],
+   reply:()=>({text:'Pick a bag and a rhythm — every one, two or four weeks. You can change the coffee, skip a delivery or cancel whenever, no notice and no fee.\n\nSubscribers pay 10% less and get the roast a day earlier.'})},
+
+  {id:'wholesale', keys:['wholesale','cafe','café','restaurant','bulk','6kg','office','b2b','reseller'],
+   reply:()=>({text:'We do supply cafés and offices, from 6 kg a month, with a trade price list and a loaned grinder if you need one.\n\nThat conversation belongs to a person rather than to me. I have flagged it — leave the name of the place and they will come back within one working day.', escalate:'Wholesale enquiry', sale:true})},
+
+  {id:'freshness', keys:['fresh','roast date','when roasted','old'],
+   reply:()=>({text:'Monday and Thursday, shipped the same day. The roast date is stamped on the back of every bag, so you never have to guess.'})},
+
+  {id:'payment', keys:['pay','card','paypal','apple pay','klarna','invoice'],
+   reply:()=>({text:'Cards, PayPal, Apple Pay and Google Pay. Wholesale accounts can pay by bank transfer against an invoice.'})},
+
+  {id:'gift', keys:['gift','present','christmas','birthday'],
+   reply:()=>({text:'There is a gift box of three 250 g bags at €48 with a card you write yourself, and gift subscriptions for three, six or twelve months. Both ship in Northbound packaging with no price anywhere on it.'})},
+
+  {id:'price', keys:['price','cost','how much','expensive','cheap'],
+   reply:()=>({text:'From €14 for Harbour Espresso to €24 for Guji Anaerobic, all 250 g. Subscribers pay 10% less, and delivery is free over €45.'})},
+
+  {id:'human', keys:['human','person','agent','speak to someone','real person','manager','complain'],
+   reply:()=>({text:'Done — I have handed this to the team with everything you have told me so far, so you will not have to repeat yourself. Someone picks it up within a working day.', escalate:'Customer asked for a person'})},
+
+  {id:'hello', keys:['hi','hello','hey','good morning','good evening','hola'],
+   reply:()=>({text:'Hello. I can help with the coffees, delivery, returns, subscriptions, or where your order has got to. What do you need?'})},
+
+  {id:'thanks', keys:['thank','thanks','cheers','great','perfect','nice one'],
+   reply:()=>({text:'Any time. Anything else while I am here?'})}
+];
+
+/* ---------- unanswered questions (dashboard) ---------- */
+let GAPS = [
+  {q:'Do you ship to Japan?', meta:'Asked 6 times in the last 30 days · last one 2 hours ago', keys:['japan','asia','outside europe','worldwide'], topic:'Delivery'},
+  {q:'Can I pause my subscription while I am on holiday?', meta:'Asked 4 times · last one yesterday', keys:['pause','holiday','vacation','suspend'], topic:'Subscription'},
+  {q:'Are the bags compostable?', meta:'Asked 3 times · last one three days ago', keys:['compost','recycl','packaging','plastic','environment'], topic:'Packaging'}
+];
+
+const CONVOS = [
+  {ini:'AL', who:'Visitor · Lisbon', time:'11:42', line:'"Which one should I buy for a moka pot?" → recommended Harbour Espresso', tags:[['solved','Closed by the assistant'],['sale','Added to cart']]},
+  {ini:'MK', who:'Visitor · Vienna', time:'10:18', line:'"Where is NB-4821?" → order found, at the Berlin depot', tags:[['solved','Closed by the assistant']]},
+  {ini:'JR', who:'Café Nordlys', time:'09:51', line:'"Do you do wholesale for a 40-seat café?" → passed to the team', tags:[['human','Handed over'],['sale','Wholesale lead']]},
+  {ini:'SB', who:'Visitor · Milan', time:'09:07', line:'"Do you ship to Japan?" → could not answer, offered a person', tags:[['human','Handed over']]},
+  {ini:'TP', who:'Visitor · Dublin', time:'08:33', line:'"Is the decaf actually decaf?" → explained the sugarcane process', tags:[['solved','Closed by the assistant']]},
+  {ini:'EW', who:'Visitor · Ghent', time:'08:02', line:'"Bag arrived split open" → refund promised, passed to the team', tags:[['human','Handed over']]}
+];
+
+/* ---------- chat engine ---------- */
+const log = document.getElementById('log');
+const chips = document.getElementById('chips');
+const chat = document.getElementById('chat');
+const input = document.getElementById('input');
+let opened = false, busy = false;
+let stats = {convos:312, solved:244};
+
+const CHIPS = [
+  'Which one for espresso?',
+  'Where is order NB-4821?',
+  'How long is delivery?',
+  'Do you supply cafés?',
+  'Can I return an opened bag?'
+];
+
+function el(cls, html){ const d=document.createElement('div'); d.className=cls; d.innerHTML=html; return d; }
+function scroll(){ log.scrollTop = log.scrollHeight; }
+
+function push(cls, html){ const n = el(cls, html); log.appendChild(n); scroll(); return n; }
+
+function pushCards(ids){
+  ids.forEach(id=>{
+    const c = COFFEE.find(x=>x.id===id); if(!c) return;
+    const stockTxt = c.stock==='out' ? 'Sold out' : c.stock==='low' ? `${c.left} left` : 'In stock';
+    push('prodcard', `<div class="pa">${bag(c.c1,c.c2,40,50)}</div>
+      <div><b>${c.name}</b><small>${c.origin} · ${c.roast} · ${stockTxt}</small>
+      <span class="pp">€${c.price.toFixed(2)}</span></div>`);
+  });
+}
+
+function renderChips(){
+  chips.innerHTML = '';
+  CHIPS.forEach(t=>{
+    const b = document.createElement('button');
+    b.textContent = t;
+    b.onclick = ()=>{ if(!busy) ask(t); };
+    chips.appendChild(b);
+  });
+}
+
+/* Things this shop has genuinely never written an answer for. They are held back
+   from the intent engine on purpose: an assistant that half-answers is worse than
+   one that admits it does not know, and the dashboard needs real gaps to fix. */
+const BLIND = [
+  ['japan','australia','canada','usa','united states','america','new zealand','singapore','korea','worldwide','outside europe','outside the eu','asia'],
+  ['pause','holiday','vacation','suspend','freeze'],
+  ['compost','recycl','packaging','plastic','landfill']
+];
+
+function match(raw){
+  const s = raw.toLowerCase();
+  // taught answers win — that is the whole point of the dashboard
+  for(const k of KB){
+    if(k.taught && k.keys && k.keys.some(w=>s.includes(w)))
+      return {text:k.a, taught:true};
+  }
+  for(const blind of BLIND){
+    if(blind.some(w=>s.includes(w))) return null;
+  }
+  for(const it of INTENTS){
+    if(it.keys.some(w=>s.includes(w))) return Object.assign({id:it.id}, it.reply(raw));
+  }
+  return null;
+}
+
+function ask(text){
+  if(busy) return;
+  busy = true;
+  push('msg me', text.replace(/</g,'&lt;'));
+  input.value = '';
+  const t = el('typing','<i></i><i></i><i></i>');
+  log.appendChild(t); scroll();
+
+  const delay = 620 + Math.min(text.length*14, 700);
+  setTimeout(()=>{
+    t.remove();
+    const r = match(text);
+    stats.convos++;
+    if(r){
+      push('msg bot', r.text);
+      if(r.cards) setTimeout(()=>pushCards(r.cards), 260);
+      if(r.taught){
+        setTimeout(()=>push('msg sys','Answered from something the shop owner taught it on the dashboard.'), 420);
+      }
+      if(r.escalate){
+        setTimeout(()=>{
+          push('msg sys','Ticket opened for a human · ' + r.escalate);
+          toast('A ticket appeared on the owner dashboard');
+        }, 520);
+      } else stats.solved++;
+    } else {
+      push('msg bot', 'I do not have a straight answer to that, and I would rather say so than invent one.\n\nI have logged the question for the shop owner and flagged it to a person — someone comes back within a working day.');
+      setTimeout(()=>{
+        push('msg sys','Logged as unanswered · it now appears on the owner dashboard');
+        addGap(text);
+        toast('Unanswered question sent to the dashboard');
+      }, 520);
+    }
+    refreshStats();
+    busy = false;
+  }, delay);
+}
+
+function addGap(q){
+  const ql = q.toLowerCase();
+  // already on the list, or a differently worded version of something on it —
+  // count it rather than pile up near-duplicates
+  const dup = GAPS.find(g=>g.q.toLowerCase()===ql || (g.keys||[]).some(w=>ql.includes(w)));
+  if(dup){ dup.meta = 'Asked again just now, live in this demo · ' + dup.meta; renderGaps(); return; }
+  const STOP = ['about','there','these','those','would','could','should','which','where','while','after','before','maybe','really','thing','think','going','again','still','every','other','their','being'];
+  const words = q.toLowerCase().replace(/[^a-z0-9 ]/g,'').split(' ').filter(w=>w.length>4 && STOP.indexOf(w)<0);
+  GAPS.unshift({q:q, meta:'Asked just now, live in this demo', keys:words.length?words:[q.toLowerCase()], topic:'New'});
+  renderGaps();
+}
+
+function greet(){
+  push('msg bot','Hello — I am Nora, the Northbound assistant.\n\nI know the eight coffees on the shelf, what is in stock, how delivery and returns work, and I can look up an order. If I cannot answer something I will say so and fetch a person.');
+  setTimeout(()=>push('msg sys','Demo — the sentences are pre-written. On a real shop this is a language model reading your catalogue and your rules.'), 380);
+}
+
+document.getElementById('send').onclick = ()=>{ const v=input.value.trim(); if(v) ask(v); };
+input.addEventListener('keydown', e=>{ if(e.key==='Enter'){ const v=input.value.trim(); if(v) ask(v); }});
+
+const launcher = document.getElementById('launcher');
+function openChat(){
+  chat.classList.add('on'); launcher.classList.add('hide');
+  if(!opened){ opened = true; renderChips(); setTimeout(greet, 220); }
+  setTimeout(()=>input.focus(), 260);
+}
+launcher.onclick = openChat;
+document.getElementById('chatclose').onclick = ()=>{
+  chat.classList.remove('on'); launcher.classList.remove('hide');
+};
+
+/* ---------- toast ---------- */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34C08A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ${msg}`;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('on'), 2800);
+}
+
+/* ---------- dashboard render ---------- */
+function renderConvos(){
+  document.getElementById('convolist').innerHTML = CONVOS.map(c=>`
+    <div class="convo">
+      <div class="ci">${c.ini}</div>
+      <div class="cb">
+        <div class="top"><b>${c.who}</b><time>${c.time}</time></div>
+        <p>${c.line}</p>
+        <div class="tagrow">${c.tags.map(t=>`<span class="tag ${t[0]}">${t[1]}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderGaps(){
+  const host = document.getElementById('gaplist');
+  document.getElementById('gapcount').textContent = GAPS.length + ' waiting';
+  host.innerHTML = '';
+  GAPS.forEach((g, i)=>{
+    const d = el('gap', `
+      <q>${g.q.replace(/</g,'&lt;')}</q>
+      <small>${g.meta}</small>
+      <div class="teach">
+        <button class="btn primary" data-teach="${i}">Teach the answer</button>
+        <button class="btn ghost" data-skip="${i}">Not important</button>
+      </div>`);
+    host.appendChild(d);
+  });
+
+  host.querySelectorAll('[data-teach]').forEach(b=>{
+    b.onclick = ()=>{
+      const i = +b.dataset.teach, g = GAPS[i];
+      const box = b.closest('.gap');
+      box.innerHTML = `
+        <q>${g.q.replace(/</g,'&lt;')}</q>
+        <small>Write the answer the way you would say it to a customer.</small>
+        <textarea placeholder="For example: yes, we ship worldwide — Japan takes 7–10 working days and costs €14.">${suggest(g)}</textarea>
+        <div class="teach">
+          <button class="btn primary" data-save="${i}">Save and go live</button>
+          <button class="btn ghost" data-cancel="1">Cancel</button>
+        </div>`;
+      box.querySelector('[data-cancel]').onclick = renderGaps;
+      box.querySelector('[data-save]').onclick = ()=>{
+        const a = box.querySelector('textarea').value.trim();
+        if(!a){ box.querySelector('textarea').focus(); return; }
+        KB.unshift({t:g.topic, q:g.q, a:a, keys:g.keys, taught:true});
+        GAPS.splice(i,1);
+        renderGaps(); renderKB();
+        stats.solved += 3;
+        refreshStats();
+        box.remove();
+        toast('Saved. Open the storefront chat and ask it now.');
+      };
+    };
+  });
+  host.querySelectorAll('[data-skip]').forEach(b=>{
+    b.onclick = ()=>{ GAPS.splice(+b.dataset.skip,1); renderGaps(); toast('Dismissed'); };
+  });
+
+  if(!GAPS.length){
+    host.innerHTML = `<div class="gap done"><div class="ok">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#166B4B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      Nothing waiting. Every question has an answer.</div></div>`;
+  }
+}
+
+function suggest(g){
+  if(g.keys.includes('japan')) return 'Yes — we ship worldwide. Japan takes seven to ten working days and costs €14, and the roast date is on the bag so you can see how it travelled.';
+  if(g.keys.includes('pause'))  return 'Yes. Pause the subscription for as many weeks as you like from your account, or just tell me and I will do it. Nothing is charged while it is paused.';
+  if(g.keys.includes('compost'))return 'The bag is home-compostable and the valve is too. The box is recycled card and the tape is paper.';
+  return '';
+}
+
+function renderKB(){
+  document.getElementById('kbcount').textContent = KB.length + ' entries';
+  const shown = KB.slice(0,7);
+  let h = shown.map(k=>`
+    <div class="kb ${k.taught?'kbnew':''}">
+      <span class="ki">${k.t}</span>
+      <div><b>${k.q.replace(/</g,'&lt;')}</b><p>${k.a.replace(/</g,'&lt;')}</p></div>
+    </div>`).join('');
+  const rest = KB.length - shown.length;
+  if(rest > 0) h += `<div class="kbmore">and ${rest} more — the owner edits all of them in plain language, no code</div>`;
+  document.getElementById('kblist').innerHTML = h;
+}
+
+function refreshStats(){
+  document.getElementById('s-convos').textContent = stats.convos;
+  const pct = Math.min(99, Math.round(stats.solved/stats.convos*100));
+  document.getElementById('s-solved').textContent = pct + '%';
+}
+
+renderConvos(); renderGaps(); renderKB(); refreshStats();
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+    document.getElementById('v-'+b.dataset.view).classList.add('on');
+    const shop = b.dataset.view==='shop';
+    launcher.style.display = shop ? '' : 'none';
+    if(!shop) chat.classList.remove('on');
+    else if(!chat.classList.contains('on')) launcher.classList.remove('hide');
+    window.scrollTo({top:0});
+  };
+});
+
+document.querySelectorAll('.range button').forEach(b=>{
+  b.onclick = ()=>{
+    document.querySelectorAll('.range button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+  };
+});
+
+/* nudge the visitor once */
+setTimeout(()=>{ if(!opened && document.getElementById('v-shop').classList.contains('on')) launcher.style.animation='pulse 2.6s ease-in-out 2'; }, 2600);
+</script>
+</body>
+</html>

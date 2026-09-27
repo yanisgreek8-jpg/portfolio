@@ -5,6 +5,7 @@ Live work samples: presentation decks and landing pages, designed and hand-coded
 | Page | Path |
 |---|---|
 | Portfolio hub | `/` |
+| Northbound Assistant — AI support & sales chat + owner dashboard | `/ai-chat/` |
 | Meridian — Series A pitch deck (11 slides + PDF) | `/deck/` |
 | Meridian — SaaS landing page | `/meridian/` |
 | Prozymi Bakehouse — local business site | `/prozymi/` |
