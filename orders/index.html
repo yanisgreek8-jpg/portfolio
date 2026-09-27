@@ -1,0 +1,1184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prozymi Order Desk — wholesale ordering &amp; bake planning</title>
+<meta name="description" content="A working order-desk application for a sourdough bakery: wholesale orders, an automatically calculated bake plan, and customer accounts. Concept project by Ivan K.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Prozymi Order Desk — wholesale ordering &amp; bake planning">
+<meta property="og:description" content="A working web application, not a mockup. Orders, bake plan, customer accounts. Built with hand-written HTML, CSS and JavaScript — no framework, no build step.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231C1512'/%3E%3Cpath d='M8 20c0-5 3.6-8 8-8s8 3 8 8z' fill='%23C8923D'/%3E%3Cpath d='M11 19l2.6-4M16 19l2.6-4' stroke='%231C1512' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF7F2; --cream-2:#F1EADE; --paper:#FFFDFA;
+  --ink:#1C1512; --ink-soft:#5B4B3E; --ink-faint:#8B7A6B;
+  --line:rgba(28,21,18,.13); --line-2:rgba(28,21,18,.07);
+  --crust:#C8923D; --crust-deep:#9A6C22; --crust-wash:rgba(200,146,61,.13);
+  --rail:#221A15;
+  --ok:#3F7A4E; --ok-wash:rgba(63,122,78,.13);
+  --warn:#B3701C; --warn-wash:rgba(179,112,28,.14);
+  --sea:#2F5D7C; --sea-wash:rgba(47,93,124,.13);
+  --alert:#A33A2C; --alert-wash:rgba(163,58,44,.12);
+  --r:10px; --rail-w:236px;
+  --shadow:0 1px 2px rgba(28,21,18,.05), 0 8px 24px -12px rgba(28,21,18,.22);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--cream); color:var(--ink);
+  font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.serif{font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+table{border-collapse:collapse;width:100%}
+a{color:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- shell ---------- */
+.app{display:flex;min-height:100vh}
+.rail{
+  width:var(--rail-w);flex:0 0 var(--rail-w);background:var(--rail);color:#EDE4D8;
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+}
+.brand{padding:22px 20px 18px;border-bottom:1px solid rgba(237,228,216,.12);display:flex;gap:11px;align-items:center}
+.brand svg{flex:0 0 32px}
+.brand b{display:block;font-size:15px;letter-spacing:-.01em}
+.brand span{display:block;font-size:11px;color:rgba(237,228,216,.52);letter-spacing:.09em;text-transform:uppercase;margin-top:2px}
+.nav{padding:14px 12px;display:flex;flex-direction:column;gap:2px}
+.nav button{
+  display:flex;align-items:center;gap:11px;width:100%;padding:9px 12px;border-radius:8px;
+  color:rgba(237,228,216,.68);font-size:13.5px;font-weight:500;text-align:left;transition:.13s;
+}
+.nav button svg{flex:0 0 17px;opacity:.75}
+.nav button:hover{background:rgba(237,228,216,.07);color:#EDE4D8}
+.nav button[aria-current="true"]{background:rgba(200,146,61,.17);color:#F2D9AE}
+.nav button[aria-current="true"] svg{opacity:1}
+.nav .badge{margin-left:auto;font-size:11px;font-weight:700;background:rgba(237,228,216,.13);
+  padding:1px 7px;border-radius:99px;min-width:22px;text-align:center}
+.rail-foot{margin-top:auto;padding:16px 16px 18px;border-top:1px solid rgba(237,228,216,.12);font-size:11.5px;color:rgba(237,228,216,.42);line-height:1.55}
+.rail-foot button{color:rgba(237,228,216,.62);text-decoration:underline;text-underline-offset:2px;font-size:11.5px;padding:0;margin-top:8px}
+.rail-foot button:hover{color:#F2D9AE}
+
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:30;background:rgba(250,247,242,.88);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:14px 26px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.datenav{display:flex;align-items:center;gap:2px;background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:3px}
+.datenav button.arrow{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--ink-soft)}
+.datenav button.arrow:hover{background:var(--cream-2);color:var(--ink)}
+.datenav .cur{padding:0 12px;min-width:132px;text-align:center}
+.datenav .cur b{display:block;font-size:13.5px;line-height:1.25}
+.datenav .cur i{display:block;font-style:normal;font-size:10.5px;color:var(--ink-faint);letter-spacing:.07em;text-transform:uppercase}
+.chips{display:flex;gap:5px}
+.chip{
+  padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--paper);
+  font-size:12.5px;font-weight:600;color:var(--ink-soft);transition:.13s;white-space:nowrap;
+}
+.chip:hover{border-color:var(--crust);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--cream)}
+.search{position:relative;margin-left:auto;min-width:190px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--ink-faint)}
+.search input{
+  width:100%;padding:8px 10px 8px 31px;border-radius:9px;border:1px solid var(--line);
+  background:var(--paper);font-size:13px;outline:none;transition:.13s;
+}
+.search input:focus{border-color:var(--crust);box-shadow:0 0 0 3px var(--crust-wash)}
+.search kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:inherit;font-size:10.5px;
+  color:var(--ink-faint);border:1px solid var(--line);border-radius:4px;padding:1px 5px;background:var(--cream-2)}
+.search input:focus + kbd{display:none}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:9px;
+  background:var(--ink);color:var(--cream);font-size:13px;font-weight:600;transition:.13s;white-space:nowrap;
+}
+.btn:hover{background:#31241d}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn.ghost{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--cream-2);border-color:var(--crust)}
+.btn.danger{background:var(--alert-wash);color:var(--alert);border:1px solid rgba(163,58,44,.26)}
+.btn.danger:hover{background:var(--alert);color:#fff}
+
+/* ---------- cutoff ---------- */
+.cutoff{
+  margin:0;padding:9px 26px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:9px;
+  border-bottom:1px solid var(--line);
+}
+.cutoff.open{background:var(--crust-wash);color:var(--crust-deep)}
+.cutoff.closed{background:var(--alert-wash);color:var(--alert)}
+.cutoff.past{background:var(--cream-2);color:var(--ink-faint)}
+.cutoff span.thin{font-weight:500;opacity:.8}
+
+/* ---------- views ---------- */
+.view{padding:24px 26px 60px;flex:1;display:none}
+.view.on{display:block}
+.vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:20px;flex-wrap:wrap}
+.vhead h1{margin:0;font-size:25px;letter-spacing:-.02em}
+.vhead p{margin:5px 0 0;color:var(--ink-soft);font-size:13.5px;max-width:62ch}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:22px}
+.stat{background:var(--paper);padding:14px 16px}
+.stat i{font-style:normal;display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+.stat b{display:block;font-size:24px;letter-spacing:-.025em;margin-top:5px;font-family:'Fraunces',Georgia,serif;font-weight:600}
+.stat em{font-style:normal;font-size:12px;color:var(--ink-soft);display:block;margin-top:2px}
+
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.panel-head{padding:13px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.panel-head h2{margin:0;font-size:14.5px;letter-spacing:-.01em}
+.panel-head .sub{font-size:12.5px;color:var(--ink-faint)}
+
+thead th{
+  text-align:left;font-size:10.5px;letter-spacing:.085em;text-transform:uppercase;color:var(--ink-faint);
+  font-weight:700;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--cream);white-space:nowrap;
+}
+thead th.sortable{cursor:pointer;user-select:none}
+thead th.sortable:hover{color:var(--ink)}
+thead th .caret{opacity:.45;margin-left:3px}
+tbody td{padding:12px 16px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr.clickable{cursor:pointer;transition:background .1s}
+tbody tr.clickable:hover{background:var(--cream)}
+td.r,th.r{text-align:right}
+.cust{font-weight:600;letter-spacing:-.005em}
+.cust small{display:block;font-weight:500;color:var(--ink-faint);font-size:11.5px;letter-spacing:.02em}
+.items-peek{color:var(--ink-soft);font-size:12.5px;max-width:34ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.tag{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px 3px 7px;border-radius:99px;
+  font-size:11.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;
+}
+.tag .dot{width:6px;height:6px;border-radius:99px;background:currentColor}
+.tag.draft{background:var(--cream-2);color:var(--ink-faint)}
+.tag.confirmed{background:var(--crust-wash);color:var(--crust-deep)}
+.tag.baking{background:var(--warn-wash);color:var(--warn)}
+.tag.out{background:var(--sea-wash);color:var(--sea)}
+.tag.delivered{background:var(--ok-wash);color:var(--ok)}
+.tag.cancelled{background:var(--alert-wash);color:var(--alert);text-decoration:line-through}
+
+.empty{padding:62px 26px;text-align:center}
+.empty svg{color:var(--line);margin-bottom:14px}
+.empty h3{margin:0 0 6px;font-size:17px;letter-spacing:-.01em}
+.empty p{margin:0 auto 18px;color:var(--ink-soft);max-width:40ch;font-size:13.5px}
+
+/* ---------- bake plan ---------- */
+.planblock{margin-bottom:22px}
+.planblock .when{
+  display:flex;align-items:baseline;gap:10px;margin-bottom:10px;
+}
+.planblock .when h3{margin:0;font-size:16px;letter-spacing:-.015em}
+.planblock .when span{font-size:12.5px;color:var(--ink-faint)}
+tfoot td{padding:12px 16px;border-top:1px solid var(--line);font-weight:700;background:var(--cream)}
+.bar{height:6px;border-radius:99px;background:var(--cream-2);overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;background:var(--crust);border-radius:99px}
+.batchnote{font-size:11.5px;color:var(--ink-faint)}
+.plan-note{display:flex;gap:10px;align-items:flex-start;padding:13px 16px;background:var(--crust-wash);
+  border:1px solid rgba(200,146,61,.28);border-radius:var(--r);font-size:12.5px;color:var(--crust-deep);margin-bottom:20px}
+.plan-note svg{flex:0 0 16px;margin-top:1px}
+
+/* ---------- customers ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:17px;display:flex;flex-direction:column}
+.card.paused{opacity:.62}
+.card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.card h3{margin:0;font-size:15.5px;letter-spacing:-.012em}
+.card .kind{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:3px}
+.card .addr{font-size:12.5px;color:var(--ink-soft);margin:9px 0 0}
+.card .meta{display:flex;gap:16px;margin:13px 0 0;padding-top:13px;border-top:1px solid var(--line-2)}
+.card .meta div i{font-style:normal;display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.card .meta div b{font-size:15px;font-family:'Fraunces',Georgia,serif;font-weight:600;letter-spacing:-.02em}
+.card .spark{margin:14px 0 0;padding-top:13px;border-top:1px solid var(--line-2)}
+.card .spark i{font-style:normal;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;display:block;margin-bottom:6px}
+.card .standing{margin:13px 0 0;padding-top:13px;border-top:1px solid var(--line-2);font-size:12.5px;color:var(--ink-soft)}
+.card .standing b{color:var(--ink)}
+.card .acts{margin-top:14px;display:flex;gap:8px}
+.card .acts .btn{padding:6px 12px;font-size:12px}
+
+/* ---------- drawer & modal ---------- */
+.scrim{position:fixed;inset:0;background:rgba(28,21,18,.4);backdrop-filter:blur(2px);z-index:50;opacity:0;pointer-events:none;transition:opacity .18s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(470px,100%);background:var(--cream);z-index:60;
+  transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+  box-shadow:-18px 0 44px -22px rgba(28,21,18,.4);
+}
+.drawer.on{transform:none}
+.drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;gap:12px;align-items:flex-start}
+.drawer-head h2{margin:0;font-size:18px;letter-spacing:-.018em}
+.drawer-head .sub{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+.x{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;color:var(--ink-faint);margin-left:auto;flex:0 0 30px}
+.x:hover{background:var(--cream-2);color:var(--ink)}
+.drawer-body{flex:1;overflow-y:auto;padding:18px 20px}
+.drawer-foot{padding:14px 20px;border-top:1px solid var(--line);background:var(--paper);display:flex;gap:9px;flex-wrap:wrap}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;letter-spacing:.085em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--paper);
+  font-size:13.5px;outline:none;transition:.13s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--crust);box-shadow:0 0 0 3px var(--crust-wash)}
+.field textarea{resize:vertical;min-height:62px}
+.field.bad input,.field.bad select{border-color:var(--alert);box-shadow:0 0 0 3px var(--alert-wash)}
+.err{color:var(--alert);font-size:12px;font-weight:600;margin-top:5px;display:none}
+.field.bad .err{display:block}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.lines{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--paper)}
+.line{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line-2)}
+.line:last-child{border-bottom:none}
+.line .nm{flex:1;min-width:0}
+.line .nm b{display:block;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.line .nm small{color:var(--ink-faint);font-size:11.5px}
+.line select{flex:1;min-width:0;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--cream);font-size:13px}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--cream)}
+.stepper button{width:26px;height:28px;display:grid;place-items:center;color:var(--ink-soft);font-weight:700}
+.stepper button:hover{background:var(--cream-2);color:var(--ink)}
+.stepper input{width:40px;height:28px;border:none;background:transparent;text-align:center;font-size:13px;font-weight:600;outline:none;
+  -moz-appearance:textfield}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.line .amt{width:66px;text-align:right;font-size:13.5px;font-weight:600}
+.line .rm{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:var(--ink-faint);flex:0 0 26px}
+.line .rm:hover{background:var(--alert-wash);color:var(--alert)}
+.totals{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.totals div{display:flex;justify-content:space-between;padding:3px 0;font-size:13px;color:var(--ink-soft)}
+.totals div.grand{font-size:17px;color:var(--ink);font-weight:700;padding-top:9px;margin-top:6px;border-top:1px solid var(--line-2);
+  font-family:'Fraunces',Georgia,serif;letter-spacing:-.02em}
+.addline{width:100%;margin-top:10px;padding:9px;border:1px dashed var(--line);border-radius:8px;
+  font-size:13px;font-weight:600;color:var(--ink-soft);background:var(--paper)}
+.addline:hover{border-color:var(--crust);color:var(--crust-deep);background:var(--crust-wash)}
+
+.modal{
+  position:fixed;z-index:60;left:50%;top:50%;transform:translate(-50%,-46%) scale(.98);
+  width:min(560px,calc(100% - 32px));max-height:88vh;background:var(--cream);border-radius:14px;
+  display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:.18s;box-shadow:0 30px 70px -20px rgba(28,21,18,.5);
+}
+.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.modal .drawer-body{padding:18px 20px}
+
+.trail{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.trail i{font-style:normal;font-size:11px;letter-spacing:.085em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.trail ol{list-style:none;margin:10px 0 0;padding:0}
+.trail li{display:flex;gap:10px;font-size:12.5px;color:var(--ink-soft);padding:4px 0}
+.trail li time{color:var(--ink-faint);flex:0 0 96px;font-variant-numeric:tabular-nums}
+
+.toasts{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{
+  background:var(--ink);color:var(--cream);padding:10px 16px;border-radius:99px;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:8px;animation:pop .22s cubic-bezier(.4,0,.2,1);
+}
+.toast.good{background:var(--ok)}
+.toast.bad{background:var(--alert)}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.demo-note{margin:30px 26px 0;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--cream-2);font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+.demo-note b{color:var(--ink)}
+.demo-note a{color:var(--crust-deep);font-weight:600}
+
+.mobile-bar{display:none}
+
+/* ---------- responsive ---------- */
+@media(max-width:1080px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:860px){
+  .rail{position:fixed;left:0;top:0;bottom:0;transform:translateX(-100%);transition:transform .2s;z-index:70}
+  .rail.on{transform:none}
+  .mobile-bar{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--paper)}
+  .topbar{padding:12px 16px;gap:10px}
+  .search{order:9;min-width:100%;margin-left:0}
+  .view{padding:18px 16px 60px}
+  .cutoff{padding:9px 16px}
+  .demo-note{margin:24px 16px 0}
+  .col-window,.col-items{display:none}
+  .vhead h1{font-size:21px}
+}
+@media(max-width:560px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat b{font-size:20px}
+  .col-units{display:none}
+  tbody td,thead th{padding:10px 12px}
+  .datenav .cur{min-width:104px}
+  .two{grid-template-columns:1fr}
+}
+
+@media print{
+  .rail,.topbar,.cutoff,.vhead p,.demo-note,.toasts,.scrim,.drawer,.modal,.plan-note .btn{display:none!important}
+  body{background:#fff}
+  .view{padding:0}
+  .panel{border-color:#ccc;break-inside:avoid}
+  thead th{background:#f3f3f3}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="rail" id="rail">
+    <div class="brand">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#C8923D" fill-opacity=".18"/>
+        <path d="M6.5 21c0-5.5 4.2-9 9.5-9s9.5 3.5 9.5 9z" fill="#C8923D"/>
+        <path d="M10.5 20.2l2.8-4.6M16 20.2l2.8-4.6" stroke="#221A15" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div><b>Prozymi</b><span>Order desk</span></div>
+    </div>
+    <nav class="nav">
+      <button data-view="orders" aria-current="true">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 3h12v14l-3-2-3 2-3-2-3 2z"/><path d="M7 7h6M7 10.5h4"/></svg>
+        Orders <span class="badge" id="badge-orders">0</span>
+      </button>
+      <button data-view="plan">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12.5c0-4 3.1-6.5 7-6.5s7 2.5 7 6.5z"/><path d="M3 12.5h14M7.5 11l2-3M11 11l2-3"/></svg>
+        Bake plan <span class="badge" id="badge-plan">0</span>
+      </button>
+      <button data-view="customers">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7.5" cy="7" r="2.6"/><path d="M3 16c0-2.6 2-4.2 4.5-4.2S12 13.4 12 16"/><path d="M13.5 6.2a2.4 2.4 0 010 4.4M14.5 12c1.7.5 2.8 1.9 2.8 4"/></svg>
+        Customers <span class="badge" id="badge-cust">0</span>
+      </button>
+    </nav>
+    <div class="rail-foot">
+      Concept project by Ivan&nbsp;K.<br>
+      Fictional bakery, fictional data.
+      <button id="reset">Reset demo data</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <button class="mobile-bar" id="menu" aria-label="Menu">
+        <svg width="16" height="16" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8"><path d="M3 5h14M3 10h14M3 15h14"/></svg>
+      </button>
+      <div class="datenav">
+        <button class="arrow" id="prev" aria-label="Previous day">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4l-5 6 5 6"/></svg>
+        </button>
+        <div class="cur"><b id="dlabel">—</b><i id="drel">—</i></div>
+        <button class="arrow" id="next" aria-label="Next day">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4l5 6-5 6"/></svg>
+        </button>
+      </div>
+      <div class="chips" id="quick">
+        <button class="chip" data-jump="0">Today</button>
+        <button class="chip" data-jump="1">Tomorrow</button>
+      </div>
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="5"/><path d="M12.5 12.5L17 17"/></svg>
+        <input id="q" type="search" placeholder="Search customer or product" autocomplete="off">
+        <kbd>/</kbd>
+      </div>
+      <button class="btn" id="newbtn">
+        <svg width="14" height="14" viewBox="0 0 20 20" stroke="currentColor" stroke-width="2"><path d="M10 4v12M4 10h12"/></svg>
+        New order
+      </button>
+    </div>
+
+    <p class="cutoff" id="cutoff"></p>
+
+    <!-- ORDERS -->
+    <section class="view on" id="view-orders">
+      <div class="vhead">
+        <div>
+          <h1 class="serif">Orders</h1>
+          <p>Wholesale orders for the selected delivery date. Cafés and restaurants order by 18:00 the day before; anything confirmed by then goes into the night's bake plan.</p>
+        </div>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2 class="serif">Delivery list</h2>
+          <span class="sub" id="listsub"></span>
+          <div class="chips" id="statusfilter" style="margin-left:auto"></div>
+        </div>
+        <div id="orders-body"></div>
+      </div>
+    </section>
+
+    <!-- BAKE PLAN -->
+    <section class="view" id="view-plan">
+      <div class="vhead">
+        <div>
+          <h1 class="serif">Bake plan</h1>
+          <p>Calculated from every confirmed order for this date. Nothing here is typed in by hand — change a quantity on an order and these numbers move with it.</p>
+        </div>
+        <button class="btn ghost" onclick="window.print()">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 8V3h8v5M6 14H4V8h12v6h-2"/><path d="M6 12h8v5H6z"/></svg>
+          Print for the bakers
+        </button>
+      </div>
+      <div id="plan-body"></div>
+    </section>
+
+    <!-- CUSTOMERS -->
+    <section class="view" id="view-customers">
+      <div class="vhead">
+        <div>
+          <h1 class="serif">Customers</h1>
+          <p>Nine wholesale accounts around Patra. Volume and revenue are counted from the last 30 days of delivered orders.</p>
+        </div>
+      </div>
+      <div class="cards" id="cust-body"></div>
+    </section>
+
+    <div class="demo-note">
+      <b>This is a concept project.</b> Prozymi Bakehouse, its customers and every figure on this page are invented for a portfolio piece.
+      The application runs entirely in your browser — no server, no database, no account. Your changes are kept in this browser only, and
+      <b>Reset demo data</b> in the sidebar puts everything back. Built with hand-written HTML, CSS and JavaScript: no framework, no build step, one file.
+      The bakery's landing page is <a href="../prozymi/">here</a>, the rest of the portfolio <a href="../">here</a>.
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<!-- order drawer -->
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h2 class="serif" id="d-title">—</h2>
+      <div class="sub" id="d-sub">—</div>
+    </div>
+    <button class="x" data-close aria-label="Close"><svg width="15" height="15" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8"><path d="M5 5l10 10M15 5L5 15"/></svg></button>
+  </div>
+  <div class="drawer-body" id="d-body"></div>
+  <div class="drawer-foot" id="d-foot"></div>
+</aside>
+
+<!-- new order modal -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="drawer-head">
+    <div>
+      <h2 class="serif">New order</h2>
+      <div class="sub">Taken over the phone or at the counter.</div>
+    </div>
+    <button class="x" data-close aria-label="Close"><svg width="15" height="15" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.8"><path d="M5 5l10 10M15 5L5 15"/></svg></button>
+  </div>
+  <div class="drawer-body">
+    <div class="two">
+      <div class="field" id="f-cust">
+        <label for="m-cust">Customer</label>
+        <select id="m-cust"><option value="">Choose an account…</option></select>
+        <div class="err">Pick which account this order is for.</div>
+      </div>
+      <div class="field">
+        <label for="m-date">Delivery date</label>
+        <input id="m-date" type="date">
+      </div>
+    </div>
+    <div class="field" id="f-lines" style="margin-bottom:6px">
+      <label>Items</label>
+      <div class="lines" id="m-lines"></div>
+      <button class="addline" id="m-add">+ Add another item</button>
+      <div class="err">Add at least one item.</div>
+    </div>
+    <div class="totals" id="m-totals"></div>
+    <div class="field" style="margin-top:14px">
+      <label for="m-note">Note for the bakers</label>
+      <textarea id="m-note" placeholder="Sliced, in paper bags, leave at the side door…"></textarea>
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn" id="m-save">Save order</button>
+    <button class="btn ghost" data-close>Cancel</button>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ reference data ============ */
+var PRODUCTS = [
+  {sku:'SOUR', name:'Prozymi white sourdough', unit:'800 g', price:3.20, batch:30, flour:0.55, mix:'night'},
+  {sku:'HORT', name:'Horiatiko country loaf',  unit:'900 g', price:3.40, batch:24, flour:0.62, mix:'night'},
+  {sku:'OLIV', name:'Kalamata olive loaf',     unit:'700 g', price:3.90, batch:18, flour:0.48, mix:'night'},
+  {sku:'MULT', name:'Seven-seed multigrain',   unit:'800 g', price:3.80, batch:20, flour:0.55, mix:'night'},
+  {sku:'RYE',  name:'Dark rye, 48-hour',       unit:'1 kg',  price:4.10, batch:16, flour:0.70, mix:'night'},
+  {sku:'WALN', name:'Walnut & fig',            unit:'600 g', price:4.60, batch:12, flour:0.42, mix:'night'},
+  {sku:'BAGU', name:'Baguette',                unit:'280 g', price:1.30, batch:40, flour:0.20, mix:'morning'},
+  {sku:'CIAB', name:'Ciabatta',                unit:'350 g', price:1.60, batch:36, flour:0.24, mix:'morning'},
+  {sku:'SESA', name:'Sesame koulouri',         unit:'120 g', price:0.55, batch:60, flour:0.09, mix:'morning'},
+  {sku:'FOCA', name:'Rosemary focaccia',       unit:'tray',  price:6.80, batch:8,  flour:1.10, mix:'morning'},
+  {sku:'BRIO', name:'Tsoureki brioche',        unit:'500 g', price:4.20, batch:14, flour:0.35, mix:'morning'},
+  {sku:'CROI', name:'Butter croissant',        unit:'each',  price:1.10, batch:48, flour:0.07, mix:'morning'},
+  {sku:'SPAN', name:'Spanakopita',             unit:'slice', price:1.40, batch:30, flour:0.10, mix:'morning'}
+];
+var P = {}; PRODUCTS.forEach(function(p){ P[p.sku] = p; });
+
+var CUSTOMERS = [
+  {id:'c1', name:'Kafeneio Marika',      kind:'Café',        addr:'Agiou Nikolaou 42',  win:'06:30–07:00', terms:'Net 14', days:[0,1,2,3,4,5,6],
+   standing:[['SESA',40],['SOUR',6],['BAGU',12],['CROI',18]]},
+  {id:'c2', name:'Hotel Astir breakfast', kind:'Hotel',      addr:'Othonos Amalias 12', win:'06:00–06:30', terms:'Net 30', days:[0,1,2,3,4,5,6],
+   standing:[['SOUR',10],['MULT',6],['CROI',36],['BRIO',6],['BAGU',10]]},
+  {id:'c3', name:'Deli stou Manoli',     kind:'Delicatessen',addr:'Riga Feraiou 88',    win:'07:00–07:30', terms:'Net 7',  days:[1,2,3,4,5,6],
+   standing:[['HORT',8],['OLIV',6],['RYE',4],['WALN',4]]},
+  {id:'c4', name:'Taverna Elia',         kind:'Restaurant',  addr:'Trion Navarchon 15', win:'09:00–09:30', terms:'Net 14', days:[0,2,3,4,5,6],
+   standing:[['HORT',10],['FOCA',4],['CIAB',18]]},
+  {id:'c5', name:'Kolokotroni Coffee Co.',kind:'Café group', addr:'Kolokotroni 7',      win:'06:30–07:00', terms:'Net 30', days:[0,1,2,3,4,5,6],
+   standing:[['CROI',48],['SESA',60],['SPAN',24],['BRIO',8]]},
+  {id:'c6', name:'Bistro Limani',        kind:'Restaurant',  addr:'Akti Dymaion 3',     win:'08:30–09:00', terms:'Prepaid',days:[0,3,4,5,6],
+   standing:[['CIAB',24],['FOCA',6],['SOUR',8]]},
+  {id:'c7', name:'Grocer Kalamaki',      kind:'Grocery',     addr:'Korinthou 210',      win:'07:30–08:00', terms:'Net 7',  days:[1,3,5],
+   standing:[['SOUR',12],['HORT',10],['MULT',8],['RYE',5],['SESA',30]]},
+  {id:'c9', name:'University canteen',   kind:'Canteen',     addr:'Panepistimioupoli, Rio', win:'07:45–08:15', terms:'Net 30', days:[1,2,3,4,5],
+   standing:[['BAGU',30],['CIAB',24],['SPAN',40],['SESA',50]]},
+  {id:'c8', name:'Aigio Farm Café',      kind:'Café',        addr:'Aigio, 38 km',       win:'07:00–07:30', terms:'Net 14', days:[5,6], paused:true,
+   standing:[['HORT',6],['WALN',4],['CROI',12]]}
+];
+var C = {}; CUSTOMERS.forEach(function(c){ C[c.id] = c; });
+
+var STATUSES = ['draft','confirmed','baking','out','delivered','cancelled'];
+var STATUS_LABEL = {draft:'Draft', confirmed:'Confirmed', baking:'In the oven', out:'Out for delivery', delivered:'Delivered', cancelled:'Cancelled'};
+
+/* ============ small helpers ============ */
+function pad(n){ return (n<10?'0':'')+n; }
+function key(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function parseKey(s){ var a=s.split('-'); return new Date(+a[0], +a[1]-1, +a[2]); }
+function addDays(d,n){ var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); x.setDate(x.getDate()+n); return x; }
+function todayKey(){ return key(new Date()); }
+function money(n){ return '€' + n.toFixed(2); }
+function money0(n){ return '€' + Math.round(n).toLocaleString('en-GB'); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); }
+function el(id){ return document.getElementById(id); }
+function fmtDay(k){
+  var d = parseKey(k);
+  return d.toLocaleDateString('en-GB',{weekday:'short', day:'numeric', month:'short'});
+}
+function relDay(k){
+  var diff = Math.round((parseKey(k) - parseKey(todayKey()))/86400000);
+  if(diff===0) return 'Today';
+  if(diff===1) return 'Tomorrow';
+  if(diff===-1) return 'Yesterday';
+  return (diff>0? 'in '+diff+' days' : Math.abs(diff)+' days ago');
+}
+function hash32(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function rng(seed){ var a=seed>>>0; return function(){ a=(a+0x6D2B79F5)|0; var t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
+
+function orderTotal(o){
+  var t=0; o.lines.forEach(function(l){ t += (P[l.sku]?P[l.sku].price:0) * l.qty; }); return t;
+}
+function orderUnits(o){ var u=0; o.lines.forEach(function(l){ u+=l.qty; }); return u; }
+
+/* ============ seed generation ============ */
+function seedOrders(){
+  var out = [];
+  var base = parseKey(todayKey());
+  for(var off=-30; off<=3; off++){
+    var d = addDays(base, off), k = key(d), dow = d.getDay();
+    CUSTOMERS.forEach(function(c){
+      if(c.days.indexOf(dow) < 0) return;
+      if(c.paused && off >= -6) return;                 // paused account stopped a week ago
+      var r = rng(hash32(c.id + k));
+      if(r() < 0.07) return;                            // the odd skipped day
+      var lines = [];
+      c.standing.forEach(function(s){
+        var q = Math.round(s[1] * (0.78 + r()*0.44));
+        if(dow===6) q = Math.round(q*1.25);             // Saturday is heavier
+        if(dow===0) q = Math.round(q*0.6);
+        if(q>0) lines.push({sku:s[0], qty:q});
+      });
+      if(r() < 0.22){                                   // an extra line now and then
+        var extra = PRODUCTS[Math.floor(r()*PRODUCTS.length)];
+        if(!lines.some(function(l){return l.sku===extra.sku;})) lines.push({sku:extra.sku, qty:Math.max(2,Math.round(r()*10))});
+      }
+      if(!lines.length) return;
+      var st;
+      if(off < 0)       st = r() < 0.04 ? 'cancelled' : 'delivered';
+      else if(off === 0) st = r() < 0.34 ? 'delivered' : (r() < 0.6 ? 'out' : 'baking');
+      else if(off === 1) st = r() < 0.16 ? 'draft' : 'confirmed';
+      else               st = r() < 0.55 ? 'draft' : 'confirmed';
+      out.push({
+        id: 'PZ-' + k.slice(5).replace('-','') + '-' + c.id.slice(1) + String(out.length%97).padStart(2,'0'),
+        cust: c.id, date: k, lines: lines, status: st,
+        note: r() < 0.14 ? ['Sliced, please.','Leave at the side door.','Paper bags, no plastic.','Same driver as last week.'][Math.floor(r()*4)] : '',
+        placed: k + ' 17:' + pad(Math.floor(r()*59)),
+        trail: []
+      });
+    });
+  }
+  return out;
+}
+
+/* ============ state & persistence ============ */
+var KEY = 'prozymi.orderdesk.v1';
+var state = { orders: [], seedDay: '', view: 'orders', date: '', status: 'all', q: '', sort: 'win', dir: 1, open: null };
+
+function load(){
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e){}
+  var fresh = seedOrders();
+  if(saved && saved.seedDay === todayKey() && Array.isArray(saved.orders)){
+    state.orders = saved.orders;
+  } else if(saved && Array.isArray(saved.orders)){
+    // The seed is anchored to "today", so when the day rolls over we rebuild it —
+    // but anything the user created or edited for a date still ahead of us is kept.
+    var keep = saved.orders.filter(function(o){ return (o.user || o.edited) && o.date >= todayKey(); });
+    var ids = {}; keep.forEach(function(o){ ids[o.id] = 1; });
+    state.orders = keep.concat(fresh.filter(function(o){ return !ids[o.id]; }));
+  } else {
+    state.orders = fresh;
+  }
+  state.seedDay = todayKey();
+  save();
+}
+function save(){
+  try { localStorage.setItem(KEY, JSON.stringify({seedDay: state.seedDay, orders: state.orders})); } catch(e){}
+}
+
+/* ============ toasts ============ */
+function toast(msg, kind){
+  var t = document.createElement('div');
+  t.className = 'toast' + (kind ? ' ' + kind : '');
+  t.textContent = msg;
+  el('toasts').appendChild(t);
+  setTimeout(function(){ t.style.transition='opacity .25s'; t.style.opacity='0'; setTimeout(function(){ t.remove(); }, 260); }, 2400);
+}
+
+/* ============ selectors ============ */
+function ordersOn(k){ return state.orders.filter(function(o){ return o.date === k; }); }
+function visibleOrders(){
+  var list = ordersOn(state.date);
+  if(state.status !== 'all') list = list.filter(function(o){ return o.status === state.status; });
+  var q = state.q.trim().toLowerCase();
+  if(q){
+    list = list.filter(function(o){
+      if(C[o.cust].name.toLowerCase().indexOf(q) > -1) return true;
+      return o.lines.some(function(l){ return P[l.sku] && P[l.sku].name.toLowerCase().indexOf(q) > -1; });
+    });
+  }
+  var s = state.sort, dir = state.dir;
+  list.sort(function(a,b){
+    var x,y;
+    if(s==='cust'){ x=C[a.cust].name; y=C[b.cust].name; }
+    else if(s==='total'){ x=orderTotal(a); y=orderTotal(b); }
+    else if(s==='units'){ x=orderUnits(a); y=orderUnits(b); }
+    else if(s==='status'){ x=STATUSES.indexOf(a.status); y=STATUSES.indexOf(b.status); }
+    else { x=C[a.cust].win; y=C[b.cust].win; }
+    return (x>y?1:x<y?-1:0) * dir;
+  });
+  return list;
+}
+// Orders that the bakery actually has to bake for a date.
+function committedOn(k){
+  return ordersOn(k).filter(function(o){ return o.status !== 'cancelled' && o.status !== 'draft'; });
+}
+
+/* ============ rendering: orders ============ */
+function renderStats(){
+  var all = ordersOn(state.date).filter(function(o){ return o.status !== 'cancelled'; });
+  var units = 0, rev = 0;
+  all.forEach(function(o){ units += orderUnits(o); rev += orderTotal(o); });
+  var pend = all.filter(function(o){ return o.status === 'draft'; }).length;
+  el('stats').innerHTML =
+    stat('Orders', all.length, pend ? pend + ' still a draft' : 'all confirmed') +
+    stat('Items ordered', units.toLocaleString('en-GB'), 'units across ' + new Set(all.reduce(function(a,o){ return a.concat(o.lines.map(function(l){return l.sku;})); },[])).size + ' products') +
+    stat('Value', money0(rev), 'wholesale, before VAT') +
+    stat('Accounts', new Set(all.map(function(o){ return o.cust; })).size, 'of ' + CUSTOMERS.filter(function(c){return !c.paused;}).length + ' active');
+}
+function stat(label, value, sub){
+  return '<div class="stat"><i>' + label + '</i><b class="num">' + value + '</b><em>' + sub + '</em></div>';
+}
+
+function renderStatusFilter(){
+  var all = ordersOn(state.date);
+  var counts = {}; all.forEach(function(o){ counts[o.status] = (counts[o.status]||0)+1; });
+  var html = '<button class="chip" data-status="all" aria-pressed="' + (state.status==='all') + '">All ' + all.length + '</button>';
+  STATUSES.forEach(function(s){
+    if(!counts[s]) return;
+    html += '<button class="chip" data-status="' + s + '" aria-pressed="' + (state.status===s) + '">' + STATUS_LABEL[s] + ' ' + counts[s] + '</button>';
+  });
+  el('statusfilter').innerHTML = html;
+}
+
+function renderOrders(){
+  renderStats();
+  renderStatusFilter();
+  var list = visibleOrders();
+  var total = ordersOn(state.date).length;
+  el('listsub').textContent = total ? (list.length === total ? total + ' deliveries' : list.length + ' of ' + total + ' deliveries') : '';
+
+  if(!list.length){
+    el('orders-body').innerHTML = emptyState(total);
+    return;
+  }
+  var caret = function(s){ return state.sort===s ? '<span class="caret">' + (state.dir>0?'↑':'↓') + '</span>' : ''; };
+  var rows = list.map(function(o){
+    var c = C[o.cust];
+    var peek = o.lines.map(function(l){ return l.qty + '× ' + (P[l.sku] ? P[l.sku].name : l.sku); }).join(', ');
+    return '<tr class="clickable" data-id="' + o.id + '">' +
+      '<td><div class="cust">' + esc(c.name) + '<small>' + esc(c.kind) + ' · ' + esc(c.addr) + '</small></div></td>' +
+      '<td class="col-window num">' + c.win + '</td>' +
+      '<td class="col-items"><div class="items-peek">' + esc(peek) + '</div></td>' +
+      '<td class="col-units r num">' + orderUnits(o) + '</td>' +
+      '<td class="r num" style="font-weight:600">' + money(orderTotal(o)) + '</td>' +
+      '<td><span class="tag ' + o.status + '"><span class="dot"></span>' + STATUS_LABEL[o.status] + '</span></td>' +
+    '</tr>';
+  }).join('');
+  el('orders-body').innerHTML =
+    '<table><thead><tr>' +
+      '<th class="sortable" data-sort="cust">Customer' + caret('cust') + '</th>' +
+      '<th class="sortable col-window" data-sort="win">Delivery' + caret('win') + '</th>' +
+      '<th class="col-items">Items</th>' +
+      '<th class="sortable r col-units" data-sort="units">Units' + caret('units') + '</th>' +
+      '<th class="sortable r" data-sort="total">Value' + caret('total') + '</th>' +
+      '<th class="sortable" data-sort="status">Status' + caret('status') + '</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function emptyState(total){
+  if(total === 0){
+    return '<div class="empty">' +
+      '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 32c0-9 7.2-15 16-15s16 6 16 15z"/><path d="M8 32h32M17 29l5-8M26 29l5-8"/></svg>' +
+      '<h3 class="serif">Nothing to bake for ' + fmtDay(state.date) + '</h3>' +
+      '<p>No account has ordered for this date yet. Orders usually land the afternoon before.</p>' +
+      '<button class="btn" onclick="document.getElementById(\'newbtn\').click()">Take an order</button></div>';
+  }
+  return '<div class="empty">' +
+    '<svg width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><circle cx="21" cy="21" r="12"/><path d="M30 30l10 10"/></svg>' +
+    '<h3 class="serif">No match</h3>' +
+    '<p>' + total + ' orders are booked for this date, but none of them match the current search and filter.</p>' +
+    '<button class="btn ghost" id="clearf">Clear search and filter</button></div>';
+}
+
+/* ============ rendering: bake plan ============ */
+function planFor(k){
+  var rows = {};
+  committedOn(k).forEach(function(o){
+    o.lines.forEach(function(l){
+      if(!P[l.sku]) return;
+      if(!rows[l.sku]) rows[l.sku] = {sku:l.sku, qty:0, accounts:0};
+      rows[l.sku].qty += l.qty;
+    });
+  });
+  Object.keys(rows).forEach(function(sku){
+    var n = 0;
+    committedOn(k).forEach(function(o){ if(o.lines.some(function(l){ return l.sku===sku; })) n++; });
+    rows[sku].accounts = n;
+    rows[sku].batches = Math.ceil(rows[sku].qty / P[sku].batch);
+    rows[sku].flour = rows[sku].qty * P[sku].flour;
+  });
+  return Object.keys(rows).map(function(s){ return rows[s]; });
+}
+
+function renderPlan(){
+  var rows = planFor(state.date);
+  if(!rows.length){
+    el('plan-body').innerHTML = '<div class="panel"><div class="empty">' +
+      '<svg width="46" height="46" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 32c0-9 7.2-15 16-15s16 6 16 15z"/><path d="M8 32h32"/></svg>' +
+      '<h3 class="serif">No bake for ' + fmtDay(state.date) + '</h3>' +
+      '<p>The plan is built from confirmed orders. Drafts are not counted until someone confirms them, so there is nothing to mix tonight.</p>' +
+      '</div></div>';
+    return;
+  }
+  var drafts = ordersOn(state.date).filter(function(o){ return o.status==='draft'; }).length;
+  var maxQty = Math.max.apply(null, rows.map(function(r){ return r.qty; }));
+  var groups = [
+    {mix:'night',   title:'Overnight mix', when:'Mixed 21:00, bulk ferment, shaped 04:00'},
+    {mix:'morning', title:'Morning mix',   when:'Mixed 03:30, straight dough, out by 06:00'}
+  ];
+  var html = '';
+  if(drafts){
+    html += '<div class="plan-note">' +
+      '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4.5M10 13.4v.1"/></svg>' +
+      '<div><b>' + drafts + ' order' + (drafts>1?'s are':' is') + ' still a draft</b> and not in this plan. Open the order and confirm it to pull it in.</div></div>';
+  }
+  var grandFlour = 0, grandUnits = 0, grandBatches = 0;
+  groups.forEach(function(g){
+    var gr = rows.filter(function(r){ return P[r.sku].mix === g.mix; })
+                 .sort(function(a,b){ return b.qty - a.qty; });
+    if(!gr.length) return;
+    var f=0,u=0,b=0;
+    var body = gr.map(function(r){
+      f += r.flour; u += r.qty; b += r.batches;
+      return '<tr>' +
+        '<td><div class="cust">' + esc(P[r.sku].name) + '<small>' + P[r.sku].unit + ' · ' + r.accounts + ' account' + (r.accounts>1?'s':'') + '</small></div></td>' +
+        '<td style="width:22%"><div class="bar"><i style="width:' + Math.max(5, Math.round(r.qty/maxQty*100)) + '%"></i></div></td>' +
+        '<td class="r num" style="font-weight:700;font-size:15px">' + r.qty + '</td>' +
+        '<td class="r"><span class="num" style="font-weight:600">' + r.batches + '</span> <span class="batchnote">× ' + P[r.sku].batch + '</span></td>' +
+        '<td class="r num col-window">' + r.flour.toFixed(1) + ' kg</td>' +
+      '</tr>';
+    }).join('');
+    grandFlour += f; grandUnits += u; grandBatches += b;
+    html += '<div class="planblock">' +
+      '<div class="when"><h3 class="serif">' + g.title + '</h3><span>' + g.when + '</span></div>' +
+      '<div class="panel"><table><thead><tr>' +
+        '<th>Product</th><th></th><th class="r">Units</th><th class="r">Batches</th><th class="r col-window">Flour</th>' +
+      '</tr></thead><tbody>' + body + '</tbody><tfoot><tr>' +
+        '<td colspan="2">' + gr.length + ' products</td>' +
+        '<td class="r num">' + u + '</td>' +
+        '<td class="r num">' + b + '</td>' +
+        '<td class="r num col-window">' + f.toFixed(1) + ' kg</td>' +
+      '</tr></tfoot></table></div></div>';
+  });
+  html += '<div class="stats">' +
+    stat('Total units', grandUnits.toLocaleString('en-GB'), 'across ' + rows.length + ' products') +
+    stat('Batches', grandBatches, 'oven loads to schedule') +
+    stat('Flour', grandFlour.toFixed(1) + ' kg', 'roughly ' + Math.ceil(grandFlour/25) + ' sacks') +
+    stat('Orders counted', committedOn(state.date).length, 'confirmed and beyond') +
+  '</div>';
+  el('plan-body').innerHTML = html;
+}
+
+/* ============ rendering: customers ============ */
+function sparkline(vals){
+  if(!vals.length) return '';
+  var w=250, h=34, max=Math.max.apply(null, vals) || 1;
+  var step = vals.length > 1 ? w/(vals.length-1) : w;
+  var pts = vals.map(function(v,i){ return [i*step, h - (v/max)*(h-4) - 2]; });
+  var d = pts.map(function(p,i){ return (i?'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+  var area = d + ' L' + w + ' ' + h + ' L0 ' + h + ' Z';
+  return '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="34" preserveAspectRatio="none" aria-hidden="true">' +
+    '<path d="' + area + '" fill="rgba(200,146,61,.16)"/>' +
+    '<path d="' + d + '" fill="none" stroke="#C8923D" stroke-width="1.6" stroke-linejoin="round"/>' +
+  '</svg>';
+}
+
+function renderCustomers(){
+  var from = key(addDays(parseKey(todayKey()), -30)), to = todayKey();
+  var html = CUSTOMERS.map(function(c){
+    var hist = state.orders.filter(function(o){ return o.cust===c.id && o.date>=from && o.date<=to && o.status!=='cancelled'; });
+    var units=0, rev=0;
+    hist.forEach(function(o){ units += orderUnits(o); rev += orderTotal(o); });
+    var byDay = {}; hist.forEach(function(o){ byDay[o.date] = (byDay[o.date]||0) + orderUnits(o); });
+    var series = []; for(var i=30;i>=0;i--){ series.push(byDay[key(addDays(parseKey(to), -i))] || 0); }
+    var standing = c.standing.map(function(s){ return s[1] + '× ' + P[s[0]].name; }).join(', ');
+    var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    return '<article class="card' + (c.paused?' paused':'') + '">' +
+      '<div class="card-top"><div><h3 class="serif">' + esc(c.name) + '</h3><div class="kind">' + esc(c.kind) + '</div></div>' +
+        (c.paused ? '<span class="tag draft"><span class="dot"></span>Paused</span>' : '<span class="tag delivered"><span class="dot"></span>Active</span>') + '</div>' +
+      '<p class="addr">' + esc(c.addr) + ' · delivery ' + c.win + ' · ' + c.terms + '</p>' +
+      '<div class="meta">' +
+        '<div><i>30-day units</i><b class="num">' + units.toLocaleString('en-GB') + '</b></div>' +
+        '<div><i>30-day value</i><b class="num">' + money0(rev) + '</b></div>' +
+        '<div><i>Deliveries</i><b class="num">' + hist.length + '</b></div>' +
+      '</div>' +
+      '<div class="spark"><i>Units per day, last 30 days</i>' + sparkline(series) + '</div>' +
+      '<div class="standing"><b>Standing order</b> — ' + c.days.map(function(d){ return dayNames[d]; }).join(', ') + '<br>' + esc(standing) + '</div>' +
+      '<div class="acts">' +
+        '<button class="btn ghost" data-neworder="' + c.id + '">New order</button>' +
+        '<button class="btn ghost" data-toggle="' + c.id + '">' + (c.paused?'Reactivate':'Pause account') + '</button>' +
+      '</div>' +
+    '</article>';
+  }).join('');
+  el('cust-body').innerHTML = html;
+}
+
+/* ============ order drawer ============ */
+function openOrder(id){
+  var o = state.orders.filter(function(x){ return x.id===id; })[0];
+  if(!o) return;
+  state.open = id;
+  var c = C[o.cust];
+  el('d-title').textContent = c.name;
+  el('d-sub').innerHTML = esc(o.id) + ' · ' + fmtDay(o.date) + ' · delivery ' + c.win + ' · ' + c.terms;
+
+  var lines = o.lines.map(function(l,i){
+    var p = P[l.sku];
+    return '<div class="line">' +
+      '<div class="nm"><b>' + esc(p.name) + '</b><small>' + p.unit + ' · ' + money(p.price) + ' each</small></div>' +
+      '<div class="stepper"><button data-step="' + i + '" data-by="-1">−</button>' +
+        '<input type="number" data-qty="' + i + '" value="' + l.qty + '" min="0" max="999" aria-label="Quantity of ' + esc(p.name) + '">' +
+        '<button data-step="' + i + '" data-by="1">+</button></div>' +
+      '<div class="amt num">' + money(p.price * l.qty) + '</div>' +
+      '<button class="rm" data-rm="' + i + '" aria-label="Remove ' + esc(p.name) + '"><svg width="13" height="13" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.9"><path d="M5 5l10 10M15 5L5 15"/></svg></button>' +
+    '</div>';
+  }).join('');
+
+  var total = orderTotal(o), vat = total*0.13;
+  var trail = (o.trail && o.trail.length) ? o.trail : [{t:o.placed, s:'Order placed'}];
+  el('d-body').innerHTML =
+    '<div class="field"><label>Items</label><div class="lines">' + (lines || '<div class="line"><div class="nm"><small>No items left on this order.</small></div></div>') + '</div></div>' +
+    '<div class="totals">' +
+      '<div><span>' + orderUnits(o) + ' units, ' + o.lines.length + ' products</span><span class="num">' + money(total) + '</span></div>' +
+      '<div><span>VAT 13%</span><span class="num">' + money(vat) + '</span></div>' +
+      '<div class="grand"><span>Total</span><span class="num">' + money(total+vat) + '</span></div>' +
+    '</div>' +
+    '<div class="field" style="margin-top:18px"><label for="d-note">Note for the bakers</label>' +
+      '<textarea id="d-note" placeholder="Nothing noted.">' + esc(o.note||'') + '</textarea></div>' +
+    '<div class="trail"><i>History</i><ol>' + trail.map(function(t){
+        return '<li><time>' + esc(t.t) + '</time>' + esc(t.s) + '</li>';
+      }).join('') + '</ol></div>';
+
+  var flow = {draft:'confirmed', confirmed:'baking', baking:'out', out:'delivered'};
+  var nextLabel = {confirmed:'Confirm order', baking:'Send to the oven', out:'Mark out for delivery', delivered:'Mark delivered'};
+  var foot = '';
+  if(flow[o.status]) foot += '<button class="btn" data-advance="' + flow[o.status] + '">' + nextLabel[flow[o.status]] + '</button>';
+  foot += '<button class="btn ghost" data-savenote>Save note</button>';
+  if(o.status !== 'cancelled' && o.status !== 'delivered') foot += '<button class="btn danger" data-cancel>Cancel order</button>';
+  el('d-foot').innerHTML = foot;
+
+  el('drawer').classList.add('on'); el('drawer').setAttribute('aria-hidden','false');
+  el('scrim').classList.add('on');
+}
+function closeAll(){
+  state.open = null;
+  el('drawer').classList.remove('on'); el('drawer').setAttribute('aria-hidden','true');
+  el('modal').classList.remove('on'); el('modal').setAttribute('aria-hidden','true');
+  el('scrim').classList.remove('on');
+  el('rail').classList.remove('on');
+}
+function touch(o, what){
+  o.edited = true;
+  if(!o.trail) o.trail = [{t:o.placed, s:'Order placed'}];
+  var last = o.trail[o.trail.length-1];
+  if(last && last.s === what) return;          // don't log the same thing twice in a row
+  var now = new Date();
+  o.trail.push({t: key(now).slice(5) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()), s: what});
+}
+
+/* ============ new-order modal ============ */
+var draft = {lines:[]};
+function openModal(custId){
+  draft = {lines:[]};
+  var sel = el('m-cust');
+  sel.innerHTML = '<option value="">Choose an account…</option>' + CUSTOMERS.map(function(c){
+    return '<option value="' + c.id + '"' + (c.paused?' disabled':'') + '>' + esc(c.name) + (c.paused?' (paused)':'') + '</option>';
+  }).join('');
+  if(custId) sel.value = custId;
+  el('m-date').value = state.date;
+  el('m-note').value = '';
+  el('f-cust').classList.remove('bad'); el('f-lines').classList.remove('bad');
+  if(custId && C[custId]) C[custId].standing.forEach(function(s){ draft.lines.push({sku:s[0], qty:s[1]}); });
+  else draft.lines.push({sku:'SOUR', qty:6});
+  renderModalLines();
+  el('modal').classList.add('on'); el('modal').setAttribute('aria-hidden','false');
+  el('scrim').classList.add('on');
+  setTimeout(function(){ sel.focus(); }, 60);
+}
+function renderModalLines(){
+  var opts = PRODUCTS.map(function(p){ return '<option value="' + p.sku + '">' + esc(p.name) + ' — ' + money(p.price) + '</option>'; }).join('');
+  el('m-lines').innerHTML = draft.lines.map(function(l,i){
+    return '<div class="line">' +
+      '<select data-msku="' + i + '" aria-label="Product">' + opts.replace('value="' + l.sku + '"', 'value="' + l.sku + '" selected') + '</select>' +
+      '<div class="stepper"><button data-mstep="' + i + '" data-by="-1">−</button>' +
+        '<input type="number" data-mqty="' + i + '" value="' + l.qty + '" min="1" max="999" aria-label="Quantity">' +
+        '<button data-mstep="' + i + '" data-by="1">+</button></div>' +
+      '<div class="amt num">' + money(P[l.sku].price * l.qty) + '</div>' +
+      '<button class="rm" data-mrm="' + i + '" aria-label="Remove line"><svg width="13" height="13" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.9"><path d="M5 5l10 10M15 5L5 15"/></svg></button>' +
+    '</div>';
+  }).join('') || '<div class="line"><div class="nm"><small>No items yet.</small></div></div>';
+  var t = 0, u = 0;
+  draft.lines.forEach(function(l){ t += P[l.sku].price * l.qty; u += l.qty; });
+  el('m-totals').innerHTML =
+    '<div><span>' + u + ' units</span><span class="num">' + money(t) + '</span></div>' +
+    '<div><span>VAT 13%</span><span class="num">' + money(t*0.13) + '</span></div>' +
+    '<div class="grand"><span>Total</span><span class="num">' + money(t*1.13) + '</span></div>';
+}
+
+/* ============ cutoff banner ============ */
+function renderCutoff(){
+  var box = el('cutoff'), t = todayKey();
+  var diff = Math.round((parseKey(state.date) - parseKey(t))/86400000);
+  var now = new Date(), h = now.getHours(), m = now.getMinutes();
+  if(diff < 0){
+    box.className = 'cutoff past';
+    box.innerHTML = iconLock() + 'Closed — this date has been delivered. <span class="thin">Shown for reference only.</span>';
+  } else if(diff === 0){
+    box.className = 'cutoff closed';
+    box.innerHTML = iconLock() + 'Ordering closed for today. <span class="thin">The bake was set at 18:00 yesterday; anything new goes to tomorrow.</span>';
+  } else if(diff === 1 && h >= 18){
+    box.className = 'cutoff closed';
+    box.innerHTML = iconLock() + 'Cut-off passed at 18:00. <span class="thin">Tomorrow\'s bake is locked — call the bakery for anything urgent.</span>';
+  } else if(diff === 1){
+    var mins = (18 - h) * 60 - m;
+    box.className = 'cutoff open';
+    box.innerHTML = iconClock() + 'Ordering open — cut-off 18:00 today. <span class="thin">' +
+      Math.floor(mins/60) + ' h ' + (mins%60) + ' min left to change tomorrow\'s bake.</span>';
+  } else {
+    box.className = 'cutoff open';
+    box.innerHTML = iconClock() + 'Ordering open. <span class="thin">This date locks at 18:00 on ' + fmtDay(key(addDays(parseKey(state.date), -1))) + '.</span>';
+  }
+}
+function iconLock(){ return '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="9" width="12" height="8" rx="2"/><path d="M7 9V6.5a3 3 0 016 0V9"/></svg>'; }
+function iconClock(){ return '<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="10" r="7.5"/><path d="M10 6v4.3l2.8 1.7"/></svg>'; }
+
+/* ============ master render ============ */
+function render(){
+  el('dlabel').textContent = fmtDay(state.date);
+  el('drel').textContent = relDay(state.date);
+  document.querySelectorAll('#quick .chip').forEach(function(b){
+    b.setAttribute('aria-pressed', key(addDays(parseKey(todayKey()), +b.dataset.jump)) === state.date);
+  });
+  document.querySelectorAll('.nav button').forEach(function(b){
+    b.setAttribute('aria-current', b.dataset.view === state.view);
+  });
+  document.querySelectorAll('.view').forEach(function(v){
+    v.classList.toggle('on', v.id === 'view-' + state.view);
+  });
+  el('badge-orders').textContent = ordersOn(state.date).filter(function(o){ return o.status!=='cancelled'; }).length;
+  el('badge-plan').textContent = planFor(state.date).length;
+  el('badge-cust').textContent = CUSTOMERS.filter(function(c){ return !c.paused; }).length;
+  renderCutoff();
+  if(state.view === 'orders') renderOrders();
+  if(state.view === 'plan') renderPlan();
+  if(state.view === 'customers') renderCustomers();
+  var want = '#/' + state.view + '/' + state.date;
+  if(location.hash !== want){
+    if(history.replaceState) history.replaceState(null, '', want); else location.hash = want;
+  }
+}
+
+/* ============ events ============ */
+document.addEventListener('click', function(e){
+  var t = e.target, b;
+
+  if((b = t.closest('.nav button'))){ state.view = b.dataset.view; el('rail').classList.remove('on'); render(); return; }
+  if(t.closest('#menu')){ el('rail').classList.toggle('on'); return; }
+  if(t.closest('#prev')){ state.date = key(addDays(parseKey(state.date), -1)); render(); return; }
+  if(t.closest('#next')){ state.date = key(addDays(parseKey(state.date), 1)); render(); return; }
+  if((b = t.closest('#quick .chip'))){ state.date = key(addDays(parseKey(todayKey()), +b.dataset.jump)); render(); return; }
+  if((b = t.closest('#statusfilter .chip'))){ state.status = b.dataset.status; renderOrders(); return; }
+  if((b = t.closest('th.sortable'))){
+    if(state.sort === b.dataset.sort) state.dir *= -1; else { state.sort = b.dataset.sort; state.dir = 1; }
+    renderOrders(); return;
+  }
+  if(t.closest('#clearf')){ state.status='all'; state.q=''; el('q').value=''; renderOrders(); return; }
+  if((b = t.closest('tbody tr.clickable'))){ openOrder(b.dataset.id); return; }
+  if(t.closest('#newbtn')){ openModal(null); return; }
+  if((b = t.closest('[data-neworder]'))){ openModal(b.dataset.neworder); return; }
+  if((b = t.closest('[data-toggle]'))){
+    var c = C[b.dataset.toggle]; c.paused = !c.paused;
+    toast(c.paused ? c.name + ' paused' : c.name + ' reactivated', c.paused ? '' : 'good');
+    render(); return;
+  }
+  if(t.closest('[data-close]') || t === el('scrim')){ closeAll(); return; }
+  if(t.closest('#reset')){
+    try { localStorage.removeItem(KEY); } catch(err){}
+    load(); state.status='all'; state.q=''; el('q').value='';
+    CUSTOMERS.forEach(function(c){ c.paused = (c.id === 'c8'); });
+    toast('Demo data reset', 'good'); render(); return;
+  }
+
+  /* ---- open order drawer actions ---- */
+  var o = state.open ? state.orders.filter(function(x){ return x.id===state.open; })[0] : null;
+  if(o){
+    if((b = t.closest('[data-step]'))){
+      var i = +b.dataset.step, by = +b.dataset.by;
+      o.lines[i].qty = Math.max(0, Math.min(999, o.lines[i].qty + by));
+      if(o.lines[i].qty === 0) o.lines.splice(i,1);
+      touch(o, 'Quantities changed'); save(); openOrder(o.id); render(); return;
+    }
+    if((b = t.closest('[data-rm]'))){
+      var rp = P[o.lines[+b.dataset.rm].sku].name;
+      o.lines.splice(+b.dataset.rm, 1);
+      touch(o, 'Removed ' + rp); save(); openOrder(o.id); render(); toast(rp + ' removed'); return;
+    }
+    if((b = t.closest('[data-advance]'))){
+      o.status = b.dataset.advance;
+      touch(o, STATUS_LABEL[o.status]); save(); openOrder(o.id); render();
+      toast(C[o.cust].name + ' — ' + STATUS_LABEL[o.status].toLowerCase(), 'good'); return;
+    }
+    if(t.closest('[data-savenote]')){
+      o.note = el('d-note').value; touch(o, 'Note updated'); save(); openOrder(o.id); toast('Note saved', 'good'); return;
+    }
+    if(t.closest('[data-cancel]')){
+      if(!confirm('Cancel the order for ' + C[o.cust].name + '? It will be dropped from the bake plan.')) return;
+      o.status = 'cancelled'; touch(o, 'Cancelled'); save(); closeAll(); render();
+      toast('Order cancelled', 'bad'); return;
+    }
+  }
+
+  /* ---- modal ---- */
+  if((b = t.closest('[data-mstep]'))){
+    var mi = +b.dataset.mstep;
+    draft.lines[mi].qty = Math.max(1, Math.min(999, draft.lines[mi].qty + (+b.dataset.by)));
+    renderModalLines(); return;
+  }
+  if((b = t.closest('[data-mrm]'))){ draft.lines.splice(+b.dataset.mrm, 1); renderModalLines(); return; }
+  if(t.closest('#m-add')){
+    var used = draft.lines.map(function(l){ return l.sku; });
+    var free = PRODUCTS.filter(function(p){ return used.indexOf(p.sku) < 0; })[0] || PRODUCTS[0];
+    draft.lines.push({sku:free.sku, qty:6}); renderModalLines(); return;
+  }
+  if(t.closest('#m-save')){ saveNew(); return; }
+});
+
+document.addEventListener('input', function(e){
+  var t = e.target;
+  if(t.id === 'q'){ state.q = t.value; if(state.view==='orders') renderOrders(); return; }
+  if(t.id === 'm-date'){ if(t.value) { draft.date = t.value; } return; }
+  if(t.dataset.qty !== undefined){
+    var o = state.orders.filter(function(x){ return x.id===state.open; })[0];
+    if(o){
+      var li = +t.dataset.qty;
+      o.lines[li].qty = Math.max(0, Math.min(999, +t.value || 0));
+      touch(o,'Quantities changed'); save();
+      // update the row and the totals in place so the caret stays where it is
+      var row = t.closest('.line');
+      if(row) row.querySelector('.amt').textContent = money(P[o.lines[li].sku].price * o.lines[li].qty);
+      var tot = orderTotal(o);
+      var box = el('d-body').querySelector('.totals');
+      if(box) box.innerHTML =
+        '<div><span>' + orderUnits(o) + ' units, ' + o.lines.length + ' products</span><span class="num">' + money(tot) + '</span></div>' +
+        '<div><span>VAT 13%</span><span class="num">' + money(tot*0.13) + '</span></div>' +
+        '<div class="grand"><span>Total</span><span class="num">' + money(tot*1.13) + '</span></div>';
+      render();
+    }
+    return;
+  }
+  if(t.dataset.mqty !== undefined){ draft.lines[+t.dataset.mqty].qty = Math.max(1, Math.min(999, +t.value || 1)); renderModalLines(); return; }
+});
+document.addEventListener('change', function(e){
+  var t = e.target;
+  if(t.dataset.msku !== undefined){ draft.lines[+t.dataset.msku].sku = t.value; renderModalLines(); }
+});
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){ closeAll(); return; }
+  if(e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){
+    e.preventDefault(); el('q').focus(); return;
+  }
+  if((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey &&
+     document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'SELECT'){
+    e.preventDefault(); openModal(null);
+  }
+});
+
+function saveNew(){
+  var cust = el('m-cust').value, date = el('m-date').value || state.date;
+  var ok = true;
+  el('f-cust').classList.toggle('bad', !cust); if(!cust) ok = false;
+  el('f-lines').classList.toggle('bad', !draft.lines.length); if(!draft.lines.length) ok = false;
+  if(!ok){ toast('Check the highlighted fields', 'bad'); return; }
+  var merged = {};
+  draft.lines.forEach(function(l){ merged[l.sku] = (merged[l.sku]||0) + l.qty; });
+  var now = new Date();
+  var o = {
+    id: 'PZ-' + date.slice(5).replace('-','') + '-' + cust.slice(1) + String(Math.floor(Math.random()*90)+10),
+    cust: cust, date: date,
+    lines: Object.keys(merged).map(function(s){ return {sku:s, qty:merged[s]}; }),
+    status: 'confirmed', note: el('m-note').value,
+    placed: key(now) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()),
+    user: true, edited: true,
+    trail: [{t: key(now).slice(5) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()), s:'Order taken at the counter'}]
+  };
+  state.orders.push(o); save();
+  state.date = date; state.status = 'all';
+  closeAll(); render();
+  toast(C[cust].name + ' — order saved for ' + fmtDay(date), 'good');
+  setTimeout(function(){ openOrder(o.id); }, 220);
+}
+
+/* ============ boot ============ */
+load();
+var h = (location.hash || '').match(/^#\/(orders|plan|customers)\/(\d{4}-\d{2}-\d{2})$/);
+state.view = h ? h[1] : 'orders';
+state.date = h ? h[2] : key(addDays(parseKey(todayKey()), 1));
+render();
+
+})();
+</script>
+</body>
+</html>
