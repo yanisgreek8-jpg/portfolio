@@ -137,6 +137,78 @@
     .cta{padding:56px 26px;}
   }
   @media(max-width:560px){ .wrap{padding:0 20px;} .kpis{grid-template-columns:1fr 1fr;gap:20px;} }
+
+  /* ---- logo strip marks ---- */
+  .logos .strip{gap:46px;}
+  .logos .strip .lg{display:inline-flex;align-items:center;gap:11px;}
+  .logos .strip .lg svg{width:21px;height:21px;flex:none;}
+
+  /* ---- product views ---- */
+  .views{display:grid;grid-template-columns:1.32fr 1fr;gap:22px;align-items:start;}
+  .vpanel{border:1px solid var(--line);border-radius:14px;background:var(--bg-2);overflow:hidden;}
+  .vpanel + .vpanel{margin-top:22px;}
+  .vhead{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:19px 24px;border-bottom:1px solid var(--line);}
+  .vhead .t{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim);}
+  .vhead .s{font-size:12px;color:var(--jade);font-family:ui-monospace,'SF Mono',Menlo,monospace;}
+  .tbl{width:100%;border-collapse:collapse;font-size:14px;}
+  .tbl th{text-align:left;font-weight:500;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg-dim);padding:14px 24px;border-bottom:1px solid var(--line);}
+  .tbl td{padding:14px 24px;border-bottom:1px solid var(--line);}
+  .tbl tr:last-child td{border-bottom:none;}
+  .tbl .r{text-align:right;font-variant-numeric:tabular-nums;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12.5px;}
+  .tbl tbody tr:hover td{background:rgba(236,247,242,.035);}
+  .tbl .dim{color:var(--fg-dim);}
+  .ch{display:inline-flex;align-items:center;gap:10px;}
+  .ch i{width:18px;height:18px;border-radius:5px;display:inline-block;flex:none;}
+  .hf{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid;font-family:ui-monospace,'SF Mono',Menlo,monospace;}
+  .hf.ok{color:var(--jade);border-color:rgba(63,191,143,.34);background:rgba(63,191,143,.08);}
+  .hf.warn{color:var(--amber);border-color:rgba(216,166,87,.34);background:rgba(216,166,87,.09);}
+  .hf.na{color:var(--fg-dim);border-color:var(--line);}
+  .ev{display:grid;grid-template-columns:auto 1fr;gap:14px;padding:17px 24px;border-bottom:1px solid var(--line);}
+  .ev:last-child{border-bottom:none;}
+  .ev .dotc{width:8px;height:8px;border-radius:50%;margin-top:8px;}
+.feed .ev:last-child{border-bottom:none;}
+  .ev .ttl{font-size:14px;line-height:1.5;}
+  .ev .sub{color:var(--fg-dim);font-size:12.5px;margin-top:4px;}
+  .ev .tm{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:10.5px;color:rgba(236,247,242,.34);margin-top:6px;letter-spacing:.04em;}
+  .stack{display:flex;height:14px;border-radius:7px;overflow:hidden;margin:2px 0 24px;}
+  .stack i{display:block;height:100%;}
+  .legend{display:flex;flex-wrap:wrap;gap:12px 34px;font-size:13.5px;color:var(--fg-dim);}
+  .legend span{display:inline-flex;align-items:center;gap:9px;}
+  .legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .legend b{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums;}
+
+  /* ---- docs ---- */
+  .docs-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:22px;align-items:start;}
+  .eplist{border:1px solid var(--line);border-radius:14px;background:var(--bg-2);overflow:hidden;}
+  .ep{display:flex;align-items:center;gap:12px;padding:15px 22px;border-bottom:1px solid var(--line);font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12.5px;color:var(--fg-dim);}
+  .ep:last-child{border-bottom:none;}
+  .ep b{font-size:10px;letter-spacing:.08em;padding:3px 7px;border-radius:4px;background:rgba(63,191,143,.13);color:var(--jade);font-weight:700;flex:none;}
+  .ep b.post{background:rgba(216,166,87,.14);color:var(--amber);}
+  .ep span{color:var(--fg);}
+  .code{border:1px solid var(--line);border-radius:14px;background:#060908;overflow:hidden;}
+  .code .tabs{display:flex;gap:3px;padding:11px 14px 0;border-bottom:1px solid var(--line);}
+  .code .tabs span{font-size:12px;padding:8px 15px;border-radius:8px 8px 0 0;color:var(--fg-dim);}
+  .code .tabs span.on{color:var(--fg);background:rgba(236,247,242,.06);}
+  .code pre{margin:0;padding:22px 24px 26px;overflow-x:auto;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12.5px;line-height:1.8;color:rgba(236,247,242,.82);}
+  .code .cm{color:rgba(236,247,242,.32);}
+  .code .st{color:#9FE8C6;}
+  .code .ky{color:#7FB2FF;}
+  .code .nu{color:var(--amber);}
+  .concept{margin-top:20px;font-size:12.5px;line-height:1.65;color:rgba(236,247,242,.38);}
+
+  @media(max-width:980px){
+    .views,.docs-grid{grid-template-columns:1fr;}
+    .tbl th:nth-child(2),.tbl td:nth-child(2){display:none;}
+  }
+  @media(max-width:560px){
+    .tbl{font-size:13px;}
+    .tbl th,.tbl td{padding:12px 16px;}
+    .tbl th:nth-child(4),.tbl td:nth-child(4){display:none;}
+    .tbl .r{font-size:11.5px;}
+    .ch{gap:8px;}
+    .code pre{font-size:10.5px;}
+    .ev .tm{display:block;margin-top:2px;}
+  }
 </style>
 </head>
 <body>
@@ -237,7 +309,7 @@
 
 <div class="wrap logos">
   <div class="strip">
-    <span>Northgate&nbsp;Capital</span><span>Thalia&nbsp;Labs</span><span>Kestrel&nbsp;DAO</span><span>Vector&nbsp;Nine</span><span>Orbit&nbsp;Treasury</span>
+    <span class="lg"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5l16 14V5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Northgate&nbsp;Capital</span><span class="lg"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.4" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg>Thalia&nbsp;Labs</span><span class="lg"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.2l7.6 4.4v8.8L12 20.8 4.4 16.4V7.6L12 3.2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Kestrel&nbsp;DAO</span><span class="lg"><svg viewBox="0 0 24 24" fill="none"><path d="M3.5 5.5l8.5 13 8.5-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 5.5h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Vector&nbsp;Nine</span><span class="lg"><svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="12" rx="9.2" ry="4.4" stroke="currentColor" stroke-width="1.8" transform="rotate(-28 12 12)"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg>Orbit&nbsp;Treasury</span>
   </div>
 </div>
 
@@ -264,6 +336,136 @@
         <h3>Audit-ready exports</h3>
         <p>Cost-basis, realised and unrealised PnL per lot, in a format your accountant will accept without a phone call. CSV, Xero and a signed JSON attestation.</p>
       </article>
+    </div>
+  </div>
+</section>
+
+
+<section id="console" class="reveal">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">The console</p>
+      <h2 class="display" style="margin-top:20px;">Seventeen positions. One page.</h2>
+      <p>Every wallet, vault and LP range resolved to a position with a value, a rate and a distance to liquidation — recomputed block by block, not once a night.</p>
+    </div>
+
+    <div class="views">
+      <div class="vpanel">
+        <div class="vhead"><span class="t">Positions</span><span class="s">7 of 17 shown</span></div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Position</th><th>Chain</th><th style="text-align:right;">Value</th><th style="text-align:right;">Net APY</th><th style="text-align:right;">Health</th></tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td><span class="ch"><i style="background:#3FBF8F;"></i>Aave v3 · USDC supply</span></td>
+            <td class="dim">Base</td>
+            <td class="r">$14.8M</td>
+            <td class="r">7.42%</td>
+            <td class="r"><span class="hf ok">2.10</span></td>
+          </tr>
+          <tr>
+            <td><span class="ch"><i style="background:#7FB2FF;"></i>Pendle · PT-sUSDe</span></td>
+            <td class="dim">Ethereum</td>
+            <td class="r">$9.6M</td>
+            <td class="r">12.80%</td>
+            <td class="r"><span class="hf na">fixed</span></td>
+          </tr>
+          <tr>
+            <td><span class="ch"><i style="background:#C08BE8;"></i>Uniswap v4 · ETH/USDC</span></td>
+            <td class="dim">Arbitrum</td>
+            <td class="r">$7.1M</td>
+            <td class="r">18.40%</td>
+            <td class="r"><span class="hf na">in range</span></td>
+          </tr>
+          <tr>
+            <td><span class="ch"><i style="background:#7FB2FF;"></i>Morpho · wstETH loop</span></td>
+            <td class="dim">Ethereum</td>
+            <td class="r">$6.4M</td>
+            <td class="r">5.90%</td>
+            <td class="r"><span class="hf warn">1.19</span></td>
+          </tr>
+          <tr>
+            <td><span class="ch"><i style="background:#3FBF8F;"></i>Fluid · cbBTC vault</span></td>
+            <td class="dim">Base</td>
+            <td class="r">$4.3M</td>
+            <td class="r">−1.20%</td>
+            <td class="r"><span class="hf ok">1.74</span></td>
+          </tr>
+          <tr>
+            <td><span class="ch"><i style="background:#7FB2FF;"></i>Sky · sUSDS</span></td>
+            <td class="dim">Ethereum</td>
+            <td class="r">$3.8M</td>
+            <td class="r">6.25%</td>
+            <td class="r"><span class="hf na">—</span></td>
+          </tr>
+          <tr>
+            <td><span class="ch"><i style="background:#D8A657;"></i>Hyperliquid · HLP</span></td>
+            <td class="dim">Hyperliquid</td>
+            <td class="r">$2.2M</td>
+            <td class="r">14.10%</td>
+            <td class="r"><span class="hf na">—</span></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="vpanel">
+        <div class="vhead"><span class="t">Alerts</span><span class="s">5 open</span></div>
+        <div class="feed">
+        <div class="ev">
+          <span class="dotc" style="background:#D8A657;"></span>
+          <div>
+            <div class="ttl">Health factor on the Morpho wstETH loop fell below 1.25.</div>
+            <div class="sub">alpha-fund-ii · Ethereum · threshold 1.25</div>
+            <div class="tm">00:41 ago</div>
+          </div>
+        </div>
+        <div class="ev">
+          <span class="dotc" style="background:#3FBF8F;"></span>
+          <div>
+            <div class="ttl">Aave v3 USDC supply rate up 38&nbsp;bp after a large repay.</div>
+            <div class="sub">Base · now 7.42%</div>
+            <div class="tm">12 min ago</div>
+          </div>
+        </div>
+        <div class="ev">
+          <span class="dotc" style="background:#D8A657;"></span>
+          <div>
+            <div class="ttl">PT-sUSDe matures in 9 days — roll or redeem.</div>
+            <div class="sub">Ethereum · $9.6M notional</div>
+            <div class="tm">1 h ago</div>
+          </div>
+        </div>
+        <div class="ev">
+          <span class="dotc" style="background:#7FB2FF;"></span>
+          <div>
+            <div class="ttl">New adapter live: Hyperliquid HLP is now indexed.</div>
+            <div class="sub">Adapter v2.14 · no action needed</div>
+            <div class="tm">3 h ago</div>
+          </div>
+        </div>
+        <div class="ev">
+          <span class="dotc" style="background:#E8785B;"></span>
+          <div>
+            <div class="ttl">Uniswap v4 range drifted out of band — no fees for 2 h.</div>
+            <div class="sub">Arbitrum · ETH/USDC 0.05%</div>
+            <div class="tm">5 h ago</div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vpanel" style="padding:26px 30px 30px;">
+      <div class="t" style="font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim);margin-bottom:16px;">Exposure by chain · $48.2M</div>
+      <div class="stack"><i style="width:41.1%;background:#7FB2FF;"></i><i style="width:39.6%;background:#3FBF8F;"></i><i style="width:14.7%;background:#C08BE8;"></i><i style="width:4.6%;background:#D8A657;"></i></div>
+      <div class="legend">
+          <span><i style="background:#7FB2FF;"></i>Ethereum&nbsp;&nbsp;<b>$19.8M</b></span>
+          <span><i style="background:#3FBF8F;"></i>Base&nbsp;&nbsp;<b>$19.1M</b></span>
+          <span><i style="background:#C08BE8;"></i>Arbitrum&nbsp;&nbsp;<b>$7.1M</b></span>
+          <span><i style="background:#D8A657;"></i>Hyperliquid&nbsp;&nbsp;<b>$2.2M</b></span>
+      </div>
     </div>
   </div>
 </section>
@@ -345,7 +547,62 @@
   </div>
 </section>
 
-<section id="docs" class="reveal" style="padding-top:40px;">
+
+<section id="docs" class="reveal">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Developers</p>
+      <h2 class="display" style="margin-top:20px;">The same numbers, over HTTP.</h2>
+      <p>Everything the console shows is a read-only REST call. Keys are scoped per treasury, rate limits are generous, and every response carries the block it was priced at.</p>
+    </div>
+
+    <div class="docs-grid">
+      <div class="eplist">
+        <div class="ep"><b>GET</b><span>/v1/treasuries/{id}/nav</span></div>
+        <div class="ep"><b>GET</b><span>/v1/treasuries/{id}/positions</span></div>
+        <div class="ep"><b>GET</b><span>/v1/attribution?window=30d</span></div>
+        <div class="ep"><b>GET</b><span>/v1/risk/liquidation-paths</span></div>
+        <div class="ep"><b>GET</b><span>/v1/chains</span></div>
+        <div class="ep"><b class="post">POST</b><span>/v1/webhooks/alerts</span></div>
+        <div class="ep" style="color:var(--fg-dim);font-family:'Manrope',sans-serif;font-size:13px;">Adapters for 60 protocols · OpenAPI 3.1 · SDKs for TypeScript and Python</div>
+      </div>
+
+      <div class="code">
+        <div class="tabs"><span class="on">curl</span><span>typescript</span><span>python</span></div>
+        <pre><span class="cm"># one position list, priced at a single block</span>
+curl https://api.meridian.xyz/v1/treasuries/alpha-fund-ii/positions \
+  -H <span class="st">"Authorization: Bearer $MERIDIAN_KEY"</span>
+
+{
+  <span class="ky">"block"</span>: <span class="nu">23481902</span>,
+  <span class="ky">"priced_at"</span>: <span class="st">"2026-09-27T06:14:11Z"</span>,
+  <span class="ky">"nav_usd"</span>: <span class="nu">48204118.62</span>,
+  <span class="ky">"positions"</span>: [
+    {
+      <span class="ky">"protocol"</span>: <span class="st">"aave-v3"</span>,
+      <span class="ky">"chain"</span>: <span class="st">"base"</span>,
+      <span class="ky">"asset"</span>: <span class="st">"USDC"</span>,
+      <span class="ky">"value_usd"</span>: <span class="nu">14803221.04</span>,
+      <span class="ky">"net_apy"</span>: <span class="nu">0.0742</span>,
+      <span class="ky">"health_factor"</span>: <span class="nu">2.10</span>
+    },
+    {
+      <span class="ky">"protocol"</span>: <span class="st">"morpho"</span>,
+      <span class="ky">"chain"</span>: <span class="st">"ethereum"</span>,
+      <span class="ky">"asset"</span>: <span class="st">"wstETH"</span>,
+      <span class="ky">"value_usd"</span>: <span class="nu">6412884.19</span>,
+      <span class="ky">"net_apy"</span>: <span class="nu">0.0590</span>,
+      <span class="ky">"health_factor"</span>: <span class="nu">1.19</span>,
+      <span class="ky">"liquidation_price"</span>: <span class="nu">1842.00</span>
+    }
+  ]
+}</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="demo" class="reveal" style="padding-top:40px;">
   <div class="wrap">
     <div class="cta">
       <p class="eyebrow">Get started</p>
@@ -363,6 +620,7 @@
       <div style="max-width:24em;">
         <div class="brand" style="color:var(--fg);"><span class="mark"></span>Meridian</div>
         <p style="margin-top:14px;">Treasury analytics for funds that hold assets onchain. Read-only by design.</p>
+        <p class="concept">Meridian is a concept project built to demonstrate product design and front-end work. The company, the customers and every figure shown are fictional.</p>
       </div>
       <div class="fcol"><span class="h">Product</span><a href="#product">Overview</a><a href="#risk">Risk engine</a><a href="#pricing">Pricing</a><a href="#">Changelog</a></div>
       <div class="fcol"><span class="h">Developers</span><a href="#">API reference</a><a href="#">Adapters</a><a href="#">Status</a></div>
