@@ -603,7 +603,7 @@ function seedOrders(){
         id: 'PZ-' + k.slice(5).replace('-','') + '-' + c.id.slice(1) + String(out.length%97).padStart(2,'0'),
         cust: c.id, date: k, lines: lines, status: st,
         note: r() < 0.14 ? ['Sliced, please.','Leave at the side door.','Paper bags, no plastic.','Same driver as last week.'][Math.floor(r()*4)] : '',
-        placed: k + ' 17:' + pad(Math.floor(r()*59)),
+        placed: key(addDays(d,-1)) + ' 17:' + pad(Math.floor(r()*59)),
         trail: []
       });
     });
@@ -897,7 +897,7 @@ function openOrder(id){
   }).join('');
 
   var total = orderTotal(o), vat = total*0.13;
-  var trail = (o.trail && o.trail.length) ? o.trail : [{t:o.placed, s:'Order placed'}];
+  var trail = (o.trail && o.trail.length) ? o.trail : [{t:o.placed.slice(5), s:'Order placed'}];
   el('d-body').innerHTML =
     '<div class="field"><label>Items</label><div class="lines">' + (lines || '<div class="line"><div class="nm"><small>No items left on this order.</small></div></div>') + '</div></div>' +
     '<div class="totals">' +
@@ -931,7 +931,7 @@ function closeAll(){
 }
 function touch(o, what){
   o.edited = true;
-  if(!o.trail) o.trail = [{t:o.placed, s:'Order placed'}];
+  if(!o.trail || !o.trail.length) o.trail = [{t:o.placed.slice(5), s:'Order placed'}];
   var last = o.trail[o.trail.length-1];
   if(last && last.s === what) return;          // don't log the same thing twice in a row
   var now = new Date();
