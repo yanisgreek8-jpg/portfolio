@@ -1,4 +1,4 @@
-# Yanis K. — portfolio
+# Ivan K. — portfolio
 
 Live work samples: presentation decks and landing pages, designed and hand-coded from scratch.
 
