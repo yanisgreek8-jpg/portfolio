@@ -101,7 +101,7 @@
   .sec-head p{color:var(--fg-soft);}
 
   /* ---------- project cards ---------- */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:22px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px;}
   .card{
     position:relative;display:flex;flex-direction:column;
     background:var(--bg-2);
@@ -117,6 +117,9 @@
   .shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
     transition:transform .5s cubic-bezier(.2,.7,.2,1);}
   .card:hover .shot img{transform:scale(1.035);}
+  .shot-svg svg{width:100%;height:100%;display:block;
+    transition:transform .5s cubic-bezier(.2,.7,.2,1);}
+  .card:hover .shot-svg svg{transform:scale(1.035);}
   .tag{
     position:absolute;top:13px;left:13px;z-index:2;
     padding:5px 11px;border-radius:999px;
@@ -224,11 +227,97 @@
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow">Selected work</p>
-        <h2 class="serif">Three live samples</h2>
+        <h2 class="serif">Four live samples</h2>
         <p>Concept projects built end to end to show how I work — the writing, the layout and the code are all mine.</p>
       </div>
 
       <div class="grid">
+
+        <a class="card" href="./orders/">
+          <div class="shot shot-svg">
+            <span class="tag">Web app</span>
+            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Prozymi order desk interface: sidebar, stats and an order table">
+              <rect width="400" height="250" fill="#0e1217"/>
+              <rect x="0" y="0" width="76" height="250" fill="#14181f"/>
+              <circle cx="18" cy="18" r="6" fill="#E8B341"/>
+              <rect x="30" y="14" width="30" height="7" rx="3.5" fill="#3b424d"/>
+              <rect x="10" y="42" width="56" height="15" rx="4" fill="#E8B341" opacity=".16"/>
+              <rect x="16" y="47" width="26" height="5" rx="2.5" fill="#E8B341"/>
+              <circle cx="58" cy="49.5" r="4.5" fill="#E8B341"/>
+              <rect x="16" y="70" width="34" height="5" rx="2.5" fill="#39404a"/>
+              <rect x="16" y="88" width="28" height="5" rx="2.5" fill="#39404a"/>
+              <rect x="92" y="14" width="74" height="18" rx="9" fill="#1b2029"/>
+              <rect x="103" y="21" width="52" height="5" rx="2.5" fill="#4a525e"/>
+              <rect x="174" y="14" width="44" height="18" rx="9" fill="#E8B341" opacity=".14"/>
+              <rect x="184" y="21" width="24" height="5" rx="2.5" fill="#E8B341"/>
+              <rect x="300" y="14" width="86" height="18" rx="9" fill="#1b2029"/>
+              <rect x="310" y="21" width="40" height="5" rx="2.5" fill="#3f4650"/>
+              <g fill="#161b22">
+                <rect x="92" y="46" width="68" height="40" rx="7"/>
+                <rect x="168" y="46" width="68" height="40" rx="7"/>
+                <rect x="244" y="46" width="68" height="40" rx="7"/>
+                <rect x="320" y="46" width="66" height="40" rx="7"/>
+              </g>
+              <g fill="#2e3540">
+                <rect x="100" y="55" width="30" height="4" rx="2"/>
+                <rect x="176" y="55" width="30" height="4" rx="2"/>
+                <rect x="252" y="55" width="30" height="4" rx="2"/>
+                <rect x="328" y="55" width="30" height="4" rx="2"/>
+              </g>
+              <g fill="#cfd6df">
+                <rect x="100" y="66" width="22" height="10" rx="3"/>
+                <rect x="176" y="66" width="30" height="10" rx="3"/>
+                <rect x="252" y="66" width="18" height="10" rx="3"/>
+              </g>
+              <rect x="328" y="66" width="26" height="10" rx="3" fill="#E8B341"/>
+              <rect x="92" y="98" width="294" height="138" rx="9" fill="#161b22"/>
+              <rect x="92" y="98" width="294" height="20" rx="9" fill="#1b2029"/>
+              <rect x="92" y="109" width="294" height="9" fill="#1b2029"/>
+              <g fill="#39404a">
+                <rect x="104" y="105" width="38" height="5" rx="2.5"/>
+                <rect x="190" y="105" width="30" height="5" rx="2.5"/>
+                <rect x="268" y="105" width="22" height="5" rx="2.5"/>
+                <rect x="340" y="105" width="34" height="5" rx="2.5"/>
+              </g>
+              <g>
+                <rect x="104" y="128" width="62" height="6" rx="3" fill="#b9c2ce"/>
+                <rect x="190" y="128" width="40" height="6" rx="3" fill="#59616d"/>
+                <rect x="256" y="125" width="46" height="13" rx="6.5" fill="#2f7a4f"/>
+                <rect x="340" y="128" width="34" height="6" rx="3" fill="#8a93a0"/>
+                <rect x="104" y="150" width="52" height="6" rx="3" fill="#b9c2ce"/>
+                <rect x="190" y="150" width="46" height="6" rx="3" fill="#59616d"/>
+                <rect x="256" y="147" width="40" height="13" rx="6.5" fill="#9A6C22"/>
+                <rect x="340" y="150" width="28" height="6" rx="3" fill="#8a93a0"/>
+                <rect x="104" y="172" width="70" height="6" rx="3" fill="#b9c2ce"/>
+                <rect x="190" y="172" width="34" height="6" rx="3" fill="#59616d"/>
+                <rect x="256" y="169" width="50" height="13" rx="6.5" fill="#2b5c8a"/>
+                <rect x="340" y="172" width="32" height="6" rx="3" fill="#8a93a0"/>
+                <rect x="104" y="194" width="58" height="6" rx="3" fill="#b9c2ce"/>
+                <rect x="190" y="194" width="42" height="6" rx="3" fill="#59616d"/>
+                <rect x="256" y="191" width="44" height="13" rx="6.5" fill="#2f7a4f"/>
+                <rect x="340" y="194" width="30" height="6" rx="3" fill="#8a93a0"/>
+                <rect x="104" y="216" width="66" height="6" rx="3" fill="#b9c2ce"/>
+                <rect x="190" y="216" width="38" height="6" rx="3" fill="#59616d"/>
+                <rect x="256" y="213" width="38" height="13" rx="6.5" fill="#4a525e"/>
+                <rect x="340" y="216" width="26" height="6" rx="3" fill="#8a93a0"/>
+              </g>
+              <g stroke="#1f242c" stroke-width="1">
+                <line x1="92" y1="141" x2="386" y2="141"/>
+                <line x1="92" y1="163" x2="386" y2="163"/>
+                <line x1="92" y1="185" x2="386" y2="185"/>
+                <line x1="92" y1="207" x2="386" y2="207"/>
+              </g>
+            </svg>
+          </div>
+          <div class="card-body">
+            <h3>Prozymi Order Desk — wholesale web app</h3>
+            <p>The ordering system behind the bakery site: nine wholesale accounts, thirteen products, a month of seeded history. Take an order, edit lines in a drawer, move it through draft → confirmed → baking → out → delivered, and watch the overnight and morning bake plan recalculate. Every figure reconciles with the orders that feed it.</p>
+            <div class="meta"><span class="chip">Working app</span><span class="chip">Vanilla JS</span><span class="chip">Single file</span></div>
+            <span class="card-link">Open the app
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
 
         <a class="card" href="./deck/">
           <div class="shot">
