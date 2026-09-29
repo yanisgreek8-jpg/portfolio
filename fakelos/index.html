@@ -72,18 +72,18 @@ const SUPPLIERS = [
 // code — персональный код ссылки клиента (на Этапе 2 станет токеном)
 const DEFAULT_CLIENTS = [
   { slug: 'kafe-olympia', code: '8f3k2p', name: 'Καφέ Ολυμπία', afm: '802345671', docs: 12, last: '28/09', status: 'ok' },
-  { slug: 'taverna-manolis', code: 'm4n7qa', name: 'Ταβέρνα Ο Μανώλης', afm: '056781234', docs: 41, last: '29/09', status: 'ok' },
+  { slug: 'taverna-manolis', code: 'm4n7qa', name: 'Ταβέρνα Ο Μανώλης', afm: '056781234', docs: 43, last: '29/09', status: 'ok' },
   { slug: 'artopoieio-papadopoulos', code: 'p2d9rt', name: 'Αρτοποιείο Παπαδόπουλος', afm: '067812349', docs: 7, last: '22/09', status: 'partial' },
   { slug: 'ydraulika-nikolaou', code: 'n6k1xw', name: 'Υδραυλικά Νικολάου', afm: '078123456', docs: 0, last: '14/08', status: 'none' },
-  { slug: 'kommotirio-elena', code: 'e8l3vb', name: 'Κομμωτήριο Elena', afm: '089234561', docs: 19, last: '27/09', status: 'ok' },
+  { slug: 'kommotirio-elena', code: 'e8l3vb', name: 'Κομμωτήριο Elena', afm: '089234561', docs: 21, last: '27/09', status: 'ok' },
   { slug: 'farmakeio-kentro', code: 'f5k8zc', name: 'Φαρμακείο Κέντρο', afm: '091345672', docs: 63, last: '29/09', status: 'ok' },
-  { slug: 'synergeio-stavrou', code: 's3t6yh', name: 'Συνεργείο Γ. Σταύρου', afm: '045612378', docs: 2, last: '09/09', status: 'none' },
+  { slug: 'synergeio-stavrou', code: 's3t6yh', name: 'Συνεργείο Γ. Σταύρου', afm: '045612378', docs: 0, last: '26/08', status: 'none' },
   { slug: 'anthopoleio-iris', code: 'i7r2gm', name: 'Ανθοπωλείο Ίριδα', afm: '034567812', docs: 5, last: '19/09', status: 'partial' },
   { slug: 'supermarket-achaia', code: 'a9c4ds', name: 'Σούπερ Μάρκετ Αχαΐα', afm: '099456783', docs: 62, last: '29/09', status: 'ok' },
   { slug: 'psitopoleio-steki', code: 't1s5kj', name: 'Ψητοπωλείο Το Στέκι', afm: '023456789', docs: 38, last: '28/09', status: 'ok' },
-  { slug: 'ilektrologika-kostopoulos', code: 'k6p9lu', name: 'Ηλεκτρολογικά Κωστόπουλος', afm: '012345698', docs: 29, last: '26/09', status: 'ok' },
+  { slug: 'ilektrologika-kostopoulos', code: 'k6p9lu', name: 'Ηλεκτρολογικά Κωστόπουλος', afm: '012345698', docs: 31, last: '26/09', status: 'ok' },
   { slug: 'optika-vlachou', code: 'v2h8oe', name: 'Οπτικά Βλάχου', afm: '087654321', docs: 15, last: '23/09', status: 'partial' },
-  { slug: 'zacharoplasteio-glykia', code: 'g4z7nf', name: 'Ζαχαροπλαστείο Γλυκιά Ζωή', afm: '076543219', docs: 4, last: '05/09', status: 'none' }
+  { slug: 'zacharoplasteio-glykia', code: 'g4z7nf', name: 'Ζαχαροπλαστείο Γλυκιά Ζωή', afm: '076543219', docs: 0, last: '21/08', status: 'none' }
 ];
 const DEFAULT_LOG = [
   ...['Υδραυλικά Νικολάου', 'Συνεργείο Γ. Σταύρου', 'Ζαχαροπλαστείο Γλυκιά Ζωή', 'Αρτοποιείο Παπαδόπουλος', 'Ανθοπωλείο Ίριδα', 'Οπτικά Βλάχου'].map(c => ({ date: '25/09', client: c })),
@@ -103,12 +103,14 @@ const eur = n => n.toFixed(2).replace('.', ',') + ' €';
 const pad = n => String(n).padStart(2, '0');
 const docWord = n => n === 1 ? 'παραστατικό' : 'παραστατικά';
 
-// Документы генерируются детерминированно из числа docs и даты последней отправки
+// Документы генерируются детерминированно из числа docs и неизменной даты docsFrom
+// (c.last меняется при новой отправке, docsFrom — никогда)
 const TOTALS = [148.50, 62.30, 215.00, 38.90, 96.40, 320.00, 54.80, 187.25, 73.10, 240.60, 41.50, 129.90, 18.60, 452.00, 87.35];
 function makeDocs(client, idx) {
   const list = [];
-  const lastDay = parseInt(client.last, 10) || 1;
-  const lastMonth = client.last.slice(3);
+  const from = client.docsFrom || '';
+  const lastDay = parseInt(from, 10) || 1;
+  const lastMonth = from.slice(3) || '09';
   for (let i = 0; i < client.docs; i++) {
     const s = SUPPLIERS[(i + idx) % SUPPLIERS.length];
     const total = TOTALS[(i * 7 + idx * 3) % TOTALS.length];
@@ -128,7 +130,8 @@ function makeDocs(client, idx) {
 const STORE_KEY = 'fakelos-demo-v2';
 function freshState() {
   return {
-    clients: DEFAULT_CLIENTS.map(c => ({ ...c, photos: [], reminded: false })),
+    clients: DEFAULT_CLIENTS.map(c => ({ ...c, docsFrom: c.last, photos: [], reminded: false })),
+    version: 3,
     log: DEFAULT_LOG.slice(),
     autoSend: true,
     message: DEFAULT_MESSAGE
@@ -139,10 +142,23 @@ function loadState() {
     const raw = localStorage.getItem(STORE_KEY);
     if (raw) {
       const s = JSON.parse(raw);
-      if (s && Array.isArray(s.clients) && Array.isArray(s.log)) return s;
+      if (s && Array.isArray(s.clients) && Array.isArray(s.log)) return migrate(s);
     }
   } catch (e) {}
   return freshState();
+}
+// Сохранённые раньше демо-данные приводим к новым исходным числам, не теряя добавленных клиентов и фото
+function migrate(s) {
+  if (s.version === 3) return s;
+  s.clients.forEach(c => {
+    const d = DEFAULT_CLIENTS.find(x => x.slug === c.slug);
+    if (!d) { c.docsFrom = c.docsFrom || ''; return; }
+    c.docs = d.docs;
+    c.docsFrom = d.last;
+    if (!c.photos.length) { c.last = d.last; c.status = d.status; }
+  });
+  s.version = 3;
+  return s;
 }
 let state = loadState();
 function save() {
@@ -159,9 +175,8 @@ function save() {
 
 const docsCache = {};
 function docsOf(c) {
-  const key = c.slug + ':' + c.docs + ':' + c.last;
-  if (!docsCache[key]) docsCache[key] = makeDocs(c, state.clients.indexOf(c));
-  return docsCache[key];
+  if (!docsCache[c.slug]) docsCache[c.slug] = makeDocs(c, state.clients.indexOf(c));
+  return docsCache[c.slug];
 }
 const findClient = id => state.clients.find(c => c.slug === id || c.code === id);
 const countOf = c => c.docs + c.photos.length;
@@ -464,7 +479,7 @@ function submitNew(form) {
   else if (afm !== '' && !/^\d{9}$/.test(afm)) { ok = false; form.afm.focus(); }
   if (!ok) return;
   const code = newCode();
-  state.clients.push({ slug: code, code, name, afm, phone, docs: 0, last: '', status: 'none', photos: [], reminded: false });
+  state.clients.push({ slug: code, code, name, afm, phone, docs: 0, docsFrom: '', last: '', status: 'none', photos: [], reminded: false });
   save();
   location.hash = '#/office/new/' + code;
 }
@@ -530,6 +545,7 @@ function render() {
   if (parts[0] === 'reset') {          // служебный адрес: вернуть демо в исходное состояние
     try { localStorage.removeItem(STORE_KEY); } catch (e) {}
     state = freshState();
+    Object.keys(docsCache).forEach(k => delete docsCache[k]);
     location.replace('#/office');
     return;
   }
