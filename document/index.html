@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Margin Review — the same AI report before and after document design</title>
+<meta name="description" content="A consulting report as a chatbot produced it, and the same report after design. Not one word of the text was changed: cover, contents with live page numbers, a reading measure, typeset tables and five charts drawn from the data. Concept project by Ivan K.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Same words. Different document.">
+<meta property="og:description" content="Twelve designed pages against seven raw ones, with nothing rewritten. Flip between the two versions page by page.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yanisgreek8-jpg.github.io/portfolio/document/after-01.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230A1417'/%3E%3Cg fill='none' stroke='%23E08A2C' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M10 10h12M10 15h12M10 20h7'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F5F7; --panel:#FFFFFF; --panel-2:#FAFBFC;
+  --ink:#12161A; --soft:#4E575F; --faint:#858E97;
+  --line:rgba(18,22,26,.12); --line-2:rgba(18,22,26,.065);
+  --brand:#0E5A6B; --brand-2:#0A4150; --brand-wash:rgba(14,90,107,.09);
+  --sun:#D97E22; --sun-wash:rgba(217,126,34,.13);
+  --bad:#A8352A; --bad-wash:rgba(168,53,42,.09);
+  --dark:#0A1417;
+  --navy:#1B2A41; --terra:#C6603C; --tint:#F1EEEA;
+  --r:12px;
+  --shadow:0 1px 2px rgba(18,22,26,.05), 0 10px 30px -14px rgba(18,22,26,.26);
+  --paper:0 1px 1px rgba(18,22,26,.06), 0 18px 44px -20px rgba(18,22,26,.40);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--ink); font-size:14px; line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+.demobar{background:var(--dark);color:#E4EDEF;border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;top:0;z-index:80}
+.demobar .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.db-tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--sun);white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--sun);flex:none}
+.db-text{font-size:12.5px;color:#93A5A9;flex:1;min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.tabs{display:flex;gap:2px;background:rgba(255,255,255,.07);border-radius:9px;padding:3px;flex:none}
+.tabs button{padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:600;
+  color:#93A5A9;transition:.14s;white-space:nowrap}
+.tabs button:hover{color:#E4EDEF}
+.tabs button[aria-selected="true"]{background:#E9F1F2;color:var(--dark)}
+.view{display:none}
+.view.on{display:block}
+
+.kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--brand);margin:0 0 10px}
+.section{padding:52px 0 60px}
+.top{background:var(--panel);border-bottom:1px solid var(--line-2);padding:52px 0 44px}
+h1.big{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:46px;
+  line-height:1.07;margin:0 0 16px;letter-spacing:-.015em;max-width:780px}
+h1.big i{font-style:italic;color:var(--brand)}
+.lede{margin:0;color:var(--soft);font-size:15.5px;max-width:680px}
+h2.sec{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:30px;
+  margin:0 0 6px;letter-spacing:-.01em}
+.sub{margin:0;color:var(--faint);font-size:13.5px;max-width:660px}
+.note{font-size:12.8px;color:var(--faint);line-height:1.6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:600;transition:.16s}
+.btn.primary{background:var(--brand);color:#fff;text-decoration:none}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.ghost{border:1px solid var(--line);color:var(--soft);text-decoration:none}
+.btn.ghost:hover{border-color:rgba(18,22,26,.3);color:var(--ink)}
+
+/* ---------- counters ---------- */
+.counters{display:flex;margin-top:32px;border-top:1px solid var(--line-2);
+  border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.counter{flex:1 1 180px;padding:18px 24px 18px 0}
+.counter + .counter{padding-left:24px;border-left:1px solid var(--line-2)}
+.counter .n{font-family:'Instrument Serif',Georgia,serif;font-size:31px;line-height:1}
+.counter .n s{text-decoration:line-through;color:var(--faint);text-decoration-thickness:1.5px}
+.counter .n b{font-weight:400;color:var(--brand)}
+.counter .l{font-size:12.3px;color:var(--faint);margin-top:6px}
+
+/* ---------- A/B stage ---------- */
+.stage{margin-top:30px}
+.stagebar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:16px}
+.ab{display:flex;gap:2px;background:#E7EAED;border-radius:10px;padding:3px}
+.ab button{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;
+  color:var(--soft);transition:.14s}
+.ab button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.ab button[aria-pressed="true"][data-ab="before"]{color:var(--bad)}
+.ab button[aria-pressed="true"][data-ab="after"]{color:var(--brand)}
+.pgi{flex:1;min-width:200px;font-size:13px;color:var(--faint)}
+.pgi b{color:var(--ink);font-weight:600}
+.nav{display:flex;gap:6px}
+.nav button{width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
+  color:var(--soft);display:grid;place-items:center;transition:.14s}
+.nav button:hover{border-color:rgba(18,22,26,.3);color:var(--ink)}
+.nav button:disabled{opacity:.35;cursor:default}
+.paper{background:var(--panel);border-radius:4px;box-shadow:var(--paper);overflow:hidden;
+  position:relative}
+.paper img{width:100%}
+.stagewrap{display:grid;grid-template-columns:1fr 168px;gap:26px;align-items:start}
+.film{display:flex;flex-direction:column;gap:9px;max-height:760px;overflow-y:auto;padding-right:4px}
+.film button{border:1px solid var(--line-2);border-radius:3px;overflow:hidden;
+  background:var(--panel);transition:.14s;position:relative;display:block;width:100%}
+.film button:hover{border-color:rgba(18,22,26,.28)}
+.film button[aria-current="true"]{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-wash)}
+.film span{position:absolute;left:5px;bottom:4px;background:rgba(10,20,23,.72);color:#fff;
+  font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px}
+.hint{margin-top:14px;font-size:12.4px;color:var(--faint)}
+kbd{font-family:inherit;font-size:11px;background:#E7EAED;border-radius:4px;padding:1px 6px;
+  border-bottom:1px solid var(--line)}
+
+/* ---------- read view ---------- */
+.readgrid{display:grid;grid-template-columns:236px 1fr;gap:34px;align-items:start}
+.idx{position:sticky;top:80px}
+.idx .h{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:10px}
+.jump{display:flex;align-items:baseline;gap:9px;width:100%;text-align:left;padding:6px 0;
+  border-bottom:1px solid var(--line-2);font-size:13px;color:var(--soft);transition:.12s}
+.jump:hover{color:var(--brand)}
+.jump i{font-style:normal;color:var(--terra);font-size:11.5px;width:14px;flex:none}
+.jump b{font-weight:400;flex:1}
+.jump em{font-style:normal;color:var(--faint);font-size:11.5px}
+.rp{margin:0 0 30px}
+.rp img{border-radius:4px;box-shadow:var(--paper)}
+.rp figcaption{font-size:12.2px;color:var(--faint);margin-top:9px}
+
+/* ---------- change view ---------- */
+.ch{border-top:1px solid var(--line-2);padding:26px 0 4px}
+.ch:first-of-type{border-top:none;padding-top:6px}
+.chhead{display:grid;grid-template-columns:44px 1fr;gap:16px;max-width:760px}
+.chn{font-family:'Instrument Serif',Georgia,serif;font-size:26px;color:var(--terra);line-height:1}
+.chhead h3{margin:0 0 6px;font-size:17px;font-weight:600}
+.chhead p{margin:0;color:var(--soft);font-size:14px}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:22px 0 4px}
+.bacard{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);
+  overflow:hidden}
+.balab{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:10px 16px;border-bottom:1px solid var(--line-2)}
+.balab.b{color:var(--bad);background:var(--bad-wash)}
+.balab.a{color:var(--brand);background:var(--brand-wash)}
+.bapad{padding:20px 22px 24px}
+.word{font-family:Carlito,Calibri,'Segoe UI',sans-serif;font-size:12.4px;line-height:1.2;
+  color:#000;white-space:pre-wrap;word-break:break-word;margin:0}
+.wordp{font-family:Carlito,Calibri,'Segoe UI',sans-serif;font-size:12.4px;line-height:1.2;
+  color:#000;font-style:italic;margin:0}
+
+/* the finished exhibit, same rules as the PDF */
+.exlab{border-bottom:.9px solid var(--navy);padding-bottom:5px;margin-bottom:12px}
+.exn{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--terra);margin-right:12px}
+.exc{font-size:11.5px;color:var(--soft)}
+table.fin{width:100%;border-collapse:collapse;font-size:11.5px;line-height:1.35;color:#14181C}
+table.fin th{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);padding:0 8px 6px 0;border-bottom:.9px solid var(--navy);vertical-align:bottom}
+table.fin td{padding:6px 8px 6px 0;border-bottom:.6px solid #D9DDE2;vertical-align:top}
+table.fin th:last-child,table.fin td:last-child{padding-right:0}
+table.fin .al{text-align:left} table.fin .ar{text-align:right}
+table.fin tr.tot td{font-weight:700;color:var(--navy);border-top:.9px solid var(--navy);
+  border-bottom:none}
+.figbox svg{width:100%;display:block}
+.figcap{font-size:11.5px;color:var(--soft);margin-top:10px}
+
+/* ---------- approach ---------- */
+.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:30px}
+.step{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:20px 22px}
+.step h4{margin:0 0 7px;font-size:15px;font-weight:600;display:flex;align-items:baseline;gap:10px}
+.step h4 i{font-style:normal;font-family:'Instrument Serif',Georgia,serif;font-size:20px;
+  color:var(--terra)}
+.step p{margin:0;color:var(--soft);font-size:13.6px}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:34px;
+  border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2)}
+.fact{padding:20px 24px 22px 0}
+.fact + .fact{padding-left:24px;border-left:1px solid var(--line-2)}
+.fact .l{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:8px}
+.fact p{margin:0;font-size:13.6px;color:var(--soft)}
+.dl{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.verdict{margin-top:34px;border-left:3px solid var(--brand);background:var(--panel);
+  border-radius:0 var(--r) var(--r) 0;padding:22px 26px;max-width:780px}
+.verdict p{margin:0;font-size:15px;color:var(--soft)}
+.verdict b{color:var(--ink)}
+
+.foot{background:var(--dark);color:#93A5A9;padding:40px 0 46px;margin-top:20px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
+.foot a{color:#E4EDEF;font-weight:600}
+.foot p{margin:0;font-size:12.8px;max-width:640px;line-height:1.6}
+
+@media(max-width:1000px){
+  .stagewrap{grid-template-columns:1fr}
+  .film{flex-direction:row;max-height:none;overflow-x:auto}
+  .film button{width:104px;flex:none}
+  .readgrid{grid-template-columns:1fr}
+  .idx{position:static}
+  .ba,.steps,.facts{grid-template-columns:1fr}
+  .fact + .fact{padding-left:0;border-left:none;border-top:1px solid var(--line-2)}
+}
+@media(max-width:760px){
+  .demobar .wrap{height:auto;padding-top:10px;padding-bottom:10px;flex-wrap:wrap;gap:10px}
+  .db-text{display:none}
+  .tabs{width:100%;overflow-x:auto}
+  h1.big{font-size:33px}
+  .wrap{padding:0 18px}
+}
+</style>
+</head>
+<body>
+
+<div class="demobar">
+  <div class="wrap">
+    <span class="db-tag"><i class="dot"></i>Document design</span>
+    <span class="db-text">Halcyon Interiors is invented and every figure in the report is made up &mdash; the writing, the layout and the charts are mine. Concept project by Ivan&nbsp;K.</span>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-v="ab">Before / after</button>
+      <button role="tab" aria-selected="false" data-v="read">Read it</button>
+      <button role="tab" aria-selected="false" data-v="changed">What I changed</button>
+      <button role="tab" aria-selected="false" data-v="how">How I work</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VIEW 1 ============ -->
+<section class="view on" id="v-ab">
+  <div class="top">
+    <div class="wrap">
+      <p class="kicker">Aldergate Partners &middot; margin review</p>
+      <h1 class="big">Same words. <i>Different document.</i></h1>
+      <p class="lede">A twenty-five hundred word consulting report, first exactly as a chatbot
+      produced it and pasted into Word, then after design. Not one sentence of the report was
+      rewritten, cut or added &mdash; you can read both and check. Everything that changed
+      is layout.</p>
+
+      <div class="counters">
+        <div class="counter"><div class="n">0</div><div class="l">Words rewritten</div></div>
+        <div class="counter"><div class="n"><s>7</s> &rarr; <b>12</b></div><div class="l">Pages</div></div>
+        <div class="counter"><div class="n"><s>0</s> &rarr; <b>5</b></div><div class="l">Charts drawn from the data</div></div>
+        <div class="counter"><div class="n"><s>0</s> &rarr; <b>12</b></div><div class="l">Numbered figures and tables</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+      <div class="stage">
+        <div class="stagebar">
+          <div class="ab" role="group" aria-label="Which version to show">
+            <button data-ab="before" aria-pressed="false">As the AI wrote it</button>
+            <button data-ab="after" aria-pressed="true">After design</button>
+          </div>
+          <div class="pgi" id="pgi"></div>
+          <div class="nav">
+            <button id="prev" aria-label="Previous page">&#8249;</button>
+            <button id="next" aria-label="Next page">&#8250;</button>
+          </div>
+        </div>
+        <div class="stagewrap">
+          <div class="paper"><img id="shot" src="after-01.jpg" alt=""></div>
+          <div class="film" id="film"></div>
+        </div>
+        <p class="hint">Flip versions with <kbd>&larr;</kbd> <kbd>&rarr;</kbd> to move through
+        the pages, or click a thumbnail. The raw version is what the model actually returns:
+        markdown headings left as hashes, tables as pipe characters, and five places where it
+        suggests a chart instead of drawing one.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW 2 ============ -->
+<section class="view" id="v-read">
+  <div class="top">
+    <div class="wrap">
+      <p class="kicker">The finished report</p>
+      <h2 class="sec">Twelve pages, start to finish</h2>
+      <p class="sub">Cover, contents with live page numbers, eleven sections and an appendix.
+      Nothing below is a mockup &mdash; it is the actual PDF, rendered page by page.</p>
+      <div class="dl">
+        <a class="btn primary" href="margin-review-designed.pdf" target="_blank" rel="noopener">Open the designed PDF</a>
+        <a class="btn ghost" href="margin-review-raw.pdf" target="_blank" rel="noopener">Open the raw version</a>
+      </div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="wrap">
+      <div class="readgrid">
+        <div class="idx">
+          <div class="h">Contents</div>
+          <button class='jump' data-p='3'><i>1</i><b>Executive summary</b><em>3</em></button><button class='jump' data-p='3'><i>2</i><b>Scope and method</b><em>3</em></button><button class='jump' data-p='4'><i>3</i><b>Eight quarters of margin</b><em>4</em></button><button class='jump' data-p='5'><i>4</i><b>Where the 8.1 points went</b><em>5</em></button><button class='jump' data-p='6'><i>5</i><b>Discounting: the part nobody approves</b><em>6</em></button><button class='jump' data-p='8'><i>6</i><b>The product tail</b><em>8</em></button><button class='jump' data-p='9'><i>7</i><b>Freight and labour</b><em>9</em></button><button class='jump' data-p='9'><i>8</i><b>The recovery plan</b><em>9</em></button><button class='jump' data-p='11'><i>9</i><b>What it is worth and what it costs</b><em>11</em></button><button class='jump' data-p='11'><i>10</i><b>Risks</b><em>11</em></button><button class='jump' data-p='12'><i>11</i><b>The next thirty days</b><em>12</em></button><button class='jump' data-p='12'><i>A</i><b>Appendix: sources and basis</b><em>12</em></button>
+        </div>
+        <div><figure class='rp' id='rp-1'><img loading='lazy' src='after-01.jpg' alt='Page 1 of the designed report'><figcaption>Page 1 &middot; Cover</figcaption></figure><figure class='rp' id='rp-2'><img loading='lazy' src='after-02.jpg' alt='Page 2 of the designed report'><figcaption>Page 2 &middot; Contents</figcaption></figure><figure class='rp' id='rp-3'><img loading='lazy' src='after-03.jpg' alt='Page 3 of the designed report'><figcaption>Page 3 &middot; 1. Executive summary · 2. Scope and method</figcaption></figure><figure class='rp' id='rp-4'><img loading='lazy' src='after-04.jpg' alt='Page 4 of the designed report'><figcaption>Page 4 &middot; 3. Eight quarters of margin</figcaption></figure><figure class='rp' id='rp-5'><img loading='lazy' src='after-05.jpg' alt='Page 5 of the designed report'><figcaption>Page 5 &middot; 4. Where the 8.1 points went</figcaption></figure><figure class='rp' id='rp-6'><img loading='lazy' src='after-06.jpg' alt='Page 6 of the designed report'><figcaption>Page 6 &middot; 5. Discounting: the part nobody approves</figcaption></figure><figure class='rp' id='rp-7'><img loading='lazy' src='after-07.jpg' alt='Page 7 of the designed report'><figcaption>Page 7 &middot; 5. Discounting: the part nobody approves, continued</figcaption></figure><figure class='rp' id='rp-8'><img loading='lazy' src='after-08.jpg' alt='Page 8 of the designed report'><figcaption>Page 8 &middot; 6. The product tail</figcaption></figure><figure class='rp' id='rp-9'><img loading='lazy' src='after-09.jpg' alt='Page 9 of the designed report'><figcaption>Page 9 &middot; 7. Freight and labour · 8. The recovery plan</figcaption></figure><figure class='rp' id='rp-10'><img loading='lazy' src='after-10.jpg' alt='Page 10 of the designed report'><figcaption>Page 10 &middot; 8. The recovery plan, continued</figcaption></figure><figure class='rp' id='rp-11'><img loading='lazy' src='after-11.jpg' alt='Page 11 of the designed report'><figcaption>Page 11 &middot; 9. What it is worth and what it costs · 10. Risks</figcaption></figure><figure class='rp' id='rp-12'><img loading='lazy' src='after-12.jpg' alt='Page 12 of the designed report'><figcaption>Page 12 &middot; 11. The next thirty days · A. Appendix: sources and basis</figcaption></figure></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW 3 ============ -->
+<section class="view" id="v-changed">
+  <div class="top">
+    <div class="wrap">
+      <p class="kicker">Six decisions</p>
+      <h2 class="sec">What I changed, and why</h2>
+      <p class="sub">None of this is decoration. Each one is there because it changes what a
+      reader can do with the page.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="wrap">
+
+      <div class="ch">
+        <div class="chhead"><div class="chn">1</div><div>
+          <h3>A table that is actually a table</h3>
+          <p>The model does produce the data. It produces it as pipe characters, which render
+          as pipe characters in Word. Same six rows, same numbers, same order &mdash; one of
+          them can be scanned in three seconds and one cannot.</p>
+        </div></div>
+        <div class="ba">
+          <div class="bacard"><div class="balab b">Pasted into Word, untouched</div>
+            <div class="bapad"><pre class="word">**Margin bridge components**
+
+| Component | Points | What it is |
+|-----------|--------|------------|
+| Input cost inflation | −3.4 | Board, foam and steel bought at 2024 contract terms through 2026 |
+| Tender discounting | −2.2 | Blended discount on tenders above €500,000 moved from 11.8% to 19.4% |
+| Product mix | −1.6 | Seating grew from 31% to 44% of revenue at 12.6 points below the blend |
+| Inbound freight | −0.9 | Eleven carriers, no tender since 2023, spot rates on 38% of inbound loads |
+| Labour productivity | −0.7 | Setup hours per order up 11% as the SKU count grew |
+| Price increases passed | +0.7 | Two catalogue increases, 1.4% combined, against 9.8% input inflation |
+| Total | −8.1 |   |</pre></div></div>
+          <div class="bacard"><div class="balab a">Typeset</div>
+            <div class="bapad"><div class='exlab'><span class='exn'>Table 2</span><span class='exc'>Margin bridge components</span></div><table class='fin'><thead><tr><th class='al'>Component</th><th class='ar'>Points</th><th class='al'>What it is</th></tr></thead><tbody><tr><td class='al'>Input cost inflation</td><td class='ar'>−3.4</td><td class='al'>Board, foam and steel bought at 2024 contract terms through 2026</td></tr><tr><td class='al'>Tender discounting</td><td class='ar'>−2.2</td><td class='al'>Blended discount on tenders above €500,000 moved from 11.8% to 19.4%</td></tr><tr><td class='al'>Product mix</td><td class='ar'>−1.6</td><td class='al'>Seating grew from 31% to 44% of revenue at 12.6 points below the blend</td></tr><tr><td class='al'>Inbound freight</td><td class='ar'>−0.9</td><td class='al'>Eleven carriers, no tender since 2023, spot rates on 38% of inbound loads</td></tr><tr><td class='al'>Labour productivity</td><td class='ar'>−0.7</td><td class='al'>Setup hours per order up 11% as the SKU count grew</td></tr><tr><td class='al'>Price increases passed</td><td class='ar'>+0.7</td><td class='al'>Two catalogue increases, 1.4% combined, against 9.8% input inflation</td></tr><tr class='tot'><td class='al'>Total</td><td class='ar'>−8.1</td><td class='al'></td></tr></tbody></table></div></div>
+        </div>
+      </div>
+
+      <div class="ch">
+        <div class="chhead"><div class="chn">2</div><div>
+          <h3>Charts, where the model only suggested one</h3>
+          <p>Five times the report stops and recommends a chart. A recommendation is not a
+          chart. The numbers were already in the text, so I drew them &mdash; every figure in
+          the report is generated from the same data the paragraphs quote, which is also why
+          they cannot drift apart.</p>
+        </div></div>
+        <div class="ba">
+          <div class="bacard"><div class="balab b">What the model delivers</div>
+            <div class="bapad"><p class="wordp">[A chart visualising this data would be
+            helpful here. I'd recommend a clustered column or line chart depending on your
+            preference.]</p></div></div>
+          <div class="bacard"><div class="balab a">What goes in the document</div>
+            <div class="bapad"><div class="figbox"><svg viewBox='0 0 660 268' xmlns='http://www.w3.org/2000/svg'><line x1='54' y1='222.0' x2='624' y2='222.0' stroke='#D9DDE2' stroke-width='.7'/><text x='631.0' y='225.4' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#8A929A' text-anchor='start' font-weight='normal'>30%</text><line x1='54' y1='190.0' x2='624' y2='190.0' stroke='#D9DDE2' stroke-width='.7'/><text x='631.0' y='193.4' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#8A929A' text-anchor='start' font-weight='normal'>32%</text><line x1='54' y1='158.0' x2='624' y2='158.0' stroke='#D9DDE2' stroke-width='.7'/><text x='631.0' y='161.4' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#8A929A' text-anchor='start' font-weight='normal'>34%</text><line x1='54' y1='126.0' x2='624' y2='126.0' stroke='#D9DDE2' stroke-width='.7'/><text x='631.0' y='129.4' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#8A929A' text-anchor='start' font-weight='normal'>36%</text><line x1='54' y1='94.0' x2='624' y2='94.0' stroke='#D9DDE2' stroke-width='.7'/><text x='631.0' y='97.4' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#8A929A' text-anchor='start' font-weight='normal'>38%</text><line x1='54' y1='62.0' x2='624' y2='62.0' stroke='#D9DDE2' stroke-width='.7'/><text x='631.0' y='65.4' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#8A929A' text-anchor='start' font-weight='normal'>40%</text><line x1='54' y1='30.0' x2='624' y2='30.0' stroke='#D9DDE2' stroke-width='.7'/><text x='631.0' y='33.4' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#8A929A' text-anchor='start' font-weight='normal'>42%</text><text x='89.6' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Q1 FY24</text><line x1='108.2' y1='42.8' x2='142.3' y2='42.8' stroke='#8A929A' stroke-width='.8' stroke-dasharray='3 2.5'/><text x='160.9' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Input cost</text><line x1='179.4' y1='97.2' x2='213.6' y2='97.2' stroke='#8A929A' stroke-width='.8' stroke-dasharray='3 2.5'/><text x='232.1' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Discounting</text><line x1='250.7' y1='132.4' x2='284.9' y2='132.4' stroke='#8A929A' stroke-width='.8' stroke-dasharray='3 2.5'/><text x='303.4' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Mix</text><line x1='321.9' y1='158.0' x2='356.1' y2='158.0' stroke='#8A929A' stroke-width='.8' stroke-dasharray='3 2.5'/><text x='374.6' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Freight</text><line x1='393.1' y1='172.4' x2='427.4' y2='172.4' stroke='#8A929A' stroke-width='.8' stroke-dasharray='3 2.5'/><text x='445.9' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Labour</text><line x1='464.4' y1='183.6' x2='498.6' y2='183.6' stroke='#8A929A' stroke-width='.8' stroke-dasharray='3 2.5'/><text x='517.1' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Price</text><text x='517.1' y='250.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>rises</text><line x1='535.6' y1='172.4' x2='569.9' y2='172.4' stroke='#8A929A' stroke-width='.8' stroke-dasharray='3 2.5'/><text x='588.4' y='239.0' font-family='Carlito,Calibri,sans-serif' font-size='9.5' fill='#4A535C' text-anchor='middle' font-weight='normal'>Q4 FY25</text><rect x='71.1' y='42.8' width='37.1' height='179.2' fill='#1B2A41'/><text x='89.6' y='33.8' font-family='Caladea,Cambria,serif' font-size='12.5' fill='#1B2A41' text-anchor='middle' font-weight='bold'>41.2%</text><rect x='142.3' y='42.8' width='37.1' height='54.4' fill='#A8412A'/><text x='160.9' y='34.8' font-family='Carlito,Calibri,sans-serif' font-size='10.5' fill='#A8412A' text-anchor='middle' font-weight='bold'>-3.4</text><rect x='213.6' y='97.2' width='37.1' height='35.2' fill='#A8412A'/><text x='232.1' y='89.2' font-family='Carlito,Calibri,sans-serif' font-size='10.5' fill='#A8412A' text-anchor='middle' font-weight='bold'>-2.2</text><rect x='284.9' y='132.4' width='37.1' height='25.6' fill='#A8412A'/><text x='303.4' y='124.4' font-family='Carlito,Calibri,sans-serif' font-size='10.5' fill='#A8412A' text-anchor='middle' font-weight='bold'>-1.6</text><rect x='356.1' y='158.0' width='37.1' height='14.4' fill='#A8412A'/><text x='374.6' y='150.0' font-family='Carlito,Calibri,sans-serif' font-size='10.5' fill='#A8412A' text-anchor='middle' font-weight='bold'>-0.9</text><rect x='427.4' y='172.4' width='37.1' height='11.2' fill='#A8412A'/><text x='445.9' y='164.4' font-family='Carlito,Calibri,sans-serif' font-size='10.5' fill='#A8412A' text-anchor='middle' font-weight='bold'>-0.7</text><rect x='498.6' y='172.4' width='37.1' height='11.2' fill='#3E6B52'/><text x='517.1' y='164.4' font-family='Carlito,Calibri,sans-serif' font-size='10.5' fill='#3E6B52' text-anchor='middle' font-weight='bold'>+0.7</text><rect x='569.9' y='172.4' width='37.1' height='49.6' fill='#1B2A41'/><text x='588.4' y='163.4' font-family='Caladea,Cambria,serif' font-size='12.5' fill='#1B2A41' text-anchor='middle' font-weight='bold'>33.1%</text><line x1='54' y1='222.0' x2='624' y2='222.0' stroke='#BFC6CD' stroke-width='1'/></svg></div>
+            <p class="figcap"><b>Figure 2</b> &nbsp;Gross margin bridge, Q1 FY24 to Q4 FY25. Red bars destroy margin, green creates it.</p></div></div>
+        </div>
+      </div>
+
+      <div class="ch">
+        <div class="chhead"><div class="chn">3</div><div>
+          <h3>A measure you can read</h3>
+          <p>Word's default puts about sixteen words on a line across the full page width. At
+          the end of each line the eye has to find its way back to the start of the next one,
+          and at that length it regularly lands on the wrong one. The report sets text in a
+          118&nbsp;mm column &mdash; around eleven words &mdash; and lets tables and charts
+          break out to the full width instead. The page is doing two jobs, so it has two
+          widths.</p>
+        </div></div>
+      </div>
+
+      <div class="ch">
+        <div class="chhead"><div class="chn">4</div><div>
+          <h3>A way in, and a way back</h3>
+          <p>The raw version opens with &ldquo;Certainly! Here is a comprehensive margin
+          review report&rdquo; and ends with an offer to adjust the tone. In between there is
+          no cover, no contents, no page numbers and no running head, so there is no way to
+          send somebody to a specific finding. The designed version has a cover, a contents
+          page whose page numbers are generated at render time rather than typed, numbered
+          sections, numbered exhibits, and a running header that tells you which section you
+          are in.</p>
+        </div></div>
+      </div>
+
+      <div class="ch">
+        <div class="chhead"><div class="chn">5</div><div>
+          <h3>One typographic system, not twelve decisions</h3>
+          <p>Two typefaces with one job each: a serif for the cover, the section titles and
+          every headline number, a sans for everything that has to be read at length. Three
+          colours &mdash; navy for structure, terracotta for the one thing on the page that
+          matters, grey for everything that supports it. Because it is a system, the twelfth
+          page needed no decisions at all.</p>
+        </div></div>
+      </div>
+
+      <div class="ch">
+        <div class="chhead"><div class="chn">6</div><div>
+          <h3>Every number reconciled before anything was laid out</h3>
+          <p>Before I touched the design I ran the report's own arithmetic: the bridge
+          components against the 8.1 points, the SKU bands against the revenue total, the five
+          recovery moves against the &euro;3.09M, the payback against the investment. The text,
+          the tables and the charts then read one data file, so a figure cannot drift between
+          a sentence and the chart beside it. A beautifully set document that does not add up
+          is worse than an ugly one, because people believe it.</p>
+        </div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW 4 ============ -->
+<section class="view" id="v-how">
+  <div class="top">
+    <div class="wrap">
+      <p class="kicker">Approach</p>
+      <h2 class="sec">How I take a document apart and put it back</h2>
+      <p class="sub">The same six steps whether it is a twelve-page report, a board memo or a
+      white paper.</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="wrap">
+      <div class="steps">
+        <div class="step"><h4><i>1</i>Read it and find the spine</h4><p>What is the one thing
+        this document is trying to get the reader to do? Everything that survives has to serve
+        that. In this report it was a single sentence: the margin was given away, not lost,
+        and here is what it costs to take it back.</p></div>
+
+        <div class="step"><h4><i>2</i>Check the arithmetic</h4><p>Totals, percentages,
+        anything that appears twice. AI-written documents are confident and are wrong in small
+        ways that a reader will find. I fix these before laying out a single page, and I tell
+        you exactly what I changed.</p></div>
+
+        <div class="step"><h4><i>3</i>Decide where it lives</h4><p>Read on a laptop, printed
+        for a board pack, attached to an email, or all three. A4 or US Letter, colour or mono,
+        single or double sided. These decide the margins and the type sizes, so they get
+        settled first, not last.</p></div>
+
+        <div class="step"><h4><i>4</i>Build the system</h4><p>Type scale, colour, grid,
+        spacing, table rules, caption style, how a figure is numbered. One page of decisions
+        that every later page inherits. This is what keeps a long document consistent, and it
+        is what makes revisions cheap.</p></div>
+
+        <div class="step"><h4><i>5</i>Turn described data into exhibits</h4><p>Most of the
+        value is here. Text that says &ldquo;this fell from 41.2% to 33.1% over eight
+        quarters&rdquo; becomes a chart, and the paragraph beside it gets shorter. I draw
+        charts from your numbers, not from a screenshot of them.</p></div>
+
+        <div class="step"><h4><i>6</i>Proof it like it is going to print</h4><p>Widows and
+        orphans, headings stranded at the foot of a page, contents entries against real page
+        numbers, every figure reference checked, and a look at it at 100% on paper size. Then
+        I send you the file and the source.</p></div>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><div class="l">What I need from you</div>
+          <p>The document in any format, who reads it, and whether there is a brand to follow.
+          Logo, fonts and colours if you have them; if you do not, I will propose a pairing
+          and show you it applied before going further.</p></div>
+        <div class="fact"><div class="l">Turnaround</div>
+          <p>A report this size &mdash; twelve pages, five charts, seven tables &mdash; is
+          three to four working days including one round of revisions. A short memo or a
+          one-pager is usually next day.</p></div>
+        <div class="fact"><div class="l">What you get</div>
+          <p>A print-ready PDF and an editable Word or Google Docs version with real styles,
+          so your team can keep writing in it. Charts as separate files if you want them in a
+          deck later.</p></div>
+      </div>
+
+      <div class="verdict"><p><b>The point of all of this</b> is not that the document looks
+      better. It is that a reader who has eleven minutes now gets the finding, the evidence
+      and the cost, instead of getting through the first two pages and deciding to come back
+      to it later.</p></div>
+
+      <div class="dl">
+        <a class="btn primary" href="margin-review-designed.pdf" target="_blank" rel="noopener">Download the designed report</a>
+        <a class="btn ghost" href="margin-review-raw.pdf" target="_blank" rel="noopener">Download the raw version</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>A self-initiated concept project. Halcyon Interiors and Aldergate Partners are
+    invented, and every figure, name and finding in the report is made up &mdash; the writing,
+    the layout, the charts and the code on this page are mine.</p>
+    <span><a href="../">&larr; All work</a> &nbsp;&middot;&nbsp;
+    <a href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Upwork profile</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+var LAB = {"after": ["Cover", "Contents", "1. Executive summary \u00b7 2. Scope and method", "3. Eight quarters of margin", "4. Where the 8.1 points went", "5. Discounting: the part nobody approves", "5. Discounting: the part nobody approves, continued", "6. The product tail", "7. Freight and labour \u00b7 8. The recovery plan", "8. The recovery plan, continued", "9. What it is worth and what it costs \u00b7 10. Risks", "11. The next thirty days \u00b7 A. Appendix: sources and basis"], "before": ["1. Executive summary \u00b7 2. Scope and method", "3. Eight quarters of margin", "4. Where the 8.1 points went \u00b7 5. Discounting: the part nobody approves", "6. The product tail", "7. Freight and labour \u00b7 8. The recovery plan", "9. What it is worth and what it costs \u00b7 10. Risks \u00b7 11. The next thirty days", "A. Appendix: sources and basis"]};
+var side = 'after', idx = 1;
+var shot = document.getElementById('shot');
+var film = document.getElementById('film');
+var pgi  = document.getElementById('pgi');
+
+function n(){ return LAB[side].length; }
+function src(i){ return side + '-' + (i<10?'0':'') + i + '.jpg'; }
+
+function paintFilm(){
+  var h = '';
+  for(var i=1;i<=n();i++){
+    h += '<button data-i="'+i+'" aria-current="'+(i===idx)+'">'+
+         '<img loading="lazy" src="'+src(i)+'" alt="Page '+i+'"><span>'+i+'</span></button>';
+  }
+  film.innerHTML = h;
+}
+function paint(){
+  shot.src = src(idx);
+  shot.alt = 'Page ' + idx + ' — ' + LAB[side][idx-1];
+  pgi.innerHTML = '<b>Page '+idx+' of '+n()+'</b> &nbsp;&middot;&nbsp; '+LAB[side][idx-1];
+  document.getElementById('prev').disabled = idx===1;
+  document.getElementById('next').disabled = idx===n();
+  Array.prototype.forEach.call(film.children, function(b){
+    b.setAttribute('aria-current', String(+b.dataset.i === idx));
+  });
+}
+function go(i){ idx = Math.min(Math.max(i,1), n()); paint(); }
+
+document.querySelectorAll('.ab button').forEach(function(b){
+  b.addEventListener('click', function(){
+    var next = b.dataset.ab;
+    if(next === side) return;
+    var frac = (idx-1) / Math.max(LAB[side].length-1, 1);
+    side = next;
+    document.querySelectorAll('.ab button').forEach(function(x){
+      x.setAttribute('aria-pressed', String(x.dataset.ab === side));
+    });
+    idx = Math.round(frac * (n()-1)) + 1;
+    paintFilm(); paint();
+  });
+});
+film.addEventListener('click', function(ev){
+  var b = ev.target.closest('button'); if(b) go(+b.dataset.i);
+});
+document.getElementById('prev').addEventListener('click', function(){ go(idx-1); });
+document.getElementById('next').addEventListener('click', function(){ go(idx+1); });
+document.addEventListener('keydown', function(ev){
+  if(document.getElementById('v-ab').classList.contains('on')){
+    if(ev.key === 'ArrowLeft'){ go(idx-1); }
+    if(ev.key === 'ArrowRight'){ go(idx+1); }
+  }
+});
+
+document.querySelectorAll('.tabs button').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.tabs button').forEach(function(x){
+      x.setAttribute('aria-selected', String(x === b));
+    });
+    document.querySelectorAll('.view').forEach(function(v){
+      v.classList.toggle('on', v.id === 'v-' + b.dataset.v);
+    });
+    window.scrollTo(0,0);
+  });
+});
+document.querySelectorAll('.jump').forEach(function(b){
+  b.addEventListener('click', function(){
+    var el = document.getElementById('rp-' + b.dataset.p);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+
+paintFilm(); paint();
+})();
+</script>
+</body>
+</html>
