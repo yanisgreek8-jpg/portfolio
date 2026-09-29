@@ -11,7 +11,7 @@ Live site: **https://yanisgreek8-jpg.github.io/portfolio/**
 | Kestrel Lead Engine — business automation demo, four screens | `/automation/` |
 | Northbound Assistant — AI support & sales chat + owner dashboard | `/ai-chat/` |
 | Prozymi Order Desk — working order-management web app | `/orders/` |
-| Meridian — Series A pitch deck (11 slides + PDF) | `/deck/` |
+| Meridian — seed round pitch deck (11 slides + PDF) | `/deck/` |
 | Meridian — SaaS landing page | `/meridian/` |
 | Prozymi Bakehouse — local business site | `/prozymi/` |
 
