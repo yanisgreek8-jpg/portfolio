@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fakelos</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&subset=greek&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+      colors: { accent: '#1B3A57', ok: '#0F7B4F', bad: '#C0392B', warn: '#B7791F' }
+    } }
+  };
+</script>
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: #FAFAFA; color: #111; font-family: Inter, system-ui, sans-serif; }
+  .card { background: #fff; border: 1px solid #E8E8EA; border-radius: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s; }
+  .btn-primary { background: #1B3A57; color: #fff; }
+  .btn-primary:active, .btn-primary:hover { background: #14304a; }
+  .btn-ghost { background: #fff; color: #1B3A57; border: 1px solid #D5D9DE; }
+  .btn-ghost:hover { border-color: #1B3A57; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .b-ok { background: #E7F4EE; color: #0F7B4F; }
+  .b-warn { background: #FBF1DD; color: #B7791F; }
+  .b-bad { background: #FBE9E7; color: #C0392B; }
+  .b-sent { background: #EAF0F6; color: #1B3A57; }
+  .thumb { width: 84px; flex: none; aspect-ratio: 3/4; background: #fff; border: 1px solid #E1E3E6; border-radius: 6px; padding: 8px 7px; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+  .thumb i { display: block; height: 3px; background: #D9DCE0; border-radius: 2px; margin-bottom: 5px; }
+  .thumb b { display: block; font-size: 8px; line-height: 1.1; color: #1B3A57; margin-bottom: 8px; word-break: break-word; }
+  .thumb.blur i, .thumb.blur b { filter: blur(1.6px); opacity: .7; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 15px; font-weight: 500; opacity: 0; pointer-events: none; transition: all .25s; z-index: 50; max-width: calc(100vw - 32px); text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .switch { width: 44px; height: 26px; border-radius: 999px; background: #C9CDD2; position: relative; flex: none; cursor: pointer; transition: background .15s; border: 0; }
+  .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .15s; }
+  .switch[aria-checked="true"] { background: #0F7B4F; }
+  .switch[aria-checked="true"]::after { transform: translateX(18px); }
+  tr.row { cursor: pointer; }
+  tr.row:hover { background: #F5F7F9; }
+  @keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .pop { animation: pop .35s ease-out both; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast" class="toast" role="status"></div>
+<input id="cam" type="file" accept="image/*" capture="environment" hidden>
+<input id="pick" type="file" accept="image/*" multiple hidden>
+
+<script>
+'use strict';
+
+/* ---------- Данные ---------- */
+const MONTH = 'Σεπτέμβριος 2026';
+const MONTH_GEN = 'Σεπτεμβρίου 2026';
+const MONTH_NUM = '09/2026';
+const SUPPLIERS = [
+  { name: 'ΔΕΗ', afm: '090000045' },
+  { name: 'COSMOTE', afm: '094019245' },
+  { name: 'Metro ΑΕΒΕ', afm: '094062259' },
+  { name: 'Ελαιόλαδο Αχαΐας', afm: '801234567' },
+  { name: 'Χαρτικά Μακρής', afm: '045678912' }
+];
+const CLIENTS = [
+  { slug: 'kafe-olympia', name: 'Καφέ Ολυμπία', docs: 12, last: '28/09', status: 'ok' },
+  { slug: 'taverna-manolis', name: 'Ταβέρνα Ο Μανώλης', docs: 41, last: '29/09', status: 'ok' },
+  { slug: 'artopoieio-papadopoulos', name: 'Αρτοποιείο Παπαδόπουλος', docs: 7, last: '22/09', status: 'partial' },
+  { slug: 'ydraulika-nikolaou', name: 'Υδραυλικά Νικολάου', docs: 0, last: '14/08', status: 'none' },
+  { slug: 'kommotirio-elena', name: 'Κομμωτήριο Elena', docs: 19, last: '27/09', status: 'ok' },
+  { slug: 'farmakeio-kentro', name: 'Φαρμακείο Κέντρο', docs: 63, last: '29/09', status: 'ok' },
+  { slug: 'syneryeio-stavrou', name: 'Συνεργείο Γ. Σταύρου', docs: 2, last: '09/09', status: 'none' },
+  { slug: 'anthopoleio-iris', name: 'Ανθοπωλείο Ίριδα', docs: 5, last: '19/09', status: 'partial' }
+];
+const STATUS = {
+  ok: { label: 'Εντάξει', cls: 'b-ok', rank: 2 },
+  partial: { label: 'Μερικώς', cls: 'b-warn', rank: 1 },
+  none: { label: 'Δεν έστειλε', cls: 'b-bad', rank: 0 },
+  reminded: { label: 'Υπενθύμιση στάλθηκε', cls: 'b-sent', rank: 0 }
+};
+const REMINDERS = [
+  { date: '25/09', client: 'Υδραυλικά Νικολάου' },
+  { date: '25/09', client: 'Συνεργείο Γ. Σταύρου' },
+  { date: '25/09', client: 'Αρτοποιείο Παπαδόπουλος' },
+  { date: '25/08', client: 'Υδραυλικά Νικολάου' },
+  { date: '25/08', client: 'Ανθοπωλείο Ίριδα' }
+];
+
+const eur = n => n.toFixed(2).replace('.', ',') + ' €';
+const pad = n => String(n).padStart(2, '0');
+
+// Документы генерируются детерминированно: каждый раз одни и те же
+function makeDocs(client, idx) {
+  const list = [];
+  const count = Math.min(client.docs, 12);
+  const totals = [148.50, 62.30, 215.00, 38.90, 96.40, 320.00, 54.80, 187.25, 73.10, 240.60, 41.50, 129.90];
+  for (let i = 0; i < count; i++) {
+    const s = SUPPLIERS[(i + idx) % SUPPLIERS.length];
+    const total = i === 0 ? 148.50 : totals[(i + idx * 3) % totals.length];
+    const net = Math.round(total / 1.24 * 100) / 100;
+    const vat = Math.round((total - net) * 100) / 100;
+    const day = Math.max(1, 14 - i);
+    list.push({
+      date: pad(day) + '/09',
+      supplier: i === 0 ? 'ΔΕΗ' : s.name,
+      afm: i === 0 ? SUPPLIERS[0].afm : s.afm,
+      net, vat, total,
+      bad: i === 2 && idx === 0
+    });
+  }
+  return list;
+}
+const DOCS = {};
+CLIENTS.forEach((c, i) => { DOCS[c.slug] = makeDocs(c, i); });
+
+/* ---------- Состояние (только в памяти страницы) ---------- */
+const state = {
+  reminded: false,
+  autoSend: true,
+  message: 'Καλημέρα! Λείπουν τα παραστατικά Σεπτεμβρίου. Μπορείτε να τα στείλετε εδώ: [σύνδεσμος]',
+  sent: {},          // slug -> [{url}] новые фото
+  sentExtra: {}      // slug -> количество доп. документов
+};
+const findClient = slug => CLIENTS.find(c => c.slug === slug);
+
+/* ---------- Утилиты ---------- */
+const $ = s => document.querySelector(s);
+let toastTimer;
+function toast(text) {
+  const t = $('#toast');
+  t.textContent = text;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+let confirmTimer;
+let camFor = null;   // slug клиента, для которого выбираем фото
+
+function statusOf(c) {
+  return state.reminded && c.status === 'none' ? 'reminded' : c.status;
+}
+function badge(key) {
+  const s = STATUS[key];
+  return `<span class="badge ${s.cls}" style="white-space:normal;text-align:center;font-size:12px;padding:2px 8px">${s.label}</span>`;
+}
+function header(right) {
+  return `<header class="max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-3 flex items-center justify-between gap-3">
+    <a href="#/office" class="text-lg font-bold text-accent tracking-tight">Fakelos</a>${right || ''}</header>`;
+}
+function thumb(d) {
+  return `<div class="thumb ${d.bad ? 'blur' : ''}"><b>${esc(d.supplier)}</b><i></i><i style="width:80%"></i><i></i><i style="width:60%"></i><i></i><i style="width:70%"></i></div>`;
+}
+
+/* ---------- 4.1 Клиент ---------- */
+function viewClient(slug) {
+  const c = findClient(slug);
+  if (!c) return viewOffice();
+  const base = DOCS[slug];
+  const mine = state.sent[slug] || [];
+  const count = c.docs + mine.length;
+  const rows = [
+    ...mine.map(m => `<li class="flex items-center gap-3 py-3">
+        <img src="${m.url}" alt="" class="w-10 h-10 rounded-md object-cover border border-neutral-200">
+        <span class="text-[17px]">${m.date}</span></li>`),
+    ...base.map(d => `<li class="py-3 text-[17px] flex justify-between gap-3 border-t border-neutral-100 first:border-0">
+        <span>${d.date} · ${esc(d.supplier)}</span><span class="font-medium whitespace-nowrap">${eur(d.total)}</span></li>`)
+  ];
+  return `<main class="max-w-md mx-auto px-5 pt-8 pb-10">
+    <h1 class="text-[32px] leading-tight font-bold text-accent">${esc(c.name)}</h1>
+    <p class="mt-1 text-lg text-neutral-700">Παραστατικά ${MONTH_GEN}</p>
+    <p class="mt-5 text-lg font-medium">Έχετε στείλει ${count} παραστατικά αυτόν τον μήνα</p>
+    <button data-act="cam" data-slug="${slug}" class="btn btn-primary w-full min-h-[64px] mt-5 text-xl">Φωτογράφισε παραστατικό</button>
+    <button data-act="pick" data-slug="${slug}" class="btn btn-ghost w-full min-h-[52px] mt-3 text-lg">Επιλογή από το κινητό</button>
+    <ul class="card mt-7 px-4 divide-y divide-neutral-100">${rows.join('') || ''}</ul>
+    <p class="mt-6 text-sm text-neutral-600 text-center">Τα παραστατικά πηγαίνουν απευθείας στο λογιστικό σας γραφείο.</p>
+  </main>`;
+}
+
+/* ---------- 4.2 Подтверждение ---------- */
+function viewConfirm(slug) {
+  return `<main class="max-w-md mx-auto px-5 pt-24 pb-10 text-center">
+    <div class="pop mx-auto w-28 h-28 rounded-full bg-ok flex items-center justify-center">
+      <svg viewBox="0 0 24 24" class="w-16 h-16" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    </div>
+    <p class="mt-8 text-2xl font-bold">Ευχαριστούμε! Στάλθηκαν 3 παραστατικά.</p>
+    <button data-act="cam" data-slug="${slug}" class="btn btn-primary w-full min-h-[64px] mt-10 text-xl">Στείλε κι άλλο παραστατικό</button>
+  </main>`;
+}
+
+/* ---------- 4.3 Дашборд бюро ---------- */
+function viewOffice() {
+  const sorted = CLIENTS.map((c, i) => ({ c, i }))
+    .sort((a, b) => STATUS[statusOf(a.c)].rank - STATUS[statusOf(b.c)].rank || a.i - b.i)
+    .map(x => x.c);
+  const rows = sorted.map(c => `<tr class="row border-t border-neutral-100" data-go="#/office/${c.slug}">
+      <td class="px-2 sm:px-4 py-3 font-medium">${esc(c.name)}</td>
+      <td class="px-2 sm:px-4 py-3">${c.docs + (state.sent[c.slug] || []).length}</td>
+      <td class="px-4 py-3 hidden sm:table-cell text-neutral-600">${c.last}</td>
+      <td class="px-2 sm:px-4 py-3">${badge(statusOf(c))}</td></tr>`).join('');
+  const total = 312;
+  return `${header(`<button data-act="remind-all" class="btn btn-primary px-4 py-2.5 text-sm sm:text-base">Υπενθύμιση σε όλους</button>`)}
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
+      <div class="card p-5"><div class="text-sm text-neutral-600">Σύνολο παραστατικών</div><div class="text-3xl font-bold mt-1">${total}</div></div>
+      <div class="card p-5"><div class="text-sm text-neutral-600">Πελάτες που δεν έστειλαν</div><div class="text-3xl font-bold mt-1 text-bad">3</div></div>
+      <a href="#/office/reminders" class="card p-5 block hover:border-accent"><div class="text-sm text-neutral-600">Υπενθυμίσεις που στάλθηκαν</div><div class="text-3xl font-bold mt-1">${18 + (state.reminded ? 2 : 0)}</div></a>
+    </div>
+    <div class="card mt-5 overflow-hidden">
+      <table class="w-full text-left text-sm sm:text-[15px]">
+        <thead class="bg-neutral-50 text-xs sm:text-sm text-neutral-600"><tr>
+          <th class="px-2 sm:px-4 py-3 font-medium">Πελάτης</th><th class="px-2 sm:px-4 py-3 font-medium">Παραστατικά</th>
+          <th class="px-4 py-3 font-medium hidden sm:table-cell">Τελευταία αποστολή</th><th class="px-2 sm:px-4 py-3 font-medium">Κατάσταση</th>
+        </tr></thead><tbody>${rows}</tbody>
+      </table>
+    </div>
+  </main>`;
+}
+
+/* ---------- 4.4 Карточка клиента ---------- */
+function viewCard(slug) {
+  const c = findClient(slug);
+  if (!c) return viewOffice();
+  const file = `${c.name} – ${MONTH_NUM}`;
+  const cards = DOCS[slug].map(d => `<div class="card p-4 flex gap-4 ${d.bad ? 'border-bad' : ''}">
+      ${thumb(d)}
+      <dl class="text-sm grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 content-start min-w-0" style="grid-template-columns:auto 1fr">
+        <dt class="text-neutral-500">Ημερομηνία</dt><dd class="font-medium">${d.bad ? '—' : d.date + '/2026'}</dd>
+        <dt class="text-neutral-500">Προμηθευτής</dt><dd class="font-medium truncate">${d.bad ? '—' : esc(d.supplier)}</dd>
+        <dt class="text-neutral-500">ΑΦΜ</dt><dd class="font-medium">${d.bad ? '—' : d.afm}</dd>
+        <dt class="text-neutral-500">Καθαρή αξία</dt><dd class="font-medium">${d.bad ? '—' : eur(d.net)}</dd>
+        <dt class="text-neutral-500">ΦΠΑ</dt><dd class="font-medium">${d.bad ? '—' : eur(d.vat)}</dd>
+        <dt class="text-neutral-500">Σύνολο</dt><dd class="font-semibold">${d.bad ? '—' : eur(d.total)}</dd>
+        ${d.bad ? '<dd class="col-span-2 mt-2"><span class="badge b-bad" style="white-space:normal">Δυσανάγνωστο — ζήτα νέα φωτογραφία</span></dd>' : ''}
+      </dl></div>`).join('');
+  return `${header()}
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+    <h1 class="text-2xl font-bold text-accent mt-2">${esc(c.name)} · ${MONTH}</h1>
+    <div class="flex flex-wrap gap-2 mt-4">
+      <button data-toast="Κατέβηκε: ${esc(file)}.zip" class="btn btn-primary px-4 py-2.5">Λήψη ZIP</button>
+      <button data-toast="Κατέβηκε: ${esc(file)}.xlsx" class="btn btn-ghost px-4 py-2.5">Εξαγωγή σε Excel</button>
+      <button data-toast="Κατέβηκε: ${esc(file)}.zip" class="btn btn-ghost px-4 py-2.5">Αποστολή στο Google Drive</button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">${cards}</div>
+  </main>`;
+}
+
+/* ---------- 4.5 Напоминания ---------- */
+function viewReminders() {
+  const list = [
+    ...(state.reminded ? ['Υδραυλικά Νικολάου', 'Συνεργείο Γ. Σταύρου'].map(n => ({ date: '29/09', client: n })) : []),
+    ...REMINDERS
+  ];
+  return `${header()}
+  <main class="max-w-3xl mx-auto px-4 sm:px-6 pb-12">
+    <h1 class="text-2xl font-bold text-accent mt-2">Υπενθυμίσεις</h1>
+    <div class="card p-5 mt-4 flex items-center justify-between gap-4">
+      <span class="font-medium">Αυτόματη αποστολή στις 25 κάθε μήνα</span>
+      <button class="switch" role="switch" aria-checked="${state.autoSend}" data-act="switch"></button>
+    </div>
+    <textarea id="msg" rows="4" class="card w-full mt-3 p-4 text-[15px] leading-relaxed focus:outline-none focus:border-accent">${esc(state.message)}</textarea>
+    <ul class="card mt-3 divide-y divide-neutral-100">
+      ${list.map(r => `<li class="px-4 py-3 flex justify-between gap-3"><span class="font-medium">${esc(r.client)}</span><span class="text-neutral-600">${r.date}</span></li>`).join('')}
+    </ul>
+  </main>`;
+}
+
+/* ---------- Роутер ---------- */
+function render() {
+  clearTimeout(confirmTimer);
+  const hash = location.hash.replace(/^#\/?/, '');
+  const parts = hash.split('/').filter(Boolean);
+  let html;
+  if (parts[0] === 'c') html = viewClient(parts[1]);
+  else if (parts[0] === 'office' && parts[1] === 'reminders') html = viewReminders();
+  else if (parts[0] === 'office' && parts[1]) html = viewCard(parts[1]);
+  else html = viewOffice();
+  $('#app').innerHTML = html;
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', render);
+
+/* ---------- Действия ---------- */
+function addPhotos(slug, files) {
+  const c = findClient(slug);
+  if (!c || !files || !files.length) return;
+  state.sent[slug] = state.sent[slug] || [];
+  Array.from(files).reverse().forEach(f => {
+    state.sent[slug].unshift({ url: URL.createObjectURL(f), date: '29/09' });
+  });
+  $('#app').innerHTML = viewConfirm(slug);
+  window.scrollTo(0, 0);
+  clearTimeout(confirmTimer);
+  confirmTimer = setTimeout(() => {
+    if (location.hash.startsWith('#/c/')) $('#app').innerHTML = viewClient(slug);
+  }, 2000);
+}
+
+document.addEventListener('click', e => {
+  const go = e.target.closest('[data-go]');
+  const act = e.target.closest('[data-act]');
+  const tst = e.target.closest('[data-toast]');
+  if (tst) { toast(tst.dataset.toast); return; }
+  if (act) {
+    const a = act.dataset.act;
+    if (a === 'cam') { camFor = act.dataset.slug; $('#cam').value = ''; $('#cam').click(); }
+    else if (a === 'pick') { camFor = act.dataset.slug; $('#pick').value = ''; $('#pick').click(); }
+    else if (a === 'remind-all') { state.reminded = true; toast('Στάλθηκαν 3 υπενθυμίσεις'); render(); }
+    else if (a === 'switch') { state.autoSend = !state.autoSend; act.setAttribute('aria-checked', state.autoSend); }
+    return;
+  }
+  if (go) location.hash = go.dataset.go;
+});
+document.addEventListener('input', e => { if (e.target.id === 'msg') state.message = e.target.value; });
+$('#cam').addEventListener('change', e => addPhotos(camFor, e.target.files));
+$('#pick').addEventListener('change', e => addPhotos(camFor, e.target.files));
+
+if (!location.hash) location.replace('#/office');
+render();
+</script>
+</body>
+</html>
