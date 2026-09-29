@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kestrel Lead Engine — what a real business automation actually does</title>
+<meta name="description" content="An interactive demonstration of a lead-handling automation for a small installer: every step of the run, the failure paths most demos never show, the owner's console and the blueprint. Concept project by Ivan K.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Kestrel Lead Engine — a business automation you can break on purpose">
+<meta property="og:description" content="Watch a lead travel through nine steps, then take the CRM offline and see what the automation does about it. Interactive demo — simulated runs, nothing connected to a live system.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230A1417'/%3E%3Cpath d='M8 20l5-6 4 4 7-8' stroke='%23E08A2C' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F5F7; --panel:#FFFFFF; --panel-2:#FAFBFC;
+  --ink:#12161A; --soft:#4E575F; --faint:#858E97;
+  --line:rgba(18,22,26,.12); --line-2:rgba(18,22,26,.065);
+  --brand:#0E5A6B; --brand-2:#0A4150; --brand-wash:rgba(14,90,107,.09);
+  --sun:#D97E22; --sun-wash:rgba(217,126,34,.13);
+  --ok:#1B7F51; --ok-wash:rgba(27,127,81,.13);
+  --warn:#A96F18; --warn-wash:rgba(169,111,24,.14);
+  --bad:#A8352A; --bad-wash:rgba(168,53,42,.11);
+  --dark:#0A1417;
+  --r:12px;
+  --shadow:0 1px 2px rgba(18,22,26,.05), 0 10px 30px -14px rgba(18,22,26,.26);
+  --mono:'SFMono-Regular',ui-monospace,Menlo,Consolas,'Liberation Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg); color:var(--ink);
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400;letter-spacing:-.005em}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* ---------- demo bar ---------- */
+.demobar{background:var(--dark);color:#E4EDEF;border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;top:0;z-index:80}
+.demobar .wrap{display:flex;align-items:center;gap:20px;height:56px}
+.db-tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--sun);white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--sun);flex:none}
+.dot.pulse{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+.db-text{font-size:12.5px;color:#93A5A9;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs{display:flex;gap:2px;background:rgba(255,255,255,.07);border-radius:9px;padding:3px;flex:none}
+.tabs button{padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:600;color:#93A5A9;transition:.14s;white-space:nowrap}
+.tabs button:hover{color:#E4EDEF}
+.tabs button[aria-selected="true"]{background:#E9F1F2;color:var(--dark)}
+.view{display:none}
+.view.on{display:block}
+
+/* ---------- shared ---------- */
+.kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand);margin-bottom:10px}
+.section{padding:52px 0 60px}
+h1.big{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:46px;
+  line-height:1.07;margin:0 0 16px;letter-spacing:-.015em;max-width:760px}
+h1.big i{font-style:italic;color:var(--brand)}
+.lede{margin:0;color:var(--soft);font-size:15.5px;max-width:660px}
+h2.sec{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:30px;margin:0 0 6px;letter-spacing:-.01em}
+.sub{margin:0;color:var(--faint);font-size:13.5px}
+.panel{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 20px;border-radius:999px;font-size:13.5px;font-weight:600;transition:.16s}
+.btn.primary{background:var(--brand);color:#fff}
+.btn.primary:hover{background:var(--brand-2)}
+.btn.primary:disabled{opacity:.45;cursor:default}
+.btn.ghost{border:1px solid var(--line);color:var(--soft)}
+.btn.ghost:hover{border-color:rgba(18,22,26,.3);color:var(--ink)}
+.note{font-size:12.8px;color:var(--faint);line-height:1.6}
+.hr{height:1px;background:var(--line-2);margin:34px 0}
+
+/* ---------- run view ---------- */
+.runtop{background:var(--panel);border-bottom:1px solid var(--line-2);padding:52px 0 46px}
+.presets{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.preset{border:1px solid var(--line);border-radius:10px;padding:12px 15px;text-align:left;
+  background:var(--panel-2);max-width:320px;transition:.15s}
+.preset:hover{border-color:rgba(18,22,26,.28)}
+.preset[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-wash);box-shadow:inset 0 0 0 1px var(--brand)}
+.preset b{display:block;font-size:13px;font-weight:600;margin-bottom:2px}
+.preset span{display:block;font-size:12.2px;color:var(--faint);line-height:1.45}
+
+.runbody{padding:40px 0 64px}
+.rungrid{display:grid;grid-template-columns:376px 1fr;gap:28px;align-items:start}
+
+/* fake site form */
+.site{border-radius:14px;overflow:hidden;border:1px solid var(--line-2);background:var(--panel);box-shadow:var(--shadow);position:sticky;top:80px}
+.sitebar{background:var(--dark);padding:11px 15px;display:flex;align-items:center;gap:9px}
+.sitebar .bulb{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.18)}
+.siteurl{flex:1;background:rgba(255,255,255,.08);border-radius:6px;font-size:11px;
+  color:#93A5A9;padding:4px 9px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sitehead{padding:16px 18px 14px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:10px}
+.sitehead b{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:19px}
+.sitehead em{font-style:normal;font-size:11.5px;color:var(--faint);margin-left:auto}
+.form{padding:17px 18px 20px}
+.form h4{margin:0 0 3px;font-size:14.5px;font-weight:600}
+.form .fsub{margin:0 0 15px;font-size:12.3px;color:var(--faint)}
+.field{margin-bottom:11px}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.field .val{border:1px solid var(--line);border-radius:8px;padding:8px 11px;font-size:13px;background:var(--panel-2);
+  min-height:35px;word-break:break-word}
+.field .val.ta{min-height:58px;font-size:12.6px;color:var(--soft);line-height:1.5}
+.field.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.submit{width:100%;margin-top:14px;background:var(--sun);color:#2B1B06;font-weight:700;
+  border-radius:9px;padding:12px;font-size:14px;transition:.16s}
+.submit:hover{background:#C26F1A;color:#fff}
+.submit:disabled{opacity:.5;cursor:default}
+.formnote{margin-top:11px;font-size:11.5px;color:var(--faint);text-align:center}
+
+/* pipeline */
+.pipe{min-height:520px}
+.pipehead{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.pipehead h3{margin:0;font-size:16px;font-weight:600}
+.clock{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--faint);
+  border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:54px 30px;text-align:center;color:var(--faint);font-size:13.5px}
+.empty b{display:block;color:var(--soft);font-size:15px;font-weight:600;margin-bottom:6px}
+
+.step{display:grid;grid-template-columns:30px 1fr;gap:14px;position:relative;padding-bottom:16px;
+  animation:rise .34s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.step:last-child{padding-bottom:0}
+.step .rail{position:relative;display:flex;justify-content:center}
+.step .rail::before{content:'';position:absolute;top:26px;bottom:-16px;width:2px;background:var(--line-2)}
+.step:last-child .rail::before{display:none}
+.bead{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;
+  font-size:11.5px;font-weight:700;z-index:1;background:var(--ok-wash);color:var(--ok);border:1px solid rgba(27,127,81,.28)}
+.bead.skip{background:#EDEFF1;color:var(--faint);border-color:var(--line)}
+.bead.warn{background:var(--warn-wash);color:var(--warn);border-color:rgba(169,111,24,.3)}
+.bead.bad{background:var(--bad-wash);color:var(--bad);border-color:rgba(168,53,42,.28)}
+.step .body{background:var(--panel);border:1px solid var(--line-2);border-radius:var(--r);padding:13px 15px 14px}
+.step.skipped .body{background:transparent;border-style:dashed}
+.step .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.step .top b{font-size:14px;font-weight:600}
+.step .tool{font-size:11.5px;color:var(--faint);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+.step .t{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--faint)}
+.step .detail{margin-top:10px;font-size:12.8px;color:var(--soft);line-height:1.62}
+.step .detail p{margin:0 0 7px}
+.step .detail p:last-child{margin-bottom:0}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-family:var(--mono);font-size:11.8px;
+  background:var(--panel-2);border:1px solid var(--line-2);border-radius:9px;padding:10px 12px;margin:2px 0 8px}
+.kv dt{color:var(--faint)}
+.kv dd{margin:0;word-break:break-word}
+.arrowrow{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11.8px;
+  padding:5px 0;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.arrowrow:last-child{border-bottom:none}
+.arrowrow .lab{color:var(--faint);min-width:74px;font-family:'Inter',sans-serif;font-size:11.5px}
+.was{color:var(--bad);text-decoration:line-through;text-decoration-color:rgba(168,53,42,.45)}
+.now{color:var(--ok);font-weight:600}
+.arrowrow .ar{color:var(--faint)}
+
+.rules{margin:4px 0 8px;border:1px solid var(--line-2);border-radius:9px;overflow:hidden}
+.rules div{display:flex;align-items:center;gap:10px;padding:7px 12px;font-size:12.4px;border-bottom:1px solid var(--line-2);background:var(--panel-2)}
+.rules div:last-child{border-bottom:none;background:var(--brand-wash);font-weight:600}
+.rules .mk{width:15px;text-align:center;font-weight:700}
+.rules .mk.y{color:var(--ok)} .rules .mk.n{color:var(--bad)}
+.rules .pts{margin-left:auto;font-family:var(--mono);font-size:11.8px;color:var(--faint)}
+.rules div:last-child .pts{color:var(--brand)}
+
+.phone{background:var(--dark);border-radius:14px;padding:11px;max-width:330px;margin:4px 0 8px}
+.phone .ph-top{display:flex;align-items:center;gap:7px;padding:0 3px 8px;border-bottom:1px solid rgba(255,255,255,.1)}
+.phone .ph-top i{width:20px;height:20px;border-radius:6px;background:var(--sun);display:grid;place-items:center;
+  font-style:normal;font-size:11px;color:#2B1B06;font-weight:700;flex:none}
+.phone .ph-top b{font-size:11.5px;color:#E4EDEF;font-weight:600}
+.phone .ph-top em{font-style:normal;margin-left:auto;font-size:10.5px;color:#7A8C90}
+.bubble{background:#16272B;border-radius:10px;padding:10px 12px;margin-top:9px;font-size:12.2px;color:#DCE7E9;line-height:1.55}
+.bubble b{color:#fff}
+.bubble .quote{color:#93A5A9;font-style:italic;display:block;margin:6px 0}
+.bubble .btns{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+.bubble .btns span{border:1px solid rgba(255,255,255,.18);border-radius:7px;padding:4px 10px;font-size:11px;color:#BCCCCF}
+.bubble .btns span.k{background:var(--sun);border-color:var(--sun);color:#2B1B06;font-weight:700}
+
+.mail{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:4px 0 8px;max-width:440px}
+.mail .mh{background:var(--panel-2);border-bottom:1px solid var(--line-2);padding:9px 13px;font-size:11.8px;color:var(--faint)}
+.mail .mh b{color:var(--ink);font-weight:600}
+.mail .mb{padding:12px 13px;font-size:12.5px;color:var(--soft);line-height:1.6}
+.mail .mb p{margin:0 0 8px} .mail .mb p:last-child{margin-bottom:0}
+.mail .mb a{color:var(--brand);font-weight:600;text-decoration:underline}
+
+.verdict{margin-top:24px;border-left:3px solid var(--brand);background:var(--panel);
+  border-radius:0 var(--r) var(--r) 0;padding:16px 20px;animation:rise .4s .1s both}
+.verdict b{display:block;font-size:14.5px;margin-bottom:5px}
+.verdict p{margin:0;font-size:13.2px;color:var(--soft);line-height:1.65}
+.verdict.amber{border-left-color:var(--sun)}
+
+@media(max-width:1000px){
+  .rungrid{grid-template-columns:1fr}
+  .site{position:static;max-width:420px}
+}
+@media(max-width:760px){
+  .demobar .wrap{height:auto;padding-top:10px;padding-bottom:10px;flex-wrap:wrap;gap:10px}
+  .db-text{display:none}
+  .tabs{width:100%;overflow-x:auto}
+  h1.big{font-size:34px}
+  .wrap{padding:0 18px}
+}
+
+/* ---------- break view ---------- */
+.breaktop{background:var(--panel);border-bottom:1px solid var(--line-2);padding:52px 0 46px}
+.counters{display:flex;gap:0;margin-top:30px;border-top:1px solid var(--line-2);border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.counter{flex:1 1 170px;padding:18px 24px 18px 0}
+.counter + .counter{padding-left:24px;border-left:1px solid var(--line-2)}
+.counter .n{font-family:'Instrument Serif',Georgia,serif;font-size:31px;line-height:1}
+.counter .n.good{color:var(--ok)} .counter .n.hold{color:var(--warn)}
+.counter .l{font-size:12.3px;color:var(--faint);margin-top:6px}
+
+.breakbody{padding:38px 0 64px}
+.breakgrid{display:grid;grid-template-columns:300px 1fr;gap:28px;align-items:start}
+.faults{display:flex;flex-direction:column;gap:9px;position:sticky;top:80px}
+.fault{border:1px solid var(--line);border-radius:10px;padding:13px 15px;text-align:left;background:var(--panel);transition:.15s}
+.fault:hover{border-color:rgba(18,22,26,.3)}
+.fault[aria-pressed="true"]{border-color:var(--bad);background:var(--bad-wash);box-shadow:inset 0 0 0 1px var(--bad)}
+.fault b{display:block;font-size:13.4px;font-weight:600;margin-bottom:3px}
+.fault span{display:block;font-size:12.1px;color:var(--faint);line-height:1.45}
+
+.term{background:var(--dark);border-radius:var(--r);padding:16px 18px 18px;font-family:var(--mono);font-size:12.1px;
+  color:#C7D5D8;line-height:1.75;overflow-x:auto}
+.term .ln{display:flex;gap:12px;white-space:pre;animation:rise .26s both}
+.term .tm{color:#5F7378;flex:none}
+.term .ok{color:#4FC48B} .term .rt{color:#E0A33F} .term .er{color:#E4786B} .term .hi{color:#fff}
+.termcap{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.termcap b{font-size:13.5px;font-weight:600}
+.termcap span{font-size:12px;color:var(--faint)}
+.point{margin-top:18px;border:1px solid var(--line-2);background:var(--panel);border-radius:var(--r);padding:15px 17px}
+.point b{display:block;font-size:13.6px;margin-bottom:5px}
+.point p{margin:0;font-size:12.9px;color:var(--soft);line-height:1.65}
+.point + .point{margin-top:12px}
+.alertbox{margin-top:18px}
+.alertbox .lab{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:9px}
+
+/* ---------- console view ---------- */
+.contop{background:var(--dark);color:#E4EDEF;padding:50px 0 44px}
+.contop h1.big{color:#fff}
+.contop h1.big i{color:var(--sun)}
+.contop .lede{color:#93A5A9}
+.contop .kicker{color:var(--sun)}
+.bignums{display:flex;gap:0;margin-top:32px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.12)}
+.bignum{flex:1 1 200px;padding:22px 26px 6px 0}
+.bignum + .bignum{padding-left:26px;border-left:1px solid rgba(255,255,255,.12)}
+.bignum .n{font-family:'Instrument Serif',Georgia,serif;font-size:38px;line-height:1;color:var(--sun)}
+.bignum .l{font-size:12.6px;color:#93A5A9;margin-top:8px;line-height:1.5}
+.bignum .was{font-size:11.8px;color:#6D8185;margin-top:5px;text-decoration:none;display:block}
+
+.conbody{padding:46px 0 64px}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}
+.bacol{border:1px solid var(--line-2);border-radius:var(--r);background:var(--panel);overflow:hidden}
+.bacol h4{margin:0;padding:13px 17px;font-size:12px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  border-bottom:1px solid var(--line-2)}
+.bacol.before h4{background:var(--bad-wash);color:var(--bad)}
+.bacol.after h4{background:var(--ok-wash);color:var(--ok)}
+.bacol ul{margin:0;padding:6px 0;list-style:none}
+.bacol li{padding:10px 17px;font-size:13px;color:var(--soft);line-height:1.55;border-bottom:1px solid var(--line-2);
+  display:flex;gap:10px}
+.bacol li:last-child{border-bottom:none}
+.bacol li i{font-style:normal;flex:none;font-weight:700}
+.bacol.before li i{color:var(--bad)} .bacol.after li i{color:var(--ok)}
+.bacol li b{color:var(--ink);font-weight:600}
+
+.tbl{width:100%;border-collapse:collapse;font-size:12.8px;margin-top:20px;background:var(--panel);
+  border:1px solid var(--line-2);border-radius:var(--r);overflow:hidden}
+.tbl th{text-align:left;font-size:10.8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);padding:11px 14px;background:var(--panel-2);border-bottom:1px solid var(--line-2);white-space:nowrap}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--line-2);color:var(--soft);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td b{color:var(--ink);font-weight:600}
+.tbl .mono{font-family:var(--mono);font-size:11.8px}
+.badge{display:inline-block;font-size:10.6px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;white-space:nowrap}
+.badge.ok{background:var(--ok-wash);color:var(--ok)}
+.badge.rt{background:var(--warn-wash);color:var(--warn)}
+.badge.hu{background:var(--brand-wash);color:var(--brand)}
+.badge.no{background:#EDEFF1;color:var(--faint)}
+
+.costgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;margin-top:22px}
+.cost{border:1px solid var(--line-2);border-radius:var(--r);background:var(--panel);padding:18px 20px 20px}
+.cost h4{margin:0 0 12px;font-size:14.5px;font-weight:600}
+.costrow{display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px}
+.costrow:last-of-type{border-bottom:none}
+.costrow span{color:var(--soft)} .costrow em{font-style:normal;font-size:11.8px;color:var(--faint)}
+.costrow b{margin-left:auto;font-family:var(--mono);font-size:12.6px}
+.total{display:flex;align-items:baseline;gap:12px;margin-top:10px;padding-top:12px;border-top:2px solid var(--ink);font-size:14px;font-weight:600}
+.total b{margin-left:auto;font-family:var(--mono);font-size:15px;color:var(--brand)}
+.honest{border:1px solid var(--line);border-radius:var(--r);background:var(--panel-2);padding:18px 20px}
+.honest h4{margin:0 0 9px;font-size:14.5px;font-weight:600}
+.honest p{margin:0 0 9px;font-size:13px;color:var(--soft);line-height:1.65}
+.honest p:last-child{margin-bottom:0}
+
+/* ---------- built view ---------- */
+.builttop{background:var(--panel);border-bottom:1px solid var(--line-2);padding:52px 0 46px}
+.blueprint{margin:30px 0 0;border:1px solid var(--line-2);border-radius:var(--r);background:var(--panel);padding:18px;overflow-x:auto}
+.blueprint svg{display:block;min-width:880px;width:100%;height:auto}
+.builtbody{padding:44px 0 64px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;margin-top:24px}
+.ncard{border:1px solid var(--line-2);border-radius:var(--r);background:var(--panel);padding:18px 20px 20px}
+.ncard h4{margin:0 0 8px;font-size:14.5px;font-weight:600;display:flex;align-items:center;gap:9px}
+.ncard h4 i{width:22px;height:22px;border-radius:6px;background:var(--brand-wash);color:var(--brand);
+  display:grid;place-items:center;font-style:normal;font-size:11.5px;font-weight:700;flex:none}
+.ncard p{margin:0;font-size:12.9px;color:var(--soft);line-height:1.65}
+
+/* ---------- footer ---------- */
+.foot{background:var(--dark);color:#93A5A9;padding:40px 0 46px}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
+.foot a{color:#E4EDEF;font-weight:600}
+.foot p{margin:0;font-size:12.8px;max-width:620px;line-height:1.6}
+
+@media(max-width:1000px){
+  .breakgrid{grid-template-columns:1fr}
+  .faults{position:static;flex-direction:row;flex-wrap:wrap}
+  .fault{flex:1 1 220px}
+  .ba,.costgrid{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .counter + .counter,.bignum + .bignum{padding-left:14px}
+  .tblwrap{overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="demobar">
+  <div class="wrap">
+    <span class="db-tag"><i class="dot pulse"></i>Interactive demo</span>
+    <span class="db-text">Simulated runs — nothing here is wired to a live system, so you can break it as hard as you like. Concept project by Ivan&nbsp;K.</span>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-v="run">Live run</button>
+      <button role="tab" aria-selected="false" data-v="break">When it breaks</button>
+      <button role="tab" aria-selected="false" data-v="console">Owner console</button>
+      <button role="tab" aria-selected="false" data-v="built">How it's built</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VIEW 1: RUN ============ -->
+<section class="view on" id="v-run">
+
+  <div class="runtop">
+    <div class="wrap">
+      <p class="kicker">Kestrel Solar &middot; lead engine</p>
+      <h1 class="big">What actually happens in the <i>twenty minutes</i> after someone fills in your form.</h1>
+      <p class="lede">Kestrel install rooftop solar. Enquiries used to arrive as an email to a shared inbox and sit there until somebody opened it. Pick an enquiry below, press Send, and watch every step the automation takes — with the real data going through it.</p>
+      <div class="presets" id="presets"></div>
+    </div>
+  </div>
+
+  <div class="runbody">
+    <div class="wrap rungrid">
+      <div class="site">
+        <div class="sitebar">
+          <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+          <span class="siteurl">kestrelsolar.example / free-roof-survey</span>
+        </div>
+        <div class="sitehead">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#0A1417"/><path d="M6 15l4-4.5L13 14l5-6" stroke="#D97E22" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <b>Kestrel Solar</b><em>Book a free survey</em>
+        </div>
+        <div class="form" id="form"></div>
+      </div>
+
+      <div class="pipe">
+        <div class="pipehead">
+          <h3>The run</h3>
+          <span class="clock" id="clock">not started</span>
+        </div>
+        <div id="steps">
+          <div class="empty"><b>Nothing has happened yet.</b>Choose an enquiry on the left and press the orange button. Nine steps, about five seconds, no page reload.</div>
+        </div>
+        <div id="verdict"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW 2: BREAK ============ -->
+<section class="view" id="v-break">
+
+  <div class="breaktop">
+    <div class="wrap">
+      <p class="kicker">The part nobody demos</p>
+      <h1 class="big">Every automation works on the day it is built. <i>Break this one.</i></h1>
+      <p class="lede">The question worth asking is not whether it runs. It is what it does at two in the morning, eight months later, when something it depends on stops answering. Press a fault below and watch the run that comes out of it.</p>
+      <div class="counters">
+        <div class="counter"><div class="n good" id="c-lost">0</div><div class="l">leads lost across every fault on this page</div></div>
+        <div class="counter"><div class="n hold" id="c-parked">0</div><div class="l">leads currently parked, waiting to be replayed</div></div>
+        <div class="counter"><div class="n" id="c-alerts">0</div><div class="l">alerts sent to the owner, in plain English</div></div>
+        <div class="counter"><div class="n" id="c-faults">0</div><div class="l">faults you have triggered so far</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="breakbody">
+    <div class="wrap breakgrid">
+      <div class="faults" id="faults"></div>
+      <div>
+        <div class="termcap">
+          <b id="f-title">Pick a fault</b>
+          <span id="f-sub">The log below is what the owner could pull up afterwards.</span>
+        </div>
+        <div class="term" id="term"><div class="ln"><span class="tm">--:--:--</span><span>waiting for a fault to be triggered</span></div></div>
+        <div id="f-extra"></div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="hr"></div>
+      <div class="point">
+        <b>What would genuinely lose a lead</b>
+        <p>Your website form itself going down, or a customer mistyping their own email address. Neither is something an automation can save you from, and I would rather say so now than let you find out later. Everything downstream of the form is covered by what you just watched.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW 3: CONSOLE ============ -->
+<section class="view" id="v-console">
+
+  <div class="contop">
+    <div class="wrap">
+      <p class="kicker">The owner's view</p>
+      <h1 class="big">He is on a roof by half past seven. <i>This is all he has to look at.</i></h1>
+      <p class="lede">Not a dashboard with fourteen charts. Four numbers that answer the only questions he has: did anything come in, did anybody get back to them, did anything break, and what is this costing me.</p>
+      <div class="bignums">
+        <div class="bignum"><div class="n">148</div><div class="l">enquiries handled last month</div><span class="was">87 went to a human, 61 did not need one</span></div>
+        <div class="bignum"><div class="n">4 sec</div><div class="l">until the customer hears back, by name</div><span class="was">before: nothing until someone opened the inbox</span></div>
+        <div class="bignum"><div class="n">41 min</div><div class="l">median wait for a human call on a priority lead</div><span class="was">before: 4 hours 12 minutes, or the next morning</span></div>
+        <div class="bignum"><div class="n">&euro;29</div><div class="l">a month to run the whole thing</div><span class="was">no staff, no retyping, no forgotten follow-ups</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="conbody">
+    <div class="wrap">
+      <h2 class="sec">What changed</h2>
+      <p class="sub">Same business, same number of enquiries, same two people answering the phone.</p>
+      <div class="ba">
+        <div class="bacol before">
+          <h4>Before</h4>
+          <ul>
+            <li><i>&times;</i><span>The form emailed a shared inbox. It was read <b>when someone had a minute</b>, which on a fitting day meant the evening.</span></li>
+            <li><i>&times;</i><span>Median time to the first human contact: <b>4 hours 12 minutes</b>. Anything after 18:00 waited until morning.</span></li>
+            <li><i>&times;</i><span><b>34%</b> of enquiries got a call the same day. The rest competed with whoever the customer rang next.</span></li>
+            <li><i>&times;</i><span>Every detail was <b>retyped by hand</b> into the CRM. Roughly six minutes each, and the typos stayed.</span></li>
+            <li><i>&times;</i><span>Follow-ups happened if somebody remembered. Nobody remembered on a Friday.</span></li>
+          </ul>
+        </div>
+        <div class="bacol after">
+          <h4>After</h4>
+          <ul>
+            <li><i>&check;</i><span>The customer gets a reply <b>in four seconds</b>, using their name and naming the surveyor who will ring them.</span></li>
+            <li><i>&check;</i><span>The owner's phone buzzes at the same moment with the number, the ballpark value and a <b>call button</b>.</span></li>
+            <li><i>&check;</i><span><b>92%</b> of priority leads now get a call within the hour, including the ones that land at nine at night.</span></li>
+            <li><i>&check;</i><span>Nothing is retyped. That alone gave back about <b>14 hours a month</b>.</span></li>
+            <li><i>&check;</i><span>Follow-ups fire on their own at two days and seven days, and stop the moment someone replies.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2 class="sec">Yesterday, run by run</h2>
+      <p class="sub">Every run is kept for thirty days. When a customer says "I filled in your form and nobody called me", this is where you look.</p>
+      <div class="tblwrap">
+        <table class="tbl">
+          <thead><tr><th>Time</th><th>Enquiry</th><th>Route</th><th>What happened</th><th>Took</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">19:04</td><td><b>Jamie O'Connell</b><br><span class="mono">Maidstone</span></td><td>A</td><td>Deal &euro;11,400 created &middot; Danny called at 19:21</td><td class="mono">4.3s</td><td><span class="badge ok">clean</span></td></tr>
+            <tr><td class="mono">19:14</td><td><b>Jamie O'Connell</b><br><span class="mono">Maidstone</span></td><td>&mdash;</td><td>Submitted again &middot; merged into the same deal, no second email</td><td class="mono">1.2s</td><td><span class="badge ok">merged</span></td></tr>
+            <tr><td class="mono">18:41</td><td><b>Ruth Adeyemi</b><br><span class="mono">Lewisham</span></td><td>C</td><td>Rents the flat &middot; honest email sent, moved to the quarterly list</td><td class="mono">3.8s</td><td><span class="badge no">no human</span></td></tr>
+            <tr><td class="mono">17:52</td><td><b>Priya Raman</b><br><span class="mono">Sevenoaks</span></td><td>A</td><td>Deal &euro;14,900 &middot; survey booked for Thursday from the email link</td><td class="mono">4.1s</td><td><span class="badge ok">clean</span></td></tr>
+            <tr><td class="mono">16:30</td><td><b>Tom Beckwith</b><br><span class="mono">Ashford</span></td><td>B</td><td>Not ready until spring &middot; guide sent, chase set for Monday</td><td class="mono">3.9s</td><td><span class="badge ok">clean</span></td></tr>
+            <tr><td class="mono">14:07</td><td><b>Marek Nowicki</b><br><span class="mono">Gravesend</span></td><td>A</td><td>CRM was refusing records &middot; parked 48 min, replayed on its own</td><td class="mono">48m 12s</td><td><span class="badge rt">retried</span></td></tr>
+            <tr><td class="mono">11:58</td><td><b>Alice Trent</b><br><span class="mono">Canterbury</span></td><td>B</td><td>Phone number unreadable &middot; left blank, email sent asking for it</td><td class="mono">4.0s</td><td><span class="badge hu">needs a human</span></td></tr>
+            <tr><td class="mono">09:22</td><td><b>Dev Shah</b><br><span class="mono">Dartford</span></td><td>A</td><td>Deal &euro;9,200 &middot; called at 09:35</td><td class="mono">4.2s</td><td><span class="badge ok">clean</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2 class="sec">What it costs, and what it is not</h2>
+      <p class="sub">Both of these belong on the same screen. One of them is usually left off.</p>
+      <div class="costgrid">
+        <div class="cost">
+          <h4>Monthly running cost</h4>
+          <div class="costrow"><span>Make.com &mdash; Core plan</span><em>10,000 operations</em><b>&euro;9</b></div>
+          <div class="costrow"><span>Address &amp; property lookup</span><em>pay per call, capped</em><b>&euro;20</b></div>
+          <div class="costrow"><span>Customer emails</span><em>sent through the CRM they already pay for</em><b>&euro;0</b></div>
+          <div class="costrow"><span>Owner alerts</span><em>Telegram</em><b>&euro;0</b></div>
+          <div class="costrow"><span>Holding queue</span><em>one Google Sheet</em><b>&euro;0</b></div>
+          <div class="total"><span>Every month, all in</span><b>&euro;29</b></div>
+          <p class="note" style="margin-top:14px">Last month it used 6,140 operations of the 10,000. The headroom is on purpose: the busiest month of the year should not be the month it stops.</p>
+        </div>
+        <div class="honest">
+          <h4>What this does not do</h4>
+          <p>It does not sell. It cannot qualify anyone on the phone, it will not rescue a price that is too high, and it has nothing useful to say to a customer who replies with "how much?" and nothing else.</p>
+          <p>It does not think. The scoring is five rules a human wrote down, not a model guessing at intent — which is why the owner can read the rules and argue with them.</p>
+          <p>What it buys is the twenty minutes between a customer pressing Send and a human being useful. In a trade where three installers quote the same roof, those twenty minutes are most of the job.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIEW 4: BUILT ============ -->
+<section class="view" id="v-built">
+
+  <div class="builttop">
+    <div class="wrap">
+      <p class="kicker">Under the bonnet</p>
+      <h1 class="big">One diagram, and the six things <i>you would want to ask.</i></h1>
+      <p class="lede">This is the whole scenario. Not a screenshot of a canvas full of circles — the actual shape of what runs, drawn so a person who does not build these can follow it and tell me where I have got their business wrong.</p>
+
+      <div class="blueprint">
+        <svg viewBox="0 0 1140 430" role="img" aria-label="Blueprint of the lead automation: website form to webhook, then clean, deduplicate, enrich and score, then a router splitting into three branches, with an error handler underneath catching every step">
+          <defs>
+            <marker id="ah" markerWidth="9" markerHeight="9" refX="7.5" refY="3.2" orient="auto">
+              <path d="M0 0 L7.5 3.2 L0 6.4 z" fill="#0E5A6B"/>
+            </marker>
+            <marker id="ahg" markerWidth="8" markerHeight="8" refX="7" refY="2.9" orient="auto">
+              <path d="M0 0 L7 2.9 L0 5.8 z" fill="#A8352A"/>
+            </marker>
+          </defs>
+
+          <!-- main chain -->
+          <g font-family="Inter,sans-serif">
+            <rect x="14" y="150" width="108" height="56" rx="9" fill="#FAFBFC" stroke="#E3E6E9"/>
+            <text x="68" y="173" text-anchor="middle" font-size="12.5" font-weight="600" fill="#12161A">Website form</text>
+            <text x="68" y="189" text-anchor="middle" font-size="10.5" fill="#858E97">any form tool</text>
+
+            <line x1="122" y1="178" x2="136" y2="178" stroke="#0E5A6B" stroke-width="1.6" marker-end="url(#ah)"/>
+
+            <rect x="146" y="150" width="108" height="56" rx="9" fill="#FAFBFC" stroke="#E3E6E9"/>
+            <text x="200" y="173" text-anchor="middle" font-size="12.5" font-weight="600" fill="#12161A">Webhook</text>
+            <text x="200" y="189" text-anchor="middle" font-size="10.5" fill="#858E97">instant, not polled</text>
+
+            <line x1="254" y1="178" x2="268" y2="178" stroke="#0E5A6B" stroke-width="1.6" marker-end="url(#ah)"/>
+
+            <rect x="272" y="128" width="470" height="100" rx="11" fill="none" stroke="#C9D3D6" stroke-dasharray="4 4"/>
+            <text x="278" y="120" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#0E5A6B">EVERY LEAD, NO EXCEPTIONS</text>
+
+            <rect x="284" y="150" width="100" height="56" rx="9" fill="#FFFFFF" stroke="#E3E6E9"/>
+            <text x="334" y="173" text-anchor="middle" font-size="12.5" font-weight="600" fill="#12161A">Clean</text>
+            <text x="334" y="189" text-anchor="middle" font-size="10.5" fill="#858E97">names, phones</text>
+            <line x1="384" y1="178" x2="396" y2="178" stroke="#0E5A6B" stroke-width="1.6" marker-end="url(#ah)"/>
+
+            <rect x="400" y="150" width="104" height="56" rx="9" fill="#FFFFFF" stroke="#E3E6E9"/>
+            <text x="452" y="173" text-anchor="middle" font-size="12.5" font-weight="600" fill="#12161A">Know them?</text>
+            <text x="452" y="189" text-anchor="middle" font-size="10.5" fill="#858E97">CRM search + lock</text>
+            <line x1="504" y1="178" x2="516" y2="178" stroke="#0E5A6B" stroke-width="1.6" marker-end="url(#ah)"/>
+
+            <rect x="520" y="150" width="96" height="56" rx="9" fill="#FFFFFF" stroke="#E3E6E9"/>
+            <text x="568" y="173" text-anchor="middle" font-size="12.5" font-weight="600" fill="#12161A">Enrich</text>
+            <text x="568" y="189" text-anchor="middle" font-size="10.5" fill="#858E97">postcode, size</text>
+            <line x1="616" y1="178" x2="628" y2="178" stroke="#0E5A6B" stroke-width="1.6" marker-end="url(#ah)"/>
+
+            <rect x="632" y="150" width="98" height="56" rx="9" fill="#FFFFFF" stroke="#E3E6E9"/>
+            <text x="681" y="173" text-anchor="middle" font-size="12.5" font-weight="600" fill="#12161A">Score</text>
+            <text x="681" y="189" text-anchor="middle" font-size="10.5" fill="#858E97">5 written rules</text>
+
+            <line x1="742" y1="178" x2="756" y2="178" stroke="#0E5A6B" stroke-width="1.6" marker-end="url(#ah)"/>
+
+            <rect x="760" y="150" width="86" height="56" rx="9" fill="#0E5A6B"/>
+            <text x="803" y="182" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Route</text>
+
+            <!-- fan out -->
+            <path d="M846 178 C 872 178, 872 78, 896 78" stroke="#0E5A6B" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+            <path d="M846 178 L 896 178" stroke="#0E5A6B" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+            <path d="M846 178 C 872 178, 872 278, 896 278" stroke="#0E5A6B" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+
+            <rect x="906" y="36" width="220" height="84" rx="9" fill="#F3F9F6" stroke="#BFDDCE"/>
+            <text x="920" y="58" font-size="12.5" font-weight="700" fill="#1B7F51">A &mdash; Priority</text>
+            <text x="920" y="76" font-size="10.7" fill="#4E575F">Deal in the CRM &middot; phone alert</text>
+            <text x="920" y="91" font-size="10.7" fill="#4E575F">Personal email &middot; survey slot</text>
+            <text x="920" y="106" font-size="10.7" fill="#4E575F">Chase after two days</text>
+
+            <rect x="906" y="136" width="220" height="84" rx="9" fill="#FCF7EE" stroke="#E6D3B2"/>
+            <text x="920" y="158" font-size="12.5" font-weight="700" fill="#A96F18">B &mdash; Keep warm</text>
+            <text x="920" y="176" font-size="10.7" fill="#4E575F">Contact in the CRM, no deal</text>
+            <text x="920" y="191" font-size="10.7" fill="#4E575F">Guide by email &middot; no phone alert</text>
+            <text x="920" y="206" font-size="10.7" fill="#4E575F">Chase after seven days</text>
+
+            <rect x="906" y="236" width="220" height="84" rx="9" fill="#F6F7F8" stroke="#DFE3E6"/>
+            <text x="920" y="258" font-size="12.5" font-weight="700" fill="#5D666E">C &mdash; Not a fit</text>
+            <text x="920" y="276" font-size="10.7" fill="#4E575F">Tagged and parked, honest email</text>
+            <text x="920" y="291" font-size="10.7" fill="#4E575F">Quarterly list, never chased</text>
+            <text x="920" y="306" font-size="10.7" fill="#4E575F">Nobody's phone rings</text>
+
+            <!-- error lane -->
+            <g stroke="#A8352A" stroke-width="1.3" stroke-dasharray="3 4" opacity=".55">
+              <line x1="334" y1="206" x2="334" y2="336" marker-end="url(#ahg)"/>
+              <line x1="452" y1="206" x2="452" y2="336" marker-end="url(#ahg)"/>
+              <line x1="568" y1="206" x2="568" y2="336" marker-end="url(#ahg)"/>
+              <line x1="681" y1="206" x2="681" y2="336" marker-end="url(#ahg)"/>
+              <line x1="803" y1="206" x2="803" y2="336" marker-end="url(#ahg)"/>
+            </g>
+
+            <rect x="14" y="342" width="1112" height="76" rx="10" fill="#FDF6F5" stroke="#E8C5C0"/>
+            <text x="32" y="368" font-size="12.5" font-weight="700" fill="#A8352A">If anything above fails</text>
+            <text x="32" y="387" font-size="11" fill="#4E575F">Four retries &mdash; 5 seconds, 25 seconds, 2 minutes, 8 minutes. Then the lead is parked in a Google Sheet, the customer is emailed anyway</text>
+            <text x="32" y="404" font-size="11" fill="#4E575F">because that step does not need the broken thing, and the owner gets one message in plain English. Parked leads replay themselves when it recovers.</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="builtbody">
+    <div class="wrap">
+      <h2 class="sec">The six questions</h2>
+      <p class="sub">These come up in every conversation about automation, so here they are before you have to ask.</p>
+      <div class="notes">
+        <div class="ncard"><h4><i>1</i>What it is built on</h4><p>Make.com runs the scenario. The CRM is whichever one you already pay for. A postcode and property lookup fills in what the customer did not type. Telegram carries the alerts because it is the app the owner already has open. One Google Sheet is the safety net. No server, nothing to host, nothing that needs patching.</p></div>
+        <div class="ncard"><h4><i>2</i>Where the keys live</h4><p>Inside Make's own connection store, entered once, never written into the scenario and never into a spreadsheet. The account is yours and I build inside it, not the other way round. If we stop working together you change one password and keep everything &mdash; no hostage situation, no "my agency holds the logins".</p></div>
+        <div class="ncard"><h4><i>3</i>What gets logged</h4><p>Every run for thirty days: what came in, what each step did with it, what went out and how long it took. That is the table on the owner console. It exists for one reason &mdash; so that "nobody called me back" is a question you can answer in ten seconds instead of a row you cannot win.</p></div>
+        <div class="ncard"><h4><i>4</i>Personal data</h4><p>The data stays inside tools that hold it in the EU or UK. No enrichment service that quietly resells what it learns about your customers. A deletion request is one row removed from the sheet and one search in the CRM, and I write that procedure down for you rather than leaving you to work it out under a deadline.</p></div>
+        <div class="ncard"><h4><i>5</i>How long it takes to build</h4><p>A scenario this size is six to ten hours. Roughly two of those are the happy path you watched on the first tab; the rest is the failure handling, and the testing that proves it. That second part is the part that gets skipped by people quoting two hours, and it is the only reason the thing still works in March.</p></div>
+        <div class="ncard"><h4><i>6</i>What you get at handover</h4><p>This diagram, a short screen recording of me breaking it on purpose and it recovering, and a plain-English list of every message it can ever send you and what each one means. Plus the scenario itself, in your account, documented well enough that another person could pick it up.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>A self-initiated concept project. Kestrel Solar is invented, the runs on this page are simulated and nothing is connected to a live system &mdash; the design, the copy and the code are mine.</p>
+    <span><a href="../">&larr; All work</a> &nbsp;&middot;&nbsp; <a href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Upwork profile</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------------- helpers ---------------- */
+var $ = function(s,r){ return (r||document).querySelector(s); };
+var timers = [];
+function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
+
+function kv(pairs){
+  var h = '<dl class="kv">';
+  pairs.forEach(function(p){ h += '<dt>'+p[0]+'</dt><dd>'+p[1]+'</dd>'; });
+  return h + '</dl>';
+}
+function changes(list){
+  return list.map(function(c){
+    return '<div class="arrowrow"><span class="lab">'+c[0]+'</span>'+
+           '<span class="was">'+c[1]+'</span><span class="ar">&rarr;</span>'+
+           '<span class="now">'+c[2]+'</span></div>';
+  }).join('');
+}
+function ruleset(rows, total){
+  var h = '<div class="rules">';
+  rows.forEach(function(r){
+    h += '<div><span class="mk '+(r[0]?'y':'n')+'">'+(r[0]?'&check;':'&times;')+'</span>'+
+         '<span>'+r[1]+'</span><span class="pts">'+r[2]+'</span></div>';
+  });
+  return h + '<div><span class="mk"></span><span>'+total[0]+'</span><span class="pts">'+total[1]+'</span></div></div>';
+}
+
+/* ---------------- run data ---------------- */
+var PRESETS = [
+{
+  id:'keen',
+  label:'A keen one',
+  sub:'Owns the house, big bill, asking about a battery',
+  form:{ name:"jamie o'CONNELL", email:'  J.OConnell@Example.com ', phone:'07700 900982',
+         postcode:'me14 1xj', bill:'£190 – £240 a month', owns:'Yes, I own it',
+         roof:'South-west', msg:'Want panels and a battery in before the winter tariff change. Best time to call is after 6.' },
+  steps:[
+  { t:'0.0s', n:'The form is submitted', tool:'Website &rarr; webhook',
+    d:'<p>No polling, no five-minute delay. The form hands the data straight over the moment he presses the button.</p>'+
+      kv([['name',"jamie o'CONNELL"],['email','&nbsp;&nbsp;J.OConnell@Example.com&nbsp;'],['phone','07700 900982'],
+          ['postcode','me14 1xj'],['bill','190-240'],['owns','yes'],['roof','SW']]) },
+  { t:'0.3s', n:'Clean it up', tool:'Make &middot; text tools',
+    d:'<p>People type the way people type. This is the step that stops your CRM filling up with nonsense.</p>'+
+      changes([['Name',"jamie o'CONNELL","Jamie O'Connell"],
+               ['Email','&nbsp;J.OConnell@Example.com&nbsp;','j.oconnell@example.com'],
+               ['Phone','07700 900982','+44 7700 900982'],
+               ['Postcode','me14 1xj','ME14 1XJ']]) },
+  { t:'1.1s', n:'Do we already know him?', tool:'CRM &middot; search',
+    d:'<p>Searched on the cleaned email and the cleaned phone, not the raw ones &mdash; which is why the cleaning step comes first.</p>'+
+      kv([['email','no match'],['phone','no match'],['verdict','new contact']]) },
+  { t:'1.9s', n:'Fill in what he did not type', tool:'Postcode &amp; property lookup',
+    d:'<p>He gave seven fields. The surveyor needs about fifteen. The rest is looked up rather than asked for, because every extra form field costs you enquiries.</p>'+
+      kv([['ME14 1XJ','Maidstone, Kent'],['team','Kent &mdash; Danny R.'],
+          ['usage est.','~4,300 kWh a year, from the bill band'],
+          ['system est.','8&ndash;10 panels + 5 kWh battery'],['ballpark','&euro;11,400']]) },
+  { t:'2.4s', n:'Score it, and route it', tool:'Five rules, written down',
+    d:ruleset([[1,'Owns the property','+30'],[1,'Bill over &euro;180 a month','+25'],
+               [1,'Mentioned a battery','+15'],[1,'Roof faces south or south-west','+10'],
+               [1,'Inside the Kent service area','+5']],
+              ['Priority A &mdash; a surveyor calls within the hour','85']) +
+      '<p>No model, no guessing. Five rules the owner wrote and can argue with. Anything under 40 never reaches a human.</p>' },
+  { t:'3.0s', n:'Write it into the CRM', tool:'CRM &middot; create',
+    d:kv([['contact','#4812 &mdash; created'],['deal',"O'Connell &mdash; Maidstone"],
+          ['stage','New enquiry'],['value','&euro;11,400'],['owner','Danny R.'],
+          ['source','Google Ads / solar-battery']]) +
+      '<p>Typed by nobody. That is six minutes a lead, and the typos do not happen.</p>' },
+  { t:'3.4s', n:"Buzz the owner's phone", tool:'Telegram',
+    d:'<div class="phone"><div class="ph-top"><i>K</i><b>Kestrel leads</b><em>19:04</em></div>'+
+      '<div class="bubble"><b>New priority lead &mdash; Maidstone</b><br>'+
+      "Jamie O'Connell &middot; +44 7700 900982<br>"+
+      'Bill &pound;190&ndash;240 &middot; owns the house &middot; SW roof &middot; wants a battery'+
+      '<span class="quote">"…before the winter tariff change. Best time to call is after 6."</span>'+
+      'Ballpark &euro;11,400 &middot; yours, Danny'+
+      '<div class="btns"><span class="k">Call him</span><span>Open in CRM</span><span>Not for us</span></div>'+
+      '</div></div>'+
+      '<p>On the app he already has open, not in a dashboard he would have to remember to check.</p>' },
+  { t:'3.9s', n:'Answer him while he is still on the page', tool:'Email',
+    d:'<div class="mail"><div class="mh">To: <b>j.oconnell@example.com</b><br>Subject: <b>Thanks Jamie &mdash; Danny will call you after 6</b></div>'+
+      '<div class="mb"><p>Hi Jamie,</p>'+
+      '<p>Got it. Danny, who covers Maidstone, will ring you after six this evening on the number you left. He has your roof direction and your bill already, so he is not going to ask you the same things again.</p>'+
+      '<p>On the battery: yes, and it is usually the right call at your usage &mdash; he will bring the numbers.</p>'+
+      '<p>If after six does not suit, <a>pick a slot here</a>.</p></div></div>'+
+      '<p>Four seconds after he pressed Send. He has not closed the tab yet.</p>' },
+  { t:'4.3s', n:'Set the chase-up, so nobody has to remember', tool:'Scheduler',
+    d:'<p>Wednesday 18:00 &mdash; if Danny has not logged the call, nudge Danny, not Jamie.<br>'+
+      'Friday &mdash; if still nothing, a second email from a different angle.<br>'+
+      'After that &mdash; the quarterly list. Not the bin.</p>'+
+      '<p>All three cancel themselves the moment Jamie replies or the deal moves on.</p>' }
+  ],
+  verdict:{ k:'', b:'Four seconds, and one thing the owner did not have to do.',
+    p:"Jamie is in the CRM with a value on him, Danny knows to ring after six, and Jamie has been answered by name before he had time to open a competitor's site. The old version of this was an email sitting in a shared inbox until half past nine." }
+},
+{
+  id:'twice',
+  label:'The same man, ten minutes later',
+  sub:'He was not sure it went through, so he sent it again',
+  form:{ name:"Jamie O'Connell", email:'j.oconnell@example.com', phone:'07700 900982',
+         postcode:'ME14 1XJ', bill:'£190 – £240 a month', owns:'Yes, I own it',
+         roof:'South-west', msg:'Sent this already but the page did not say anything so trying again. After 6 is best.' },
+  steps:[
+  { t:'0.0s', n:'The form is submitted', tool:'Website &rarr; webhook',
+    d:'<p>19:14. Ten minutes after the first one, from the same phone, because nothing on the page told him it had worked.</p>' },
+  { t:'0.3s', n:'Clean it up', tool:'Make &middot; text tools',
+    d:'<p>Same treatment as any other lead. Nothing knows yet that this is a repeat.</p>' },
+  { t:'1.0s', n:'Do we already know him?', tool:'CRM &middot; search',
+    d:kv([['email','match &mdash; contact #4812'],['created','10 minutes ago'],['open deal',"O'Connell &mdash; Maidstone"]]) +
+      '<p>This is the step everything below depends on. It is also the one that gets left out when somebody builds this in an afternoon.</p>' },
+  { t:'', n:'Fill in what he did not type', tool:'skipped', s:'skip',
+    d:'<p>Already done ten minutes ago. Looking it up again would cost money for the same answer.</p>' },
+  { t:'', n:'Score it, and route it', tool:'skipped', s:'skip',
+    d:'<p>Already scored 85, already Priority A, already Danny&rsquo;s.</p>' },
+  { t:'1.2s', n:'No second deal', tool:'CRM &middot; update',
+    d:'<p>The existing deal gets a line added to it instead:</p>'+
+      kv([['note','Submitted the form again at 19:14. Keen, or worried it did not send.']]) },
+  { t:'1.4s', n:'No second buzz', tool:'Telegram &middot; silent',
+    d:'<div class="phone"><div class="ph-top"><i>K</i><b>Kestrel leads</b><em>19:14 &middot; silent</em></div>'+
+      '<div class="bubble">Jamie O&rsquo;Connell sent the form again, 10 minutes after the first. Same details. No action needed &mdash; just so you know he is keen.</div></div>'+
+      '<p>Posted into the same thread with notifications turned off. He finds it when he looks. His phone does not ring twice for one customer.</p>' },
+  { t:'', n:'No second email', tool:'skipped', s:'skip',
+    d:'<p>Sending the identical thank-you twice is how an automation starts looking like a spam bot to the person it is meant to impress.</p>' },
+  { t:'', n:'No second chase-up', tool:'skipped', s:'skip',
+    d:'<p>The reminders from ten minutes ago are still standing. Adding a second set is how a customer ends up chased four times in one week.</p>' }
+  ],
+  verdict:{ k:'amber', b:'This branch is the whole difference between a demo and a working system.',
+    p:'Without it you get two deals in the CRM, two identical emails to the same man, and a surveyor ringing someone a colleague already rang. Nobody puts this scene in a portfolio because nothing visibly happens in it. It is the one that saves the customer.' }
+},
+{
+  id:'nofit',
+  label:'Not a fit, and told so',
+  sub:'Rents a third-floor flat, small bill',
+  form:{ name:'Ruth Adeyemi', email:'r.adeyemi@example.com', phone:'07700 900411',
+         postcode:'SE13 6AB', bill:'£55 – £75 a month', owns:'No, I rent',
+         roof:'Not sure — I am on the third floor',
+         msg:'Interested in cutting my bill, not sure if any of this applies to a flat.' },
+  steps:[
+  { t:'0.0s', n:'The form is submitted', tool:'Website &rarr; webhook',
+    d:'<p>18:41. Exactly the same route in as the priority lead. The automation does not know yet, and should not treat her worse on the way through.</p>' },
+  { t:'0.3s', n:'Clean it up', tool:'Make &middot; text tools',
+    d:changes([['Phone','07700 900411','+44 7700 900411'],['Postcode','SE13 6AB','SE13 6AB &mdash; Lewisham']]) },
+  { t:'1.1s', n:'Do we already know her?', tool:'CRM &middot; search',
+    d:kv([['email','no match'],['phone','no match'],['verdict','new contact']]) },
+  { t:'1.8s', n:'Fill in what she did not type', tool:'Postcode &amp; property lookup',
+    d:kv([['SE13 6AB','Lewisham, South East London'],['property type','Flat, purpose-built'],
+          ['roof rights','None &mdash; communal roof, leasehold'],['service area','Outside the Kent team']]) },
+  { t:'2.3s', n:'Score it, and route it', tool:'Five rules, written down',
+    d:ruleset([[0,'Owns the property','0'],[0,'Bill over &euro;180 a month','0'],
+               [0,'Mentioned a battery','0'],[0,'Roof faces south or south-west','0'],
+               [0,'Inside the Kent service area','&minus;10']],
+              ['Route C &mdash; nobody is going to ring her','&minus;10']) },
+  { t:'2.9s', n:'Into the CRM, but quietly', tool:'CRM &middot; create',
+    d:kv([['contact','#4813 &mdash; created'],['tag','Not now &mdash; rented flat'],
+          ['deal','none created'],['owner','unassigned']]) +
+      '<p>She is kept, because in three years she may own a house. She is just not taking anyone&rsquo;s afternoon today.</p>' },
+  { t:'', n:"Buzz the owner's phone", tool:'not sent', s:'skip',
+    d:'<p>His phone stays quiet. That is the point of the step, not a failure of it. An alert that fires for every enquiry is an alert he stops reading by week three.</p>' },
+  { t:'3.4s', n:'Tell her the truth, politely', tool:'Email',
+    d:'<div class="mail"><div class="mh">To: <b>r.adeyemi@example.com</b><br>Subject: <b>Honest answer, Ruth &mdash; not for a rented flat</b></div>'+
+      '<div class="mb"><p>Hi Ruth,</p>'+
+      '<p>Straight answer: we cannot fit panels to a rented third-floor flat &mdash; the roof is communal and it is the freeholder&rsquo;s decision, not yours. I would rather tell you that now than book a survey that goes nowhere.</p>'+
+      '<p>Two things that do work at your usage: a smart tariff, and your council&rsquo;s shared-roof scheme &mdash; both linked below.</p>'+
+      '<p>If you ever move, or the freeholder asks, we are here.</p></div></div>'+
+      '<p>It costs nothing, and it is the email people forward to a friend who does own a house.</p>' },
+  { t:'3.8s', n:'Quarterly list, never chased', tool:'Scheduler',
+    d:'<p>No two-day nudge, no seven-day nudge, no salesman. One useful email every three months that she can leave in one click.</p>' }
+  ],
+  verdict:{ k:'', b:'A good automation guards the owner&rsquo;s attention as hard as it chases work.',
+    p:'Sixty-one of last month&rsquo;s 148 enquiries went down this path. None of them took a phone call, none of them got ignored either, and the two people who answer the phone spent the time on the eighty-seven that were worth it.' }
+}
+];
+
+/* ---------------- fault data ---------------- */
+var FAULTS = [
+{ id:'crm', label:'The CRM stops answering',
+  sub:'The one thing every step downstream depends on, down for 48 minutes',
+  title:'The CRM stops answering', note:'19:04 on a Tuesday. Nobody notices for another ten minutes.',
+  lines:[
+  ['19:04:02','',  'Lead received — O’Connell, Maidstone'],
+  ['19:04:03','ok','Cleaned, checked, scored. Priority A.'],
+  ['19:04:03','er','CRM create contact ............ 503 Service Unavailable'],
+  ['19:04:08','rt','retry 1 of 4, waited 5s ....... 503'],
+  ['19:04:33','rt','retry 2 of 4, waited 25s ...... 503'],
+  ['19:06:33','rt','retry 3 of 4, waited 2m ....... 503'],
+  ['19:14:33','rt','retry 4 of 4, waited 8m ....... 503'],
+  ['19:14:33','er','Giving up on the CRM. Not giving up on the lead.'],
+  ['19:14:34','',  'Lead parked in the holding sheet, row 1',{parked:1}],
+  ['19:14:34','ok','Customer emailed anyway — that step never touches the CRM'],
+  ['19:14:35','',  'Owner alerted. Once, not five times.',{alerts:1}],
+  ['19:31:20','',  'Two more leads arrive. Both parked the same way.',{parked:3}],
+  ['19:52:08','ok','CRM answered. Replaying the holding sheet.'],
+  ['19:52:11','ok','3 contacts written, 3 deals created, sheet empty.',{parked:0}],
+  ['19:52:12','',  'Owner told it is fixed.',{alerts:1}],
+  ['','hi',       'Leads lost: 0']],
+  alert:'Heads up — your CRM has been refusing new records since 19:04. I am holding 3 leads safely and I have emailed all 3 customers, so nobody is sitting there wondering. Nothing is lost. The moment it starts answering I will put them in and tell you. If it is still down at 9am I will message you again.',
+  points:[
+   ['Read that message again','Notice what it does not say: "Error 503 in module 7 of scenario 2". The man reading it at seven in the evening is an installer in a van with one hand free. Every alert this thing can send is written for him, and there is a list of all of them in the handover.'],
+   ['Why the email still went out','The thank-you email needs a name and an address. It does not need the CRM. Steps that can still run, run. A scenario that abandons the whole lead because one service is down was built in a hurry by someone who never tested it being down.']
+  ] },
+{ id:'junk', label:'The phone number is junk',
+  sub:'Nine digits, no pattern, typed on a phone in a hurry',
+  title:'The phone number is junk', note:'The boring fault that quietly ruins a CRM over eighteen months.',
+  lines:[
+  ['11:58:01','',  'Lead received — Trent, Canterbury'],
+  ['11:58:01','',  'Phone as typed: "0770 090 98"'],
+  ['11:58:01','er','Validation failed — not a UK mobile and not a landline'],
+  ['11:58:01','',  'Two easy options, both rejected:'],
+  ['11:58:01','er','  write it in anyway .... a rep loses four minutes on a dead line'],
+  ['11:58:01','er','  bin the lead .......... you just threw a customer away'],
+  ['11:58:02','ok','Contact created, phone left blank, flagged "number needs checking"'],
+  ['11:58:02','ok','Email sent asking her to confirm it — one tap to reply'],
+  ['11:58:03','',  'Sent to human triage with the note attached',{alerts:1}],
+  ['','hi',       'Leads lost: 0']],
+  alert:'One enquiry came in with a phone number I could not make sense of — Alice Trent in Canterbury typed 0770 090 98. I have emailed her to ask for it. She is in the CRM with the number left blank so nobody rings a wrong one by mistake. Everything else about her enquiry is fine and she is in the normal follow-up.',
+  points:[
+   ['Rubbish in, rubbish out is a decision somebody made','Validating a phone number is ten minutes of build time. Skipping it is how a CRM fills up with numbers that do not ring, and how the person who has to ring them stops believing anything the system tells them.'],
+   ['Leaving a field blank is a feature','An empty field with a flag on it is honest. A field full of nine wrong digits looks exactly like a field full of nine right ones, and that is far more expensive.']
+  ] },
+{ id:'race', label:'Two submissions in one second',
+  sub:'He double-tapped the button. This one is sneaky.',
+  title:'Two submissions in the same second', note:'The bug that never appears in testing, because in testing you click Submit once.',
+  lines:[
+  ['02.118','',  'Lead A received'],
+  ['02.539','',  'Lead B received — identical, 421ms later. He double-tapped.'],
+  ['02.541','ok','Lock taken on j.oconnell@example.com'],
+  ['02.544','rt','Lead B: the lock is held. Waiting.'],
+  ['03.902','ok','Lead A: no match found → contact #4812 created'],
+  ['03.905','ok','Lock released'],
+  ['03.907','ok','Lead B: match found → merged. No second record.'],
+  ['03.908','hi','One deal, one email, one buzz.']],
+  alert:'',
+  points:[
+   ['Why this one catches people out','Without the lock, both runs search the CRM in the same instant, both are told "no match", and both create a record. It passes every test you would think to write. Then it runs for a month and someone asks why there are two of everyone.'],
+   ['No alert for this one','Nothing went wrong, so the owner hears nothing. Deciding what is not worth telling him is as much of the job as deciding what is — an alert channel that cries wolf gets muted, and then the real one gets missed.']
+  ] },
+{ id:'quota', label:'You run out of credits',
+  sub:'The plan has a ceiling and a busy month walks into it',
+  title:'You run out of automation credits', note:'How most people find out: a customer rings to ask why nobody called them back.',
+  lines:[
+  ['14th','',  'Operations used this month: 8,012 of 10,000 — 80%'],
+  ['14th','rt','Warning sent. Sixteen days before it could possibly matter.',{alerts:1}],
+  ['22nd','',  'Operations used: 9,510 of 10,000 — 95%'],
+  ['22nd','rt','Second warning, this time with the two ways out.',{alerts:1}],
+  ['22nd','',  'Remaining: 490 operations, about 24 more leads'],
+  ['','',     'And if it ever does run dry:'],
+  ['','ok',   '  the form still writes into the holding sheet'],
+  ['','ok',   '  the customer still gets their email'],
+  ['','',     '  both of those run on a separate free plan, on purpose'],
+  ['','hi',   'Leads lost: 0']],
+  alert:'You are running low on automation credits — about 24 more leads before it stops. Two ways out: press upgrade, which takes it from €9 to €16 a month, or I switch off the weekly report scenario, which is the one eating them. Tell me which and I will do it today.',
+  points:[
+   ['A ceiling is not a problem, a surprise is','Two thresholds and a message cost nothing to build. They turn an outage into an errand, and they give the owner the one thing he actually wants: a decision with a number attached to it.'],
+   ['Why the safety net is on a different plan','If the paid plan stops, everything on it stops with it — including the part that was supposed to catch the failure. So the holding sheet and the customer email live somewhere else. It costs nothing and it is the difference between degraded and dead.']
+  ] }
+];
+
+/* ---------------- tabs ---------------- */
+var tabBtns = document.querySelectorAll('.tabs button');
+Array.prototype.forEach.call(tabBtns, function(b){
+  b.addEventListener('click', function(){
+    Array.prototype.forEach.call(tabBtns, function(o){ o.setAttribute('aria-selected', o===b ? 'true':'false'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.view'), function(v){ v.classList.remove('on'); });
+    var el = document.getElementById('v-'+b.getAttribute('data-v'));
+    if(el) el.classList.add('on');
+    if(window.scrollTo) window.scrollTo(0,0);
+  });
+});
+
+/* ---------------- run view ---------------- */
+var active = 0, running = false;
+var elPresets = $('#presets'), elForm = $('#form'), elSteps = $('#steps'),
+    elVerdict = $('#verdict'), elClock = $('#clock');
+
+function paintPresets(){
+  elPresets.innerHTML = PRESETS.map(function(p,i){
+    return '<button class="preset" data-i="'+i+'" aria-pressed="'+(i===active)+'">'+
+           '<b>'+p.label+'</b><span>'+p.sub+'</span></button>';
+  }).join('');
+  Array.prototype.forEach.call(elPresets.querySelectorAll('.preset'), function(b){
+    b.addEventListener('click', function(){
+      if(running) return;
+      active = parseInt(b.getAttribute('data-i'),10);
+      paintPresets(); paintForm(); resetRun();
+    });
+  });
+}
+
+function paintForm(){
+  var f = PRESETS[active].form;
+  elForm.innerHTML =
+   '<h4>Book a free roof survey</h4>'+
+   '<p class="fsub">A minute of your time. No obligation and nobody turning up at the door.</p>'+
+   '<div class="field"><label>Full name</label><div class="val">'+f.name+'</div></div>'+
+   '<div class="field two"><div><label>Email</label><div class="val">'+f.email+'</div></div>'+
+   '<div><label>Phone</label><div class="val">'+f.phone+'</div></div></div>'+
+   '<div class="field two"><div><label>Postcode</label><div class="val">'+f.postcode+'</div></div>'+
+   '<div><label>Electricity bill</label><div class="val">'+f.bill+'</div></div></div>'+
+   '<div class="field two"><div><label>Own the property?</label><div class="val">'+f.owns+'</div></div>'+
+   '<div><label>Roof faces</label><div class="val">'+f.roof+'</div></div></div>'+
+   '<div class="field"><label>Anything else</label><div class="val ta">'+f.msg+'</div></div>'+
+   '<button class="submit" id="send">Send my enquiry</button>'+
+   '<p class="formnote">Nothing is sent anywhere. This is a drawing of a form.</p>';
+  $('#send').addEventListener('click', run);
+}
+
+function resetRun(){
+  clearTimers(); running = false;
+  elSteps.innerHTML = '<div class="empty"><b>Nothing has happened yet.</b>Choose an enquiry on the left and press the orange button. Nine steps, about five seconds, no page reload.</div>';
+  elVerdict.innerHTML = '';
+  elClock.textContent = 'not started';
+  var s = $('#send'); if(s) s.disabled = false;
+}
+
+function stepHTML(st, i){
+  var state = st.s || 'ok';
+  var bead = state==='skip' ? '<span class="bead skip">&ndash;</span>'
+           : '<span class="bead">'+(i+1)+'</span>';
+  return '<div class="step'+(state==='skip'?' skipped':'')+'">'+
+    '<div class="rail">'+bead+'</div>'+
+    '<div class="body"><div class="top"><b>'+st.n+'</b>'+
+    '<span class="tool">'+st.tool+'</span>'+
+    (st.t ? '<span class="t">'+st.t+'</span>' : '')+
+    '</div><div class="detail">'+st.d+'</div></div></div>';
+}
+
+function run(){
+  if(running) return;
+  running = true;
+  var p = PRESETS[active];
+  $('#send').disabled = true;
+  elSteps.innerHTML = '';
+  elVerdict.innerHTML = '';
+  elClock.textContent = 'running…';
+  p.steps.forEach(function(st,i){
+    later(function(){
+      elSteps.insertAdjacentHTML('beforeend', stepHTML(st,i));
+    }, 420 + i*430);
+  });
+  later(function(){
+    var last = '';
+    for(var i=p.steps.length-1;i>=0;i--){ if(p.steps[i].t){ last = p.steps[i].t; break; } }
+    elClock.textContent = 'finished in ' + last;
+    elVerdict.innerHTML = '<div class="verdict '+(p.verdict.k||'')+'"><b>'+p.verdict.b+'</b><p>'+p.verdict.p+'</p></div>';
+    $('#send').disabled = false;
+    running = false;
+  }, 420 + p.steps.length*430 + 200);
+}
+
+/* ---------------- break view ---------------- */
+var elFaults = $('#faults'), elTerm = $('#term'), elFTitle = $('#f-title'),
+    elFSub = $('#f-sub'), elFExtra = $('#f-extra');
+var counts = { lost:0, parked:0, alerts:0, faults:0 };
+var fTimers = [];
+
+function setCounts(){
+  $('#c-lost').textContent = counts.lost;
+  $('#c-parked').textContent = counts.parked;
+  $('#c-alerts').textContent = counts.alerts;
+  $('#c-faults').textContent = counts.faults;
+}
+
+function paintFaults(){
+  elFaults.innerHTML = FAULTS.map(function(f,i){
+    return '<button class="fault" data-i="'+i+'" aria-pressed="false"><b>'+f.label+'</b><span>'+f.sub+'</span></button>';
+  }).join('');
+  Array.prototype.forEach.call(elFaults.querySelectorAll('.fault'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(elFaults.querySelectorAll('.fault'), function(o){
+        o.setAttribute('aria-pressed', o===b ? 'true':'false');
+      });
+      runFault(parseInt(b.getAttribute('data-i'),10));
+    });
+  });
+}
+
+function runFault(i){
+  fTimers.forEach(clearTimeout); fTimers = [];
+  var f = FAULTS[i];
+  counts.faults += 1; counts.parked = 0;
+  setCounts();
+  elFTitle.textContent = f.title;
+  elFSub.textContent = f.note;
+  elTerm.innerHTML = '';
+  elFExtra.innerHTML = '';
+  f.lines.forEach(function(ln, k){
+    fTimers.push(setTimeout(function(){
+      var cls = ln[1] ? ' class="'+ln[1]+'"' : '';
+      elTerm.insertAdjacentHTML('beforeend',
+        '<div class="ln"><span class="tm">'+(ln[0]||'      ')+'</span><span'+cls+'>'+ln[2]+'</span></div>');
+      var set = ln[3];
+      if(set){
+        if(typeof set.parked === 'number') counts.parked = set.parked;
+        if(typeof set.alerts === 'number') counts.alerts += set.alerts;
+        setCounts();
+      }
+    }, 160 + k*190));
+  });
+  fTimers.push(setTimeout(function(){
+    var h = '';
+    if(f.alert){
+      h += '<div class="alertbox"><div class="lab">What the owner actually receives</div>'+
+           '<div class="phone" style="max-width:420px"><div class="ph-top"><i>K</i><b>Kestrel leads</b><em>alert</em></div>'+
+           '<div class="bubble">'+f.alert+'</div></div></div>';
+    }
+    f.points.forEach(function(pt){
+      h += '<div class="point"><b>'+pt[0]+'</b><p>'+pt[1]+'</p></div>';
+    });
+    elFExtra.innerHTML = h;
+  }, 160 + f.lines.length*190 + 220));
+}
+
+/* ---------------- boot ---------------- */
+paintPresets();
+paintForm();
+paintFaults();
+setCounts();
+
+})();
+</script>
+</body>
+</html>
