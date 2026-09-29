@@ -13,10 +13,12 @@ Live site: **https://yanisgreek8-jpg.github.io/portfolio/**
 | Prozymi Order Desk — working order-management web app | `/orders/` |
 | Meridian — seed round pitch deck (11 slides + PDF) | `/deck/` |
 | Meridian — SaaS landing page | `/meridian/` |
-| Prozymi Bakehouse — local business site | `/prozymi/` |
+| Prozymi Bakehouse — local business site, Greek / English | `/prozymi/` |
 
 All projects are self-initiated concepts. The companies are invented; the design, copy and code are mine.
 
 The interactive demos (`/automation/`, `/ai-chat/`, `/orders/`) are scripted front-end simulations — no server, no database, no live API calls. Everything you click happens in the browser.
+
+The bakery site is bilingual: Greek by default, English on a switch in the header. Both languages live in one file; the choice is remembered in the browser.
 
 Static HTML and CSS only — no build step, no dependencies. Served with GitHub Pages.
