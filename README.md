@@ -7,6 +7,7 @@ Live site: **https://yanisgreek8-jpg.github.io/portfolio/**
 | Page | Path |
 |---|---|
 | Portfolio hub | `/` |
+| Prapopoulos — drone spraying sales deck (6 slides) | `/prapopoulos/` |
 | Margin Review — an AI-written report before and after document design | `/document/` |
 | Kestrel Lead Engine — business automation demo, four screens | `/automation/` |
 | Northbound Assistant — AI support & sales chat + owner dashboard | `/ai-chat/` |
@@ -15,7 +16,7 @@ Live site: **https://yanisgreek8-jpg.github.io/portfolio/**
 | Meridian — SaaS landing page | `/meridian/` |
 | Prozymi Bakehouse — local business site, Greek / English | `/prozymi/` |
 
-All projects are self-initiated concepts. The companies are invented; the design, copy and code are mine.
+All projects are self-initiated concepts. Most of the companies are invented; the drone deck is a speculative pitch for a real Patras business I have no affiliation with. The design, copy and code are mine.
 
 The interactive demos (`/automation/`, `/ai-chat/`, `/orders/`) are scripted front-end simulations — no server, no database, no live API calls. Everything you click happens in the browser.
 
