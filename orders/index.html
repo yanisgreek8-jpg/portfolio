@@ -596,10 +596,11 @@ function seedOrders(){
       }
       if(!lines.length) return;
       var st;
-      if(off < 0)       st = r() < 0.04 ? 'cancelled' : 'delivered';
-      else if(off === 0) st = r() < 0.34 ? 'delivered' : (r() < 0.6 ? 'out' : 'baking');
-      else if(off === 1) st = r() < 0.16 ? 'draft' : 'confirmed';
-      else               st = r() < 0.55 ? 'draft' : 'confirmed';
+      var roll = r();                                   // one roll per order, so the odds below are the real odds
+      if(off < 0)        st = roll < 0.04 ? 'cancelled' : 'delivered';
+      else if(off === 0) st = roll < 0.34 ? 'delivered' : (roll < 0.74 ? 'out' : 'baking');
+      else if(off === 1) st = roll < 0.16 ? 'draft' : 'confirmed';
+      else               st = roll < 0.55 ? 'draft' : 'confirmed';
       out.push({
         id: 'PZ-' + k.slice(5).replace('-','') + '-' + c.id.slice(1) + String(out.length%97).padStart(2,'0'),
         cust: c.id, date: k, lines: lines, status: st,
@@ -616,9 +617,19 @@ function seedOrders(){
 var KEY = 'prozymi.orderdesk.v1';
 var state = { orders: [], seedDay: '', view: 'orders', date: '', status: 'all', q: '', sort: 'win', dir: 1, open: null };
 
+/* Which accounts are paused is part of the saved state, not just an in-memory flag,
+   so a pause survives a reload the same way an order does. */
+function pausedMap(){
+  var m = {}; CUSTOMERS.forEach(function(c){ if(c.paused) m[c.id] = 1; }); return m;
+}
+function applyPaused(m){
+  CUSTOMERS.forEach(function(c){ c.paused = !!(m && m[c.id]); });
+}
+
 function load(){
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch(e){}
+  if(saved && saved.paused) applyPaused(saved.paused);
   var fresh = seedOrders();
   if(saved && saved.seedDay === todayKey() && Array.isArray(saved.orders)){
     state.orders = saved.orders;
@@ -631,11 +642,17 @@ function load(){
   } else {
     state.orders = fresh;
   }
+  // Saved orders can outlive a change to the product list. Anything pointing at a code
+  // we no longer sell is dropped here, so nothing downstream has to keep checking.
+  state.orders.forEach(function(o){
+    if(Array.isArray(o.lines)) o.lines = o.lines.filter(function(l){ return !!P[l.sku] && l.qty > 0; });
+    else o.lines = [];
+  });
   state.seedDay = todayKey();
   save();
 }
 function save(){
-  try { localStorage.setItem(KEY, JSON.stringify({seedDay: state.seedDay, orders: state.orders})); } catch(e){}
+  try { localStorage.setItem(KEY, JSON.stringify({seedDay: state.seedDay, orders: state.orders, paused: pausedMap()})); } catch(e){}
 }
 
 /* ============ toasts ============ */
@@ -749,7 +766,7 @@ function emptyState(total){
   return '<div class="empty">' +
     '<svg width="42" height="42" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><circle cx="21" cy="21" r="12"/><path d="M30 30l10 10"/></svg>' +
     '<h3 class="serif">No match</h3>' +
-    '<p>' + total + ' order' + (total === 1 ? ' is' : 's are') + ' booked for this date, but ' + (total === 1 ? 'it does' : 'none of them') + ' not match the current search and filter.</p>' +
+    '<p>' + total + ' order' + (total === 1 ? ' is' : 's are') + ' booked for this date, but ' + (total === 1 ? 'it does not match' : 'none of them match') + ' the current search and filter.</p>' +
     '<button class="btn ghost" id="clearf">Clear search and filter</button></div>';
 }
 
@@ -893,7 +910,7 @@ function openOrder(id){
     return '<div class="line">' +
       '<div class="nm"><b>' + esc(p.name) + '</b><small>' + p.unit + ' · ' + money(p.price) + ' each</small></div>' +
       '<div class="stepper"><button data-step="' + i + '" data-by="-1">−</button>' +
-        '<input type="number" data-qty="' + i + '" value="' + l.qty + '" min="0" max="999" aria-label="Quantity of ' + esc(p.name) + '">' +
+        '<input type="number" data-qty="' + i + '" value="' + l.qty + '" min="1" max="999" aria-label="Quantity of ' + esc(p.name) + '">' +
         '<button data-step="' + i + '" data-by="1">+</button></div>' +
       '<div class="amt num">' + money(p.price * l.qty) + '</div>' +
       '<button class="rm" data-rm="' + i + '" aria-label="Remove ' + esc(p.name) + '"><svg width="13" height="13" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.9"><path d="M5 5l10 10M15 5L5 15"/></svg></button>' +
@@ -943,9 +960,9 @@ function touch(o, what){
 }
 
 /* ============ new-order modal ============ */
-var draft = {lines:[]};
+var draft = {lines:[], date:''};
 function openModal(custId){
-  draft = {lines:[]};
+  draft = {lines:[], date: state.date};
   var sel = el('m-cust');
   sel.innerHTML = '<option value="">Choose an account…</option>' + CUSTOMERS.map(function(c){
     return '<option value="' + c.id + '"' + (c.paused?' disabled':'') + '>' + esc(c.name) + (c.paused?' (paused)':'') + '</option>';
@@ -962,10 +979,16 @@ function openModal(custId){
   setTimeout(function(){ sel.focus(); }, 60);
 }
 function renderModalLines(){
-  var opts = PRODUCTS.map(function(p){ return '<option value="' + p.sku + '">' + esc(p.name) + ' — ' + money(p.price) + '</option>'; }).join('');
+  // The selected option is marked while the list is built, rather than patched into
+  // finished markup afterwards — string surgery on HTML breaks the moment two codes overlap.
+  function options(sku){
+    return PRODUCTS.map(function(p){
+      return '<option value="' + p.sku + '"' + (p.sku === sku ? ' selected' : '') + '>' + esc(p.name) + ' — ' + money(p.price) + '</option>';
+    }).join('');
+  }
   el('m-lines').innerHTML = draft.lines.map(function(l,i){
     return '<div class="line">' +
-      '<select data-msku="' + i + '" aria-label="Product">' + opts.replace('value="' + l.sku + '"', 'value="' + l.sku + '" selected') + '</select>' +
+      '<select data-msku="' + i + '" aria-label="Product">' + options(l.sku) + '</select>' +
       '<div class="stepper"><button data-mstep="' + i + '" data-by="-1">−</button>' +
         '<input type="number" data-mqty="' + i + '" value="' + l.qty + '" min="1" max="999" aria-label="Quantity">' +
         '<button data-mstep="' + i + '" data-by="1">+</button></div>' +
@@ -1053,15 +1076,15 @@ document.addEventListener('click', function(e){
   if(t.closest('#newbtn')){ openModal(null); return; }
   if((b = t.closest('[data-neworder]'))){ openModal(b.dataset.neworder); return; }
   if((b = t.closest('[data-toggle]'))){
-    var c = C[b.dataset.toggle]; c.paused = !c.paused;
+    var c = C[b.dataset.toggle]; c.paused = !c.paused; save();
     toast(c.paused ? c.name + ' paused' : c.name + ' reactivated', c.paused ? '' : 'good');
     render(); return;
   }
   if(t.closest('[data-close]') || t === el('scrim')){ closeAll(); return; }
   if(t.closest('#reset')){
     try { localStorage.removeItem(KEY); } catch(err){}
+    CUSTOMERS.forEach(function(c){ c.paused = (c.id === 'c8'); });   // back to the shipped default, before load() saves
     load(); state.status='all'; state.q=''; el('q').value='';
-    CUSTOMERS.forEach(function(c){ c.paused = (c.id === 'c8'); });
     toast('Demo data reset', 'good'); render(); return;
   }
 
@@ -1070,8 +1093,13 @@ document.addEventListener('click', function(e){
   if(o){
     if((b = t.closest('[data-step]'))){
       var i = +b.dataset.step, by = +b.dataset.by;
-      o.lines[i].qty = Math.max(0, Math.min(999, o.lines[i].qty + by));
-      if(o.lines[i].qty === 0) o.lines.splice(i,1);
+      var nq = Math.max(0, Math.min(999, o.lines[i].qty + by));
+      if(nq === 0){
+        var gone = P[o.lines[i].sku] ? P[o.lines[i].sku].name : o.lines[i].sku;
+        o.lines.splice(i,1);
+        touch(o, 'Removed ' + gone); save(); openOrder(o.id); render(); toast(gone + ' removed'); return;
+      }
+      o.lines[i].qty = nq;
       touch(o, 'Quantities changed'); save(); openOrder(o.id); render(); return;
     }
     if((b = t.closest('[data-rm]'))){
@@ -1112,12 +1140,18 @@ document.addEventListener('click', function(e){
 document.addEventListener('input', function(e){
   var t = e.target;
   if(t.id === 'q'){ state.q = t.value; if(state.view==='orders') renderOrders(); return; }
-  if(t.id === 'm-date'){ if(t.value) { draft.date = t.value; } return; }
+  if(t.id === 'm-date'){ if(t.value) draft.date = t.value; return; }
   if(t.dataset.qty !== undefined){
     var o = state.orders.filter(function(x){ return x.id===state.open; })[0];
     if(o){
+      if(t.value === '') return;                 // the field is mid-edit; wait for a number
       var li = +t.dataset.qty;
-      o.lines[li].qty = Math.max(0, Math.min(999, +t.value || 0));
+      // A line has to be worth at least one unit. Removing it is what the − button
+      // and the × button are for, so typing 0 here snaps back to 1 instead of
+      // leaving a phantom zero line on the order.
+      var typed = Math.max(1, Math.min(999, Math.round(+t.value) || 1));
+      o.lines[li].qty = typed;
+      if(+t.value !== typed) t.value = typed;
       touch(o,'Quantities changed'); save();
       // update the row and the totals in place so the caret stays where it is
       var row = t.closest('.line');
@@ -1144,14 +1178,16 @@ document.addEventListener('keydown', function(e){
   if(e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){
     e.preventDefault(); el('q').focus(); return;
   }
-  if((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey &&
+  if((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey && !e.altKey &&
      document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'SELECT'){
+    // don't stack a new-order form on top of an order that's already open
+    if(el('modal').classList.contains('on') || el('drawer').classList.contains('on')) return;
     e.preventDefault(); openModal(null);
   }
 });
 
 function saveNew(){
-  var cust = el('m-cust').value, date = el('m-date').value || state.date;
+  var cust = el('m-cust').value, date = el('m-date').value || draft.date || state.date;
   var ok = true;
   el('f-cust').classList.toggle('bad', !cust); if(!cust) ok = false;
   el('f-lines').classList.toggle('bad', !draft.lines.length); if(!draft.lines.length) ok = false;
@@ -1159,8 +1195,14 @@ function saveNew(){
   var merged = {};
   draft.lines.forEach(function(l){ merged[l.sku] = (merged[l.sku]||0) + l.qty; });
   var now = new Date();
+  // Order numbers have to be unique — a random pair of digits collides sooner than you'd think,
+  // so we walk up until nothing on the books is using the number.
+  var stem = 'PZ-' + date.slice(5).replace('-','') + '-' + cust.slice(1);
+  var taken = {}; state.orders.forEach(function(x){ taken[x.id] = 1; });
+  var n = Math.floor(Math.random()*90) + 10, id = stem + n, guard = 0;
+  while(taken[id] && guard++ < 90){ n = n >= 99 ? 10 : n + 1; id = stem + n; }
   var o = {
-    id: 'PZ-' + date.slice(5).replace('-','') + '-' + cust.slice(1) + String(Math.floor(Math.random()*90)+10),
+    id: id,
     cust: cust, date: date,
     lines: Object.keys(merged).map(function(s){ return {sku:s, qty:merged[s]}; }),
     status: 'confirmed', note: el('m-note').value,
