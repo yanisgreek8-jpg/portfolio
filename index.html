@@ -1,692 +1,199 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ivan K. — Presentation &amp; landing page design, Patra, Greece</title>
-<meta name="description" content="Live work samples: a report redesign you can compare page by page, presentation decks, landing pages, a working web app, an AI support assistant and a business automation you can run in the browser. Designed and hand-coded from scratch — click any project to open the real page.">
-<meta property="og:title" content="Ivan K. — Presentation &amp; landing page design">
-<meta property="og:description" content="Live, clickable work samples — a before-and-after report redesign, decks, landing pages, a web app, an AI assistant and an automation you can actually run.">
-<meta property="og:type" content="website">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ivan K. — Presentation &amp; web design</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230B0D10'/><text x='16' y='22' font-size='16' font-family='Georgia,serif' fill='%23E8B341' text-anchor='middle'>I</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=IBM+Plex+Sans:wght@400;600&display=swap">
 <style>
-  :root{
-    --bg:#0B0D10;
-    --bg-2:#101419;
-    --line:rgba(255,255,255,.10);
-    --line-2:rgba(255,255,255,.18);
-    --fg:#F2F4F7;
-    --fg-soft:#9AA3AE;
-    --fg-dim:#6B7480;
-    --accent:#E8B341;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--bg);
-    color:var(--fg);
-    font-family:'Manrope',system-ui,-apple-system,sans-serif;
-    font-size:17px;
-    line-height:1.7;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  a{color:inherit;text-decoration:none;}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
-  .serif{font-family:'Instrument Serif',Georgia,serif;font-weight:400;letter-spacing:-0.01em;line-height:1.05;}
-  .eyebrow{
-    font-size:11px;letter-spacing:0.24em;text-transform:uppercase;
-    font-weight:600;color:var(--fg-dim);
-  }
-
-  /* ---------- nav ---------- */
-  header{
-    position:sticky;top:0;z-index:50;
-    background:rgba(11,13,16,.82);
-    backdrop-filter:saturate(140%) blur(14px);
-    border-bottom:1px solid var(--line);
-  }
-  .nav{display:flex;align-items:center;justify-content:space-between;height:66px;}
-  .logo{display:flex;align-items:center;gap:11px;font-weight:600;font-size:15px;letter-spacing:-0.01em;}
-  .logo-mark{
-    width:30px;height:30px;border-radius:8px;
-    background:linear-gradient(145deg,#1b212a,#0e1217);
-    border:1px solid var(--line-2);
-    display:grid;place-items:center;
-    font-family:'Instrument Serif',serif;font-size:16px;color:var(--accent);
-  }
-  .nav-links{display:flex;align-items:center;gap:26px;font-size:14px;color:var(--fg-soft);}
-  .nav-links a:hover{color:var(--fg);}
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:10px 20px;border-radius:999px;
-    font-size:14px;font-weight:600;letter-spacing:-0.01em;
-    transition:transform .18s ease, background .18s ease, border-color .18s ease;
-  }
-  .btn-primary{background:var(--accent);color:#14100A;}
-  .btn-primary:hover{transform:translateY(-1px);background:#F0C15C;}
-  .btn-ghost{border:1px solid var(--line-2);color:var(--fg);}
-  .btn-ghost:hover{border-color:rgba(255,255,255,.4);transform:translateY(-1px);}
-  @media(max-width:760px){.nav-links a:not(.btn){display:none;}}
-
-  /* ---------- hero ---------- */
-  .hero{position:relative;padding:118px 0 88px;}
-  .hero::before{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:
-      radial-gradient(760px 420px at 18% -8%, rgba(232,179,65,.13), transparent 62%),
-      radial-gradient(620px 420px at 88% 8%, rgba(76,120,255,.10), transparent 62%);
-  }
-  .hero-inner{position:relative;max-width:840px;}
-  h1{font-size:clamp(40px,6.4vw,74px);margin:20px 0 22px;}
-  h1 em{font-style:italic;color:var(--accent);}
-  .lede{font-size:clamp(17px,2.1vw,21px);color:var(--fg-soft);max-width:660px;line-height:1.62;}
-  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px;}
-  .facts{
-    display:flex;flex-wrap:wrap;gap:0;margin-top:62px;
-    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  }
-  .fact{flex:1 1 180px;padding:22px 26px 22px 0;}
-  .fact + .fact{padding-left:26px;border-left:1px solid var(--line);}
-  .fact-n{font-family:'Instrument Serif',serif;font-size:32px;line-height:1;}
-  .fact-l{font-size:13px;color:var(--fg-dim);margin-top:7px;letter-spacing:.01em;}
-
-  /* ---------- section ---------- */
-  section{padding:88px 0;}
-  .sec-head{max-width:640px;margin-bottom:44px;}
-  .sec-head h2{font-size:clamp(28px,4vw,42px);margin:14px 0 14px;}
-  .sec-head p{color:var(--fg-soft);}
-
-  /* ---------- project cards ---------- */
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px;}
-  .card{
-    position:relative;display:flex;flex-direction:column;
-    background:var(--bg-2);
-    border:1px solid var(--line);border-radius:18px;
-    overflow:hidden;
-    transition:transform .22s ease, border-color .22s ease;
-  }
-  .card:hover{transform:translateY(-4px);border-color:var(--line-2);}
-  .shot{
-    position:relative;aspect-ratio:16/10;overflow:hidden;
-    background:#0e1217;border-bottom:1px solid var(--line);
-  }
-  .shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
-    transition:transform .5s cubic-bezier(.2,.7,.2,1);}
-  .card:hover .shot img{transform:scale(1.035);}
-  .shot-svg svg{width:100%;height:100%;display:block;
-    transition:transform .5s cubic-bezier(.2,.7,.2,1);}
-  .card:hover .shot-svg svg{transform:scale(1.035);}
-  .tag{
-    position:absolute;top:13px;left:13px;z-index:2;
-    padding:5px 11px;border-radius:999px;
-    font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-    background:rgba(11,13,16,.78);border:1px solid var(--line-2);
-    backdrop-filter:blur(8px);color:var(--fg);
-  }
-  .card-body{padding:24px 24px 26px;display:flex;flex-direction:column;flex:1;}
-  .card-body h3{font-size:21px;font-weight:600;letter-spacing:-0.015em;margin-bottom:9px;}
-  .card-body p{font-size:15px;color:var(--fg-soft);line-height:1.62;flex:1;}
-  .meta{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0 20px;}
-  .chip{
-    font-size:11.5px;color:var(--fg-dim);
-    border:1px solid var(--line);border-radius:6px;padding:4px 9px;
-  }
-  .card-link{
-    display:inline-flex;align-items:center;gap:8px;
-    font-size:14px;font-weight:600;color:var(--accent);
-  }
-  .card-link svg{transition:transform .2s ease;}
-  .card:hover .card-link svg{transform:translateX(4px);}
-
-  /* ---------- process ---------- */
-  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;background:var(--line);
-    border:1px solid var(--line);border-radius:16px;overflow:hidden;}
-  .step{background:var(--bg);padding:28px 24px 30px;}
-  .step-n{font-family:'Instrument Serif',serif;font-size:15px;color:var(--accent);
-    border:1px solid var(--line-2);border-radius:999px;width:30px;height:30px;
-    display:grid;place-items:center;margin-bottom:16px;}
-  .step h4{font-size:16px;font-weight:600;margin-bottom:8px;letter-spacing:-0.01em;}
-  .step p{font-size:14.5px;color:var(--fg-soft);line-height:1.6;}
-
-  /* ---------- cta ---------- */
-  .cta{
-    position:relative;overflow:hidden;
-    border:1px solid var(--line);border-radius:22px;
-    background:linear-gradient(150deg,#12171d,#0c0f13);
-    padding:58px 46px;text-align:center;
-  }
-  .cta::before{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:radial-gradient(520px 260px at 50% 0%, rgba(232,179,65,.15), transparent 66%);
-  }
-  .cta-inner{position:relative;}
-  .cta h2{font-size:clamp(26px,3.6vw,40px);margin-bottom:16px;}
-  .cta p{color:var(--fg-soft);max-width:520px;margin:0 auto 30px;}
-
-  footer{border-top:1px solid var(--line);padding:34px 0 46px;}
-  .foot{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;
-    font-size:13.5px;color:var(--fg-dim);}
-  .note{font-size:13px;color:var(--fg-dim);margin-top:26px;line-height:1.6;max-width:680px;}
-
-  @media(max-width:620px){
-    .hero{padding:78px 0 62px;}
-    section{padding:66px 0;}
-    .cta{padding:44px 24px;}
-    .fact + .fact{padding-left:20px;}
-  }
-  @media(max-width:400px){
-    .grid{grid-template-columns:1fr;}
-    .steps{grid-template-columns:1fr;}
-  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#0E2247;color:#F4F6F1;font-family:'IBM Plex Sans',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  header{padding:96px 0 64px}
+  .eyebrow{font-size:14px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#A6CE39;margin:0 0 20px}
+  h1{font-family:Domine,Georgia,serif;font-size:clamp(34px,5vw,58px);line-height:1.1;font-weight:600;margin:0 0 20px}
+  .lede{font-size:clamp(17px,2.2vw,21px);line-height:1.55;color:#C2CFE4;max-width:720px;margin:0}
+  main{background:#F4F6F1;color:#16305F;padding:72px 0 96px}
+  .case-head{max-width:760px;margin:0 0 40px}
+  h2{font-family:Domine,Georgia,serif;font-size:clamp(26px,3.6vw,40px);line-height:1.15;font-weight:600;margin:0 0 14px}
+  .meta{font-size:15px;color:#5C6B80;margin:0 0 10px}
+  .note{display:inline-block;font-size:14px;line-height:1.5;color:#4E6B0E;background:#EDF4DC;border:1px solid #CFE09B;border-radius:999px;padding:8px 16px;margin:6px 0 0}
+  .stage{position:relative;width:100%;padding-top:56.25%;margin:0 0 28px;border-radius:14px;overflow:hidden;
+         box-shadow:0 1px 2px rgba(16,36,71,.10),0 12px 30px rgba(16,36,71,.13)}
+  .canvas{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left}
+  .canvas section{position:relative;width:1920px;height:1080px;overflow:hidden}
+  .canvas h1,.canvas h2,.canvas h3,.canvas p{margin:0}
+  .canvas img{display:block}
+  footer{background:#0E2247;color:#9FB1CC;font-size:15px;padding:56px 0 72px;line-height:1.6}
+  footer a{color:#A6CE39;text-decoration:none}
+  @media (max-width:640px){header{padding:64px 0 44px}main{padding:52px 0 68px}}
 </style>
 </head>
 <body>
+<header><div class="wrap">
+  <p class="eyebrow">Ivan K. &middot; Patras, Greece</p>
+  <h1>Sales decks, pitch decks and web apps</h1>
+  <p class="lede">I build presentations and small web products for businesses that sell to other businesses. Below is a self-initiated concept made to show how I work.</p>
+</div></header>
 
-<header>
-  <div class="wrap nav">
-    <a class="logo" href="#top">
-      <span class="logo-mark">I</span>
-      <span>Ivan&nbsp;K.</span>
-    </a>
-    <nav class="nav-links">
-      <a href="#work">Work</a>
-      <a href="#process">Process</a>
-      <a class="btn btn-primary" href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Hire on Upwork</a>
-    </nav>
+<main><div class="wrap">
+  <div class="case-head" id="prapopoulos-deck">
+    <h2>Prapopoulos &mdash; drone spraying sales deck</h2>
+    <p class="meta">Concept &middot; 6 slides &middot; agricultural technology &middot; English</p>
+    <p class="meta">A B2B deck for a Patras supplier of DJI agriculture drones, aimed at vineyard and orchard growers. Built around one argument: drone spraying is a scheduling answer before it is a technology answer.</p>
+    <p class="note">Self-initiated concept &mdash; not affiliated with Prapopoulos</p>
   </div>
-</header>
+  <div class="stage"><div class="canvas"><section id="cover" data-transition="fade" style="background:#16305F;color:#F4F6F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:flex-end">
+<img src="assets/drone.png" alt="A DJI Agras spraying drone standing at the edge of a green field with its battery case" style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;object-fit:cover">
+<div style="position:absolute;left:0px;top:0px;width:1920px;height:1080px;background:linear-gradient(105deg, #0E2247 0%, #0E2247 46%, rgba(14,34,71,0.62) 68%, rgba(14,34,71,0.30) 100%)"></div>
+<img src="assets/logo.png" alt="Prapopoulos logo, established 1886" style="position:absolute;left:128px;top:80px;width:380px;height:124px;object-fit:cover;border-radius:10px">
+<div style="display:flex;flex-direction:column;gap:32px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#A6CE39">DJI Agriculture &middot; Patras</p>
+<h1 style="font-family:'Domine', Georgia, serif;font-size:100px;font-weight:600;line-height:1.05;color:#FFFFFF;width:1000px">Spray the whole vineyard before lunch</h1>
+<p style="font-size:34px;line-height:1.4;color:#DCE4F0;width:900px">A pass that takes three to four days on the ground takes two and a half hours in the air. Supplied, trained and serviced here in Patras.</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-size:24px;color:#9FB1CC">Self-initiated concept &mdash; not affiliated with Prapopoulos</p>
 
-<main id="top">
+</section></div></div>
+<div class="stage"><div class="canvas"><section id="problem" style="background:#F4F6F1;color:#16305F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;gap:56px">
+<img src="assets/spraying.png" alt="A worker in overalls and a mask spraying by hand between young trees at sunrise" style="width:600px;height:792px;object-fit:cover;border-radius:16px">
+<div style="flex:1;display:flex;flex-direction:column;gap:36px">
+<h2 style="font-family:'Domine', Georgia, serif;font-size:64px;font-weight:600;line-height:1.1">What a spraying season actually costs</h2>
+<div style="display:flex;flex-direction:column;gap:12px;border-left:6px solid #A6CE39;padding:4px 0 4px 28px">
+<h3 style="font-size:34px;font-weight:600">Three days for one pass</h3>
+<p style="font-size:28px;line-height:1.45;color:#48566B">A tractor on a hillside plot needs most of a week to cover the rows. The weather rarely gives you most of a week.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;border-left:6px solid #A6CE39;padding:4px 0 4px 28px">
+<h3 style="font-size:34px;font-weight:600">A crew you cannot book</h3>
+<p style="font-size:28px;line-height:1.45;color:#48566B">Manual spraying runs around 320 euro per operation, and every grower nearby wants the same people in the same fortnight.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;border-left:6px solid #A6CE39;padding:4px 0 4px 28px">
+<h3 style="font-size:34px;font-weight:600">Product on the ground</h3>
+<p style="font-size:28px;line-height:1.45;color:#48566B">Ground equipment puts far more chemical into the plot than the vine takes up. You pay for that twice, at purchase and at runoff.</p>
+</div>
+<p style="font-size:30px;line-height:1.45;color:#48566B">None of this is a spraying problem. It is a scheduling problem.</p>
+</div>
+<img src="assets/logo.png" alt="Prapopoulos logo" style="position:absolute;right:128px;bottom:56px;width:210px;height:68px;object-fit:cover">
 
-  <div class="hero">
-    <div class="wrap hero-inner">
-      <p class="eyebrow">Patra, Greece &middot; Presentation &amp; web design</p>
-      <h1 class="serif">Slides and pages that look like a <em>real company</em> made them.</h1>
-      <p class="lede">I design presentation decks, landing pages and small working web apps, then build them properly — no templates, no stock layouts. Everything below is live. Click it, scroll it, judge it for yourself.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="#work">See the live work
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
-        <a class="btn btn-ghost" href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Upwork profile</a>
-      </div>
+</section></div></div>
+<div class="stage"><div class="canvas"><section id="numbers" data-transition="fade" style="background:#16305F;color:#F4F6F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:space-between;gap:44px">
+<div style="display:flex;flex-direction:column;gap:20px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#A6CE39">Measured on a working vineyard</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1;color:#F4F6F1">What changes when the drone makes the pass</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px">
+<p style="font-size:26px;letter-spacing:2px;text-transform:uppercase;color:#8FA1BE">One full pass, ground against air</p>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="font-size:28px;color:#C2CFE4;width:190px">Tractor</p>
+<div style="width:1130px;height:56px;background:#2A4C82;border-radius:8px"></div>
+<p style="font-size:28px;font-weight:600;color:#F4F6F1;width:180px">3&ndash;4 days</p>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<p style="font-size:28px;color:#C2CFE4;width:190px">Agras drone</p>
+<div style="width:50px;height:56px;background:#A6CE39;border-radius:8px"></div>
+<p style="font-size:28px;font-weight:600;color:#A6CE39;width:180px">2.5 hours</p>
+</div>
+</div>
+<div style="display:flex;gap:40px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;border-top:4px solid #A6CE39;padding:28px 0 0">
+<p style="font-family:'Domine', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#A6CE39">54%</p>
+<p style="font-size:28px;line-height:1.4;color:#C2CFE4">less chemical per operation, from 241.6 down to 111.8 units</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;border-top:4px solid #A6CE39;padding:28px 0 0">
+<p style="font-family:'Domine', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#A6CE39">80 EUR</p>
+<p style="font-size:28px;line-height:1.4;color:#C2CFE4">labour per operation, down from 320 euro</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;border-top:4px solid #A6CE39;padding:28px 0 0">
+<p style="font-family:'Domine', Georgia, serif;font-size:88px;font-weight:600;line-height:1;color:#A6CE39">22 km/h</p>
+<p style="font-size:28px;line-height:1.4;color:#C2CFE4">working speed at four metre row spacing</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-size:24px;color:#8FA1BE">Source: DJI Agriculture case study, Agras T50 vineyard operation, Romania</p>
+<img src="assets/logo.png" alt="Prapopoulos logo" style="position:absolute;right:128px;bottom:56px;width:210px;height:68px;object-fit:cover;border-radius:6px">
 
-      <div class="facts">
-        <div class="fact"><div class="fact-n serif">3–6</div><div class="fact-l">days typical turnaround</div></div>
-        <div class="fact"><div class="fact-n serif">100%</div><div class="fact-l">hand-coded, no page builders</div></div>
-        <div class="fact"><div class="fact-n serif">EN&nbsp;/&nbsp;EL&nbsp;/&nbsp;RU</div><div class="fact-l">languages I work in</div></div>
-        <div class="fact"><div class="fact-n serif">PPTX&nbsp;+&nbsp;PDF</div><div class="fact-l">editable source files always</div></div>
-      </div>
+</section></div></div>
+<div class="stage"><div class="canvas"><section id="offer" style="display:flex; flex-direction:column; justify-content:flex-end; gap:44px; padding:128px 128px 160px; background:#f4f6f1">
+  <img src="assets/field-aerial.png" alt="Aerial view of a grower standing between crop rows, checking a field map on a tablet" style="position:absolute; top:0; left:0; width:1920px; height:420px; object-fit:cover">
+  <h2 style="font-family:Domine, Georgia, serif; font-size:72px; font-weight:600; line-height:1.1; color:#16305f">What we supply</h2>
+  <div style="display:flex; flex-direction:row; gap:32px">
+    <div style="display:flex; flex-direction:column; gap:18px; flex:1; padding:40px; background:#ffffff; border:1px solid #d6dde7; border-top:6px solid #a6ce39; border-radius:16px">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:52px; height:52px; stroke:#4e6b0e"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+      <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; font-weight:600; color:#16305f">DJI Agras and Enterprise</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.45; color:#48566b">Spraying and survey drones for vineyards, orchards and open field, plus spectral cameras and smart irrigation.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:18px; flex:1; padding:40px; background:#ffffff; border:1px solid #d6dde7; border-top:6px solid #a6ce39; border-radius:16px">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:52px; height:52px; stroke:#4e6b0e"><path d="M14.7 6.3a4 4 0 0 1-5 5L4 17v3h3l5.7-5.7a4 4 0 0 0 5-5l-2.4 2.4-2.1-2.1 2.5-2.3z"/></svg>
+      <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; font-weight:600; color:#16305f">Grupo Sanz machinery</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.45; color:#48566b">We represent the Spanish manufacturer in Greece, so ground equipment and drone come from one supplier.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:18px; flex:1; padding:40px; background:#ffffff; border:1px solid #d6dde7; border-top:6px solid #a6ce39; border-radius:16px">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:52px; height:52px; stroke:#4e6b0e"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+      <h3 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:32px; font-weight:600; color:#16305f">INOX tanks and storage</h3>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.45; color:#48566b">Stainless containers for wine, olive oil and honey, cooling tanks and nitrogen systems.</p>
     </div>
   </div>
+  <img src="assets/logo.png" alt="Prapopoulos logo" style="position:absolute; right:128px; bottom:56px; width:210px; height:68px; object-fit:cover">
+  
+</section></div></div>
+<div class="stage"><div class="canvas"><section id="why" style="background:#E9EDF3;color:#16305F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Domine', Georgia, serif;font-size:72px;font-weight:600;line-height:1.1">Why buy it here and not online</h2>
+<div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:44px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:48px;height:48px;stroke:#4E6B0E"><path d="M12 2.5 14.4 5l3.4-.3.4 3.4 2.6 2.2-2 2.8.9 3.3-3.3.9-1.6 3-3.1-1.4-3.1 1.4-1.6-3-3.3-.9.9-3.3-2-2.8L5.8 8.1 6.2 4.7 9.6 5z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4"/></svg>
+<h3 style="font-size:36px;font-weight:600">Since 1886</h3>
+<p style="font-size:28px;line-height:1.45;color:#48566B">The business goes back to Afoi Prapopoulos A.E. We are not a reseller that appeared with the drone market.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:48px;height:48px;stroke:#4E6B0E"><path d="M12 2.5 14.4 5l3.4-.3.4 3.4 2.6 2.2-2 2.8.9 3.3-3.3.9-1.6 3-3.1-1.4-3.1 1.4-1.6-3-3.3-.9.9-3.3-2-2.8L5.8 8.1 6.2 4.7 9.6 5z"/><circle cx="12" cy="12" r="3"/></svg>
+<h3 style="font-size:36px;font-weight:600">Service inside the city</h3>
+<p style="font-size:28px;line-height:1.45;color:#48566B">Aristotelous 123 and Philopoimen 36 to 42, Patras. A repair is a drive across town, not a shipment abroad.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:48px;height:48px;stroke:#4E6B0E"><path d="M10.5 13.5a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.6 1.6"/><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.6-1.6"/></svg>
+<h3 style="font-size:36px;font-weight:600">Two manufacturers, one supplier</h3>
+<p style="font-size:28px;line-height:1.45;color:#48566B">DJI agriculture and enterprise lines together with Grupo Sanz, handled by the same people.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:48px;height:48px;stroke:#4E6B0E"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16.5 5.2a3.5 3.5 0 0 1 0 6.6"/><path d="M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/></svg>
+<h3 style="font-size:36px;font-weight:600">We know your season</h3>
+<p style="font-size:28px;line-height:1.45;color:#48566B">Vines, olives and honey in this region, not a general catalogue written somewhere else.</p>
+</div>
+</div>
+<img src="assets/logo.png" alt="Prapopoulos logo" style="position:absolute;right:128px;bottom:56px;width:210px;height:68px;object-fit:cover">
 
-  <section id="work">
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="eyebrow">Selected work</p>
-        <h2 class="serif">Seven live samples</h2>
-        <p>Concept projects built end to end to show how I work — the writing, the layout and the code are all mine.</p>
-      </div>
+</section></div></div>
+<div class="stage"><div class="canvas"><section id="next" data-transition="fade" style="background:#0E2247;color:#F4F6F1;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:flex-end">
+<img src="assets/drone.png" alt="A DJI Agras spraying drone at the edge of a green field" style="position:absolute;right:0px;top:0px;width:820px;height:1080px;object-fit:cover">
+<div style="position:absolute;right:0px;top:0px;width:820px;height:1080px;background:linear-gradient(90deg, #0E2247 0%, rgba(14,34,71,0.55) 38%, rgba(14,34,71,0.15) 100%)"></div>
+<img src="assets/logo.png" alt="Prapopoulos logo, established 1886" style="position:absolute;left:128px;top:88px;width:380px;height:124px;object-fit:cover;border-radius:10px">
+<div style="display:flex;flex-direction:column;gap:28px">
+<p style="font-size:28px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:#A6CE39">Next step</p>
+<h2 style="font-family:'Domine', Georgia, serif;font-size:84px;font-weight:600;line-height:1.1;color:#FFFFFF;width:1000px">A demonstration flight on your own plot</h2>
+<p style="font-size:34px;line-height:1.4;color:#DCE4F0;width:940px">One afternoon, your rows, your product. You see the coverage before anything is decided.</p>
+<p style="font-size:32px;font-weight:600;line-height:1.5;color:#A6CE39;width:940px">info@prapopoulos.com &nbsp;&middot;&nbsp; 2610 641641 &nbsp;&middot;&nbsp; prapopoulos.com</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:900px;font-size:24px;color:#9FB1CC">Self-initiated concept &mdash; not affiliated with Prapopoulos</p>
 
-      <div class="grid">
+</section></div></div>
+</div></main>
 
-        <a class="card" href="./document/">
-          <div class="shot shot-svg">
-            <span class="tag">Document design</span>
-            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Two pages side by side: on the left a page of undifferentiated raw text with a markdown pipe table, on the right the same content laid out with a heading, a narrow column, a chart and a typeset table">
-              <rect width="400" height="250" fill="#F4F5F7"/>
+<footer><div class="wrap">
+  <p>Ivan K. &middot; Patras, Greece &middot; <a href="https://www.upwork.com/">Hire me on Upwork</a></p>
+  <p>Company names, logos and photographs belong to their owners. Figures on the data slide are published by DJI Agriculture.</p>
+</div></footer>
 
-              <!-- raw page -->
-              <rect x="16" y="24" width="170" height="202" rx="4" fill="#FFFFFF" stroke="#E3E6E9" stroke-width="1"/>
-              <g fill="#B9C0C6">
-                <rect x="28" y="38" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="47" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="56" width="112" height="3.4" rx="1.7"/>
-                <rect x="28" y="70" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="79" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="88" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="97" width="134" height="3.4" rx="1.7"/>
-                <rect x="28" y="111" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="120" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="129" width="98" height="3.4" rx="1.7"/>
-              </g>
-              <!-- markdown hashes, same weight as everything else -->
-              <g fill="#9AA2A9">
-                <rect x="28" y="29" width="9" height="3.4" rx="1"/>
-                <rect x="28" y="143" width="9" height="3.4" rx="1"/>
-                <rect x="41" y="143" width="62" height="3.4" rx="1.7"/>
-              </g>
-              <!-- pipe table: monospace text between bar characters, not a real table -->
-              <g fill="#C3C9CE">
-                <rect x="33" y="157" width="26" height="2.8" rx="1"/><rect x="77" y="157" width="20" height="2.8" rx="1"/><rect x="121" y="157" width="34" height="2.8" rx="1"/>
-                <rect x="33" y="173" width="34" height="2.8" rx="1"/><rect x="77" y="173" width="14" height="2.8" rx="1"/><rect x="121" y="173" width="44" height="2.8" rx="1"/>
-                <rect x="33" y="181" width="30" height="2.8" rx="1"/><rect x="77" y="181" width="16" height="2.8" rx="1"/><rect x="121" y="181" width="38" height="2.8" rx="1"/>
-                <rect x="33" y="189" width="24" height="2.8" rx="1"/><rect x="77" y="189" width="14" height="2.8" rx="1"/><rect x="121" y="189" width="48" height="2.8" rx="1"/>
-              </g>
-              <!-- the |----|----| separator row -->
-              <g fill="#C3C9CE">
-                <rect x="33" y="165" width="4" height="2.4"/><rect x="39" y="165" width="4" height="2.4"/><rect x="45" y="165" width="4" height="2.4"/><rect x="51" y="165" width="4" height="2.4"/><rect x="57" y="165" width="4" height="2.4"/><rect x="63" y="165" width="4" height="2.4"/>
-                <rect x="77" y="165" width="4" height="2.4"/><rect x="83" y="165" width="4" height="2.4"/><rect x="89" y="165" width="4" height="2.4"/><rect x="95" y="165" width="4" height="2.4"/><rect x="101" y="165" width="4" height="2.4"/><rect x="107" y="165" width="4" height="2.4"/>
-                <rect x="121" y="165" width="4" height="2.4"/><rect x="127" y="165" width="4" height="2.4"/><rect x="133" y="165" width="4" height="2.4"/><rect x="139" y="165" width="4" height="2.4"/><rect x="145" y="165" width="4" height="2.4"/><rect x="151" y="165" width="4" height="2.4"/><rect x="157" y="165" width="4" height="2.4"/><rect x="163" y="165" width="4" height="2.4"/>
-              </g>
-              <!-- the bar characters themselves -->
-              <g fill="#9AA2A9">
-                <rect x="28" y="155.4" width="1.4" height="6"/><rect x="72" y="155.4" width="1.4" height="6"/><rect x="116" y="155.4" width="1.4" height="6"/><rect x="172.6" y="155.4" width="1.4" height="6"/>
-                <rect x="28" y="163.4" width="1.4" height="6"/><rect x="72" y="163.4" width="1.4" height="6"/><rect x="116" y="163.4" width="1.4" height="6"/><rect x="172.6" y="163.4" width="1.4" height="6"/>
-                <rect x="28" y="171.4" width="1.4" height="6"/><rect x="72" y="171.4" width="1.4" height="6"/><rect x="116" y="171.4" width="1.4" height="6"/><rect x="172.6" y="171.4" width="1.4" height="6"/>
-                <rect x="28" y="179.4" width="1.4" height="6"/><rect x="72" y="179.4" width="1.4" height="6"/><rect x="116" y="179.4" width="1.4" height="6"/><rect x="172.6" y="179.4" width="1.4" height="6"/>
-                <rect x="28" y="187.4" width="1.4" height="6"/><rect x="72" y="187.4" width="1.4" height="6"/><rect x="116" y="187.4" width="1.4" height="6"/><rect x="172.6" y="187.4" width="1.4" height="6"/>
-              </g>
-              <g fill="#B9C0C6">
-                <rect x="28" y="203" width="146" height="3.4" rx="1.7"/>
-                <rect x="28" y="212" width="86" height="3.4" rx="1.7"/>
-              </g>
-
-              <!-- arrow -->
-              <path d="M192 125h14" stroke="#C6603C" stroke-width="2" stroke-linecap="round"/>
-              <path d="M202 120.5l5 4.5-5 4.5" stroke="#C6603C" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-
-              <!-- designed page -->
-              <rect x="214" y="24" width="170" height="202" rx="4" fill="#FFFFFF" stroke="#E3E6E9" stroke-width="1"/>
-              <!-- running heads -->
-              <g fill="#D3D8DC"><rect x="226" y="36" width="30" height="2.2" rx="1.1"/><rect x="342" y="36" width="30" height="2.2" rx="1.1"/></g>
-              <!-- section rule + number + serif heading -->
-              <rect x="226" y="48" width="146" height="1.8" fill="#1B2A41"/>
-              <rect x="226" y="55" width="9" height="2.6" rx="1" fill="#C6603C"/>
-              <rect x="226" y="63" width="104" height="6.4" rx="2" fill="#1B2A41"/>
-              <rect x="226" y="73" width="68" height="6.4" rx="2" fill="#1B2A41"/>
-              <!-- narrow reading measure -->
-              <g fill="#C3C9CE">
-                <rect x="226" y="90" width="108" height="2.6" rx="1.3"/>
-                <rect x="226" y="96.5" width="108" height="2.6" rx="1.3"/>
-                <rect x="226" y="103" width="108" height="2.6" rx="1.3"/>
-                <rect x="226" y="109.5" width="74" height="2.6" rx="1.3"/>
-              </g>
-              <!-- figure label + chart, breaking out full width -->
-              <rect x="226" y="124" width="14" height="2.6" rx="1" fill="#C6603C"/>
-              <rect x="246" y="124.5" width="48" height="2.2" rx="1.1" fill="#C3C9CE"/>
-              <rect x="226" y="131" width="146" height="1.2" fill="#1B2A41"/>
-              <g fill="#1B2A41">
-                <rect x="230" y="152" width="17" height="24"/>
-                <rect x="254" y="146" width="17" height="30"/>
-                <rect x="278" y="158" width="17" height="18"/>
-                <rect x="326" y="140" width="17" height="36"/>
-                <rect x="350" y="149" width="17" height="27"/>
-              </g>
-              <rect x="302" y="163" width="17" height="13" fill="#C6603C"/>
-              <rect x="226" y="176" width="146" height="1" fill="#D9DDE2"/>
-              <!-- typeset table -->
-              <rect x="226" y="188" width="146" height="1.2" fill="#1B2A41"/>
-              <g fill="#C3C9CE">
-                <rect x="226" y="193" width="38" height="2.4" rx="1.2"/>
-                <rect x="284" y="193" width="22" height="2.4" rx="1.2"/>
-                <rect x="340" y="193" width="32" height="2.4" rx="1.2"/>
-                <rect x="226" y="203" width="46" height="2.4" rx="1.2"/>
-                <rect x="284" y="203" width="22" height="2.4" rx="1.2"/>
-                <rect x="340" y="203" width="32" height="2.4" rx="1.2"/>
-              </g>
-              <g fill="#EDEFF1"><rect x="226" y="199" width="146" height=".9"/><rect x="226" y="209" width="146" height=".9"/></g>
-              <!-- page number -->
-              <rect x="364" y="216" width="8" height="3" rx="1.5" fill="#C6603C"/>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3>Margin Review — the same AI report, before and after design</h3>
-            <p>A 2,500-word consulting report, twice. First exactly as a chatbot returns it and someone pastes it into Word: markdown hashes left in the text, tables as pipe characters, seven pages at one size with no cover and no page numbers. Then the same file after layout. Not one sentence of the report was rewritten — what changed is a cover, a contents page whose numbers are generated when the PDF renders, a narrow reading measure, seven typeset tables and five charts drawn from the numbers the text was already describing. Flip the two versions page by page, read all twelve pages on the site, or download both PDFs and check the words against each other.</p>
-            <div class="meta"><span class="chip">Report layout</span><span class="chip">Charts from data</span><span class="chip">Before / after</span></div>
-            <span class="card-link">Compare the versions
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <a class="card" href="./automation/">
-          <div class="shot shot-svg">
-            <span class="tag">Automation</span>
-            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="An automation flow: a web form feeds a chain of steps that branches into a phone alert, an email and a spreadsheet, with a red retry lane underneath">
-              <rect width="400" height="250" fill="#F4F5F7"/>
-
-              <!-- form card -->
-              <rect x="14" y="40" width="82" height="118" rx="9" fill="#FFFFFF" stroke="#E3E6E9" stroke-width="1"/>
-              <path d="M14 49a9 9 0 0 1 9-9h64a9 9 0 0 1 9 9v10H14V49z" fill="#0A1417"/>
-              <g fill="#3E4A50"><circle cx="24" cy="49.5" r="2.4"/><circle cx="32" cy="49.5" r="2.4"/><circle cx="40" cy="49.5" r="2.4"/></g>
-              <g fill="#EDEFF1"><rect x="24" y="70" width="62" height="12" rx="4"/><rect x="24" y="88" width="62" height="12" rx="4"/><rect x="24" y="106" width="62" height="12" rx="4"/></g>
-              <g fill="#C3C9CE"><rect x="29" y="74.5" width="30" height="3" rx="1.5"/><rect x="29" y="92.5" width="40" height="3" rx="1.5"/><rect x="29" y="110.5" width="24" height="3" rx="1.5"/></g>
-              <rect x="24" y="126" width="62" height="16" rx="8" fill="#D97E22"/>
-              <rect x="42" y="132.5" width="26" height="3.5" rx="1.75" fill="#FFFFFF"/>
-
-              <!-- form -> chain -->
-              <path d="M96 99h22" stroke="#0E5A6B" stroke-width="2" stroke-linecap="round"/>
-              <path d="M113 95l5 4-5 4" stroke="#0E5A6B" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-
-              <!-- step chain -->
-              <g>
-                <rect x="120" y="86" width="26" height="26" rx="8" fill="#0E5A6B"/>
-                <path d="M127 99l4 4 8-9" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M146 99h10" stroke="#0E5A6B" stroke-width="2" stroke-linecap="round"/>
-                <rect x="156" y="86" width="26" height="26" rx="8" fill="#0E5A6B"/>
-                <path d="M163 99l4 4 8-9" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M182 99h10" stroke="#0E5A6B" stroke-width="2" stroke-linecap="round"/>
-                <rect x="192" y="86" width="26" height="26" rx="8" fill="#0E5A6B"/>
-                <path d="M199 99l4 4 8-9" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              </g>
-
-              <!-- router diamond -->
-              <path d="M240 82l17 17-17 17-17-17z" fill="#FFFFFF" stroke="#0E5A6B" stroke-width="2"/>
-              <path d="M233 99h14M243 95l4 4-4 4" stroke="#0E5A6B" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M218 99h5" stroke="#0E5A6B" stroke-width="2" stroke-linecap="round"/>
-
-              <!-- three branches -->
-              <path d="M257 99h14v-45h22" stroke="#1B7F51" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M257 99h36" stroke="#0E5A6B" stroke-width="2" fill="none" stroke-linecap="round"/>
-              <path d="M257 99h14v45h22" stroke="#858E97" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-
-              <!-- branch A: phone alert -->
-              <rect x="296" y="32" width="90" height="44" rx="9" fill="#FFFFFF" stroke="#E3E6E9" stroke-width="1"/>
-              <rect x="306" y="40" width="20" height="28" rx="4" fill="#1B7F51"/>
-              <rect x="309.5" y="44" width="13" height="18" rx="1.5" fill="#D6EDE1"/>
-              <g fill="#C3C9CE"><rect x="334" y="44" width="42" height="4" rx="2"/><rect x="334" y="53" width="32" height="4" rx="2"/></g>
-              <rect x="334" y="62" width="24" height="6" rx="3" fill="#1B7F51"/>
-
-              <!-- branch B: email -->
-              <rect x="296" y="78" width="90" height="42" rx="9" fill="#FFFFFF" stroke="#E3E6E9" stroke-width="1"/>
-              <rect x="306" y="88" width="26" height="20" rx="3" fill="#EAF0F1" stroke="#0E5A6B" stroke-width="1.4"/>
-              <path d="M306.5 89.5l12.5 10 12.5-10" stroke="#0E5A6B" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <g fill="#C3C9CE"><rect x="340" y="89" width="38" height="4" rx="2"/><rect x="340" y="98" width="30" height="4" rx="2"/><rect x="340" y="107" width="20" height="4" rx="2"/></g>
-
-              <!-- branch C: sheet -->
-              <rect x="296" y="122" width="90" height="44" rx="9" fill="#FFFFFF" stroke="#E3E6E9" stroke-width="1"/>
-              <g stroke="#DDE1E4" stroke-width="1">
-                <rect x="306" y="130" width="70" height="28" rx="3" fill="#FAFBFC"/>
-                <path d="M306 139h70M306 148h70M329 130v28M353 130v28"/>
-              </g>
-              <rect x="306" y="130" width="70" height="9" rx="3" fill="#EDEFF1"/>
-              <g fill="#C3C9CE"><rect x="310" y="142" width="14" height="3" rx="1.5"/><rect x="334" y="142" width="14" height="3" rx="1.5"/><rect x="358" y="142" width="12" height="3" rx="1.5"/><rect x="310" y="151" width="14" height="3" rx="1.5"/><rect x="334" y="151" width="14" height="3" rx="1.5"/><rect x="358" y="151" width="12" height="3" rx="1.5"/></g>
-
-              <!-- error lane -->
-              <rect x="14" y="184" width="372" height="48" rx="10" fill="#0A1417"/>
-              <path d="M28 208h62" stroke="#A8352A" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>
-              <circle cx="102" cy="208" r="11" fill="none" stroke="#A8352A" stroke-width="2"/>
-              <path d="M102 202v7M102 213.5v.5" stroke="#A8352A" stroke-width="2" stroke-linecap="round"/>
-              <path d="M113 208h30" stroke="#A8352A" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>
-              <path d="M155 200.5a9 9 0 1 0 3-6.5" stroke="#E0A33F" stroke-width="2" fill="none" stroke-linecap="round"/>
-              <path d="M152 191l1 8 8-1" stroke="#E0A33F" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M176 208h28" stroke="#E0A33F" stroke-width="2" stroke-dasharray="5 4" stroke-linecap="round"/>
-              <rect x="206" y="196" width="24" height="24" rx="6" fill="#16232A"/>
-              <path d="M212 208l4 4 8-9" stroke="#4FC48B" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M232 208h22" stroke="#4FC48B" stroke-width="2" stroke-linecap="round"/>
-              <rect x="258" y="197" width="114" height="22" rx="7" fill="#16232A"/>
-              <g fill="#4A5D63"><rect x="268" y="203" width="56" height="4" rx="2"/><rect x="268" y="211" width="38" height="4" rx="2"/></g>
-              <circle cx="358" cy="208" r="5" fill="#4FC48B"/>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3>Kestrel Lead Engine — what an automation actually does</h3>
-            <p>A solar installer's enquiry form, wired end to end. Pick one of three enquiries, press Send, and watch all nine steps run in front of you with the real data moving through them — the phone number cleaned, the postcode resolved, the lead scored against five written rules, the owner buzzed on his phone in four seconds. A second tab is the part nobody demos: four ways it breaks, and what the scenario does about each one — retries, parks the lead, replays it, and writes to the owner in plain English instead of losing a customer quietly. Then the owner's numbers and the build itself.</p>
-            <div class="meta"><span class="chip">Make.com scenario</span><span class="chip">Error handling</span><span class="chip">Scripted demo</span></div>
-            <span class="card-link">Run the automation
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <a class="card" href="./ai-chat/">
-          <div class="shot shot-svg">
-            <span class="tag">AI assistant</span>
-            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="An online shop with an AI chat assistant open over it, answering a question about an order">
-              <rect width="400" height="250" fill="#F4F4F1"/>
-              <!-- shop behind -->
-              <rect x="0" y="0" width="400" height="26" fill="#FFFFFF"/>
-              <rect x="14" y="10" width="7" height="7" rx="2" fill="#0E1B16"/>
-              <rect x="26" y="11" width="40" height="5" rx="2.5" fill="#14181A"/>
-              <g fill="#C9CFCB"><rect x="120" y="11" width="26" height="5" rx="2.5"/><rect x="156" y="11" width="34" height="5" rx="2.5"/><rect x="200" y="11" width="24" height="5" rx="2.5"/></g>
-              <rect x="356" y="8" width="30" height="11" rx="5.5" fill="#EDEFEC"/>
-              <g>
-                <rect x="14" y="40" width="112" height="90" rx="10" fill="#FFFFFF"/>
-                <rect x="140" y="40" width="112" height="90" rx="10" fill="#FFFFFF"/>
-                <rect x="14" y="142" width="112" height="90" rx="10" fill="#FFFFFF"/>
-                <rect x="140" y="142" width="112" height="90" rx="10" fill="#FFFFFF"/>
-              </g>
-              <!-- coffee bags -->
-              <g>
-                <rect x="52" y="54" width="36" height="46" rx="4" fill="#6B3F2A"/><rect x="52" y="54" width="36" height="11" rx="4" fill="#8C5537"/>
-                <rect x="178" y="54" width="36" height="46" rx="4" fill="#3A6553"/><rect x="178" y="54" width="36" height="11" rx="4" fill="#55856F"/>
-                <rect x="52" y="156" width="36" height="46" rx="4" fill="#9C3752"/><rect x="52" y="156" width="36" height="11" rx="4" fill="#BC5470"/>
-                <rect x="178" y="156" width="36" height="46" rx="4" fill="#46484F"/><rect x="178" y="156" width="36" height="11" rx="4" fill="#63666E"/>
-              </g>
-              <g fill="#D7DBD8"><rect x="26" y="108" width="54" height="5" rx="2.5"/><rect x="152" y="108" width="46" height="5" rx="2.5"/><rect x="26" y="210" width="50" height="5" rx="2.5"/><rect x="152" y="210" width="58" height="5" rx="2.5"/></g>
-              <g fill="#14523E" opacity=".5"><rect x="26" y="118" width="20" height="5" rx="2.5"/><rect x="152" y="118" width="20" height="5" rx="2.5"/><rect x="26" y="220" width="20" height="5" rx="2.5"/><rect x="152" y="220" width="20" height="5" rx="2.5"/></g>
-              <!-- chat panel -->
-              <rect x="266" y="34" width="122" height="208" rx="14" fill="#FFFFFF"/>
-              <path d="M266 48a14 14 0 0 1 14-14h94a14 14 0 0 1 14 14v22H266V48z" fill="#0E1B16"/>
-              <circle cx="284" cy="52" r="8" fill="#14523E"/>
-              <path d="M280 56v-8l8 8v-8" stroke="#34C08A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-              <rect x="298" y="45" width="28" height="5" rx="2.5" fill="#FFFFFF"/>
-              <rect x="298" y="54" width="46" height="4" rx="2" fill="#7E8C86"/>
-              <!-- bubbles -->
-              <rect x="276" y="82" width="86" height="26" rx="9" fill="#F1F3F1"/>
-              <g fill="#B9C0BC"><rect x="284" y="89" width="66" height="4" rx="2"/><rect x="284" y="97" width="48" height="4" rx="2"/></g>
-              <rect x="300" y="116" width="78" height="18" rx="9" fill="#14523E"/>
-              <rect x="308" y="123" width="58" height="4" rx="2" fill="#8FC6B2"/>
-              <rect x="276" y="142" width="96" height="34" rx="9" fill="#F1F3F1"/>
-              <g fill="#B9C0BC"><rect x="284" y="149" width="76" height="4" rx="2"/><rect x="284" y="157" width="82" height="4" rx="2"/><rect x="284" y="165" width="52" height="4" rx="2"/></g>
-              <!-- in-chat product card -->
-              <rect x="276" y="182" width="96" height="30" rx="8" fill="#FFFFFF" stroke="#E2E5E2" stroke-width="1"/>
-              <rect x="283" y="188" width="16" height="19" rx="3" fill="#6B3F2A"/>
-              <g fill="#C9CFCB"><rect x="305" y="190" width="44" height="4" rx="2"/><rect x="305" y="198" width="28" height="4" rx="2"/></g>
-              <rect x="352" y="196" width="14" height="5" rx="2.5" fill="#14523E"/>
-              <!-- input -->
-              <rect x="276" y="220" width="102" height="16" rx="8" fill="#F1F3F1"/>
-              <rect x="284" y="226" width="44" height="4" rx="2" fill="#C2C8C4"/>
-              <circle cx="368" cy="228" r="7" fill="#14523E"/>
-              <path d="M365 228h6M368.5 225.5l2.5 2.5-2.5 2.5" stroke="#FFFFFF" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3>Northbound Assistant — AI support &amp; sales chat</h3>
-            <p>A support and sales assistant for an online coffee shop, plus the owner's side of it. Ask it what suits an espresso machine, look up an order, push it into a wholesale enquiry and watch it hand you to a person instead of guessing. Ask something it has never been taught and the question lands on the owner dashboard, where you can write the answer yourself and hear it come back in the chat a second later. A third tab draws the real architecture — where the API key lives, what the model may and may not touch.</p>
-            <div class="meta"><span class="chip">AI assistant</span><span class="chip">Owner dashboard</span><span class="chip">Scripted demo</span></div>
-            <span class="card-link">Open the assistant
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <a class="card" href="./orders/">
-          <div class="shot shot-svg">
-            <span class="tag">Web app</span>
-            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Prozymi order desk interface: sidebar, stats and an order table">
-              <rect width="400" height="250" fill="#0e1217"/>
-              <rect x="0" y="0" width="76" height="250" fill="#14181f"/>
-              <circle cx="18" cy="18" r="6" fill="#E8B341"/>
-              <rect x="30" y="14" width="30" height="7" rx="3.5" fill="#3b424d"/>
-              <rect x="10" y="42" width="56" height="15" rx="4" fill="#E8B341" opacity=".16"/>
-              <rect x="16" y="47" width="26" height="5" rx="2.5" fill="#E8B341"/>
-              <circle cx="58" cy="49.5" r="4.5" fill="#E8B341"/>
-              <rect x="16" y="70" width="34" height="5" rx="2.5" fill="#39404a"/>
-              <rect x="16" y="88" width="28" height="5" rx="2.5" fill="#39404a"/>
-              <rect x="92" y="14" width="74" height="18" rx="9" fill="#1b2029"/>
-              <rect x="103" y="21" width="52" height="5" rx="2.5" fill="#4a525e"/>
-              <rect x="174" y="14" width="44" height="18" rx="9" fill="#E8B341" opacity=".14"/>
-              <rect x="184" y="21" width="24" height="5" rx="2.5" fill="#E8B341"/>
-              <rect x="300" y="14" width="86" height="18" rx="9" fill="#1b2029"/>
-              <rect x="310" y="21" width="40" height="5" rx="2.5" fill="#3f4650"/>
-              <g fill="#161b22">
-                <rect x="92" y="46" width="68" height="40" rx="7"/>
-                <rect x="168" y="46" width="68" height="40" rx="7"/>
-                <rect x="244" y="46" width="68" height="40" rx="7"/>
-                <rect x="320" y="46" width="66" height="40" rx="7"/>
-              </g>
-              <g fill="#2e3540">
-                <rect x="100" y="55" width="30" height="4" rx="2"/>
-                <rect x="176" y="55" width="30" height="4" rx="2"/>
-                <rect x="252" y="55" width="30" height="4" rx="2"/>
-                <rect x="328" y="55" width="30" height="4" rx="2"/>
-              </g>
-              <g fill="#cfd6df">
-                <rect x="100" y="66" width="22" height="10" rx="3"/>
-                <rect x="176" y="66" width="30" height="10" rx="3"/>
-                <rect x="252" y="66" width="18" height="10" rx="3"/>
-              </g>
-              <rect x="328" y="66" width="26" height="10" rx="3" fill="#E8B341"/>
-              <rect x="92" y="98" width="294" height="138" rx="9" fill="#161b22"/>
-              <rect x="92" y="98" width="294" height="20" rx="9" fill="#1b2029"/>
-              <rect x="92" y="109" width="294" height="9" fill="#1b2029"/>
-              <g fill="#39404a">
-                <rect x="104" y="105" width="38" height="5" rx="2.5"/>
-                <rect x="190" y="105" width="30" height="5" rx="2.5"/>
-                <rect x="268" y="105" width="22" height="5" rx="2.5"/>
-                <rect x="340" y="105" width="34" height="5" rx="2.5"/>
-              </g>
-              <g>
-                <rect x="104" y="128" width="62" height="6" rx="3" fill="#b9c2ce"/>
-                <rect x="190" y="128" width="40" height="6" rx="3" fill="#59616d"/>
-                <rect x="256" y="125" width="46" height="13" rx="6.5" fill="#2f7a4f"/>
-                <rect x="340" y="128" width="34" height="6" rx="3" fill="#8a93a0"/>
-                <rect x="104" y="150" width="52" height="6" rx="3" fill="#b9c2ce"/>
-                <rect x="190" y="150" width="46" height="6" rx="3" fill="#59616d"/>
-                <rect x="256" y="147" width="40" height="13" rx="6.5" fill="#9A6C22"/>
-                <rect x="340" y="150" width="28" height="6" rx="3" fill="#8a93a0"/>
-                <rect x="104" y="172" width="70" height="6" rx="3" fill="#b9c2ce"/>
-                <rect x="190" y="172" width="34" height="6" rx="3" fill="#59616d"/>
-                <rect x="256" y="169" width="50" height="13" rx="6.5" fill="#2b5c8a"/>
-                <rect x="340" y="172" width="32" height="6" rx="3" fill="#8a93a0"/>
-                <rect x="104" y="194" width="58" height="6" rx="3" fill="#b9c2ce"/>
-                <rect x="190" y="194" width="42" height="6" rx="3" fill="#59616d"/>
-                <rect x="256" y="191" width="44" height="13" rx="6.5" fill="#2f7a4f"/>
-                <rect x="340" y="194" width="30" height="6" rx="3" fill="#8a93a0"/>
-                <rect x="104" y="216" width="66" height="6" rx="3" fill="#b9c2ce"/>
-                <rect x="190" y="216" width="38" height="6" rx="3" fill="#59616d"/>
-                <rect x="256" y="213" width="38" height="13" rx="6.5" fill="#4a525e"/>
-                <rect x="340" y="216" width="26" height="6" rx="3" fill="#8a93a0"/>
-              </g>
-              <g stroke="#1f242c" stroke-width="1">
-                <line x1="92" y1="141" x2="386" y2="141"/>
-                <line x1="92" y1="163" x2="386" y2="163"/>
-                <line x1="92" y1="185" x2="386" y2="185"/>
-                <line x1="92" y1="207" x2="386" y2="207"/>
-              </g>
-            </svg>
-          </div>
-          <div class="card-body">
-            <h3>Prozymi Order Desk — wholesale web app</h3>
-            <p>The ordering system behind the bakery site: nine wholesale accounts, thirteen products, a month of seeded history. Take an order, edit lines in a drawer, move it through draft → confirmed → baking → out → delivered, and watch the overnight and morning bake plan recalculate. Every figure reconciles with the orders that feed it.</p>
-            <div class="meta"><span class="chip">Working app</span><span class="chip">Vanilla JS</span><span class="chip">Single file</span></div>
-            <span class="card-link">Open the app
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <a class="card" href="./deck/">
-          <div class="shot">
-            <span class="tag">Pitch deck</span>
-            <img src="./assets/thumb-deck.jpg" alt="Meridian pitch deck opening slide" loading="lazy">
-          </div>
-          <div class="card-body">
-            <h3>Meridian — seed round pitch deck</h3>
-            <p>An 11-slide investor deck for a fictional treasury-analytics product: problem framing, market sizing, charts built from real numbers and a clean pricing slide. Flip through it in the browser or download the PDF.</p>
-            <div class="meta"><span class="chip">11 slides</span><span class="chip">Custom charts</span><span class="chip">PPTX + PDF</span></div>
-            <span class="card-link">Open the deck
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <a class="card" href="./meridian/">
-          <div class="shot">
-            <span class="tag">Landing page</span>
-            <img src="./assets/thumb-meridian.jpg" alt="Meridian SaaS landing page" loading="lazy">
-          </div>
-          <div class="card-body">
-            <h3>Meridian — SaaS landing page</h3>
-            <p>The matching product site for the same brand: a dark technical aesthetic, a working product console with a positions table and an exposure chart, developer docs with real endpoints, pricing and FAQ. Every chart and icon is inline SVG — no images, no framework.</p>
-            <div class="meta"><span class="chip">Product UI</span><span class="chip">Hand-coded</span><span class="chip">Dark UI</span></div>
-            <span class="card-link">Open the page
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <a class="card" href="./prozymi/">
-          <div class="shot">
-            <span class="tag">Landing page</span>
-            <img src="./assets/thumb-prozymi.jpg" alt="Prozymi Bakehouse — the counter section with product photography" loading="lazy">
-          </div>
-          <div class="card-body">
-            <h3>Prozymi Bakehouse — local business site</h3>
-            <p>A warm, editorial site for a small sourdough bakery in Patra: eleven breads, a photographed counter, the story behind the bake, wholesale terms and opening hours. Greek by default with a one-click English switch &mdash; 144 strings, one file, no framework. The opposite end of my range from the dark SaaS look.</p>
-            <div class="meta"><span class="chip">Editorial</span><span class="chip">Local business</span><span class="chip">Bilingual EL / EN</span><span class="chip">Product photography</span></div>
-            <span class="card-link">Open the page
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-      </div>
-
-      <p class="note">These are self-initiated concept projects, not client commissions — the companies are invented so I can show complete work without breaking anyone's confidentiality. The design, copy and code are entirely my own.</p>
-    </div>
-  </section>
-
-  <section id="process">
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="eyebrow">How it works</p>
-        <h2 class="serif">Four steps, no guessing</h2>
-        <p>You always know what happens next and what you get at the end of it.</p>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-n">1</div>
-          <h4>Brief and questions</h4>
-          <p>You send the content and the goal. I come back with a short list of questions so nothing important is missed.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">2</div>
-          <h4>Structure first</h4>
-          <p>You approve a slide-by-slide outline or a page map before any design work starts. Cheap to change at this stage.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">3</div>
-          <h4>Design and build</h4>
-          <p>I design in your colours and fonts, or propose a direction if you have none yet. You see the first full draft.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">4</div>
-          <h4>Revisions and handoff</h4>
-          <p>Revisions are included. You get editable source files — PPTX and PDF, or the full HTML — not a locked export.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="wrap">
-      <div class="cta">
-        <div class="cta-inner">
-          <p class="eyebrow">Available for new work</p>
-          <h2 class="serif">Need a deck or a page that holds up?</h2>
-          <p>Send me the content and the deadline. Fixed-price packages start at $15, and everything is booked and paid through Upwork, so you are protected.</p>
-          <a class="btn btn-primary" href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Message me on Upwork
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="wrap foot">
-    <span>&copy; 2026 Ivan K. — Patra, Greece</span>
-    <span><a href="https://www.upwork.com/freelancers/~01ee2876a0db95879f" target="_blank" rel="noopener">Upwork profile</a></span>
-  </div>
-</footer>
-
+<script>
+  function fit(){
+    document.querySelectorAll('.stage').forEach(function(st){
+      var c = st.querySelector('.canvas');
+      c.style.transform = 'scale(' + (st.clientWidth / 1920) + ')';
+    });
+  }
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+  fit();
+</script>
 </body>
 </html>
