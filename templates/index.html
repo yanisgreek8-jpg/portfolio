@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Templates — Word reports and business emails · Ivan K.</title>
+<meta name="description" content="Two template studies: a quarterly report rebuilt as a Word template you can download, and three business emails turned into fill-in templates that work in Outlook.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Public+Sans:wght@400;600;700&display=swap">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#FAF8F4;color:#1C2A39;font-family:'Public Sans',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  .top{background:#1C2A39;padding:26px 0}
+  .top a{color:#E0A98D;text-decoration:none;font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+  header{background:#1C2A39;color:#FAF8F4;padding:6px 0 84px}
+  .eyebrow{font-size:14px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:#E0A98D;margin:0 0 20px}
+  h1{font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(32px,5vw,54px);line-height:1.1;font-weight:700;margin:0 0 20px;max-width:18ch}
+  .lede{font-size:clamp(17px,2.2vw,21px);line-height:1.55;color:#C8D2DC;max-width:760px;margin:0}
+  main{padding:76px 0 30px}
+  h2{font-family:'Libre Baskerville',Georgia,serif;font-size:clamp(25px,3.4vw,36px);font-weight:700;margin:0 0 10px}
+  h3{font-size:19px;font-weight:600;margin:0 0 8px}
+  .sub{font-size:17px;line-height:1.6;color:#6B7684;margin:0 0 34px;max-width:680px}
+  .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px;margin:0 0 30px}
+  .shots figure{margin:0}
+  .shots img{width:100%;display:block;border:1px solid #DED7CB;border-radius:10px;
+             box-shadow:0 1px 2px rgba(28,42,57,.08),0 8px 22px rgba(28,42,57,.10)}
+  .shots figcaption{font-size:14px;line-height:1.5;color:#6B7684;margin-top:10px}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:26px;margin:0 0 32px}
+  .facts p{font-size:16px;line-height:1.6;color:#4A5568;margin:0}
+  .btn{display:inline-block;background:#A8431F;color:#fff;text-decoration:none;font-weight:600;font-size:16px;
+       padding:13px 24px;border-radius:9px;margin:0 10px 10px 0}
+  .btn.ghost{background:transparent;color:#A8431F;border:1px solid #CBB6A9}
+  .stage{position:relative;width:100%;padding-top:56.25%;margin:0 0 18px;border-radius:12px;overflow:hidden;
+         box-shadow:0 1px 2px rgba(28,42,57,.10),0 10px 28px rgba(28,42,57,.12)}
+  .canvas{position:absolute;top:0;left:0;width:1920px;height:1080px;transform-origin:top left}
+  .canvas section{position:relative;width:1920px;height:1080px;overflow:hidden}
+  .canvas h1,.canvas h2,.canvas h3,.canvas p,.canvas ul{margin:0;max-width:none}
+  .canvas hr{border:none;margin:0}
+  .canvas table{border-collapse:collapse;width:100%}
+  .canvas th,.canvas td{text-align:left;padding:.35em .6em;border-bottom:1px solid #E6E1D7}
+  .cap{font-size:14px;line-height:1.6;color:#6B7684;margin:0 0 44px;max-width:820px}
+  .rule{height:1px;background:#E4DED3;border:0;margin:68px 0 60px}
+  footer{background:#1C2A39;color:#8C9AA8;font-size:15px;padding:52px 0 68px;line-height:1.7}
+  footer a{color:#E0A98D}
+  @media (max-width:640px){header{padding:6px 0 56px}main{padding:52px 0 20px}.rule{margin:52px 0 44px}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap"><a href="../">&larr; Portfolio</a></div></div>
+
+<header><div class="wrap">
+  <p class="eyebrow">Ivan K. &middot; Patra, Greece</p>
+  <h1>Templates a team can fill in</h1>
+  <p class="lede">A redesign that ends in a PDF nobody can edit comes back in three months. These two studies end in something the client keeps using: a Word report template with real styles, and a set of business emails that work in Outlook with no platform behind them.</p>
+</div></header>
+
+<main><div class="wrap">
+
+  <h2>Quarterly report &mdash; the Word template</h2>
+  <p class="sub">Northwind Facilities, an invented forty-site facilities company, sends the same report every quarter. Three people had built it over two years, each starting from the last one&rsquo;s file. It had to stay in Word, because nobody on their team owns design software.</p>
+
+  <div class="shots">
+    <figure><img src="word-cover.jpg" alt="Cover page of the template with every placeholder field marked in orange"><figcaption>Cover. Twelve fields, typed once and reused through the document.</figcaption></figure>
+    <figure><img src="word-body.jpg" alt="Inside page showing a KPI row, a comparison table and a bulleted action list"><figcaption>Inside. Four blocks to copy: KPI row, comparison table, action list, sign-off.</figcaption></figure>
+    <figure><img src="word-howto.jpg" alt="The how-to-use page built into the template itself"><figcaption>The how-to page ships inside the file, so nobody needs training.</figcaption></figure>
+  </div>
+
+  <div class="facts">
+    <div><h3>Six named styles</h3><p>A heading is applied, not formatted. Nobody picks a font again, and a heading that looks wrong has exactly one cause.</p></div>
+    <div><h3>Fields are orange</h3><p>Every placeholder is visible. Search for the opening bracket before sending and you know none are left.</p></div>
+    <div><h3>Fonts that exist everywhere</h3><p>Georgia and Calibri ship with the file on purpose. A brand font swaps in by editing six styles once.</p></div>
+    <div><h3>Contents as a plain list</h3><p>An automatic table of contents renders empty in every preview outside Word. This one shows correctly in Gmail, Drive and on a phone.</p></div>
+  </div>
+
+  <p><a class="btn" href="northwind-quarterly-report-template.docx">Download the .docx</a>
+     <a class="btn ghost" href="northwind-quarterly-report-template-preview.pdf">PDF preview</a></p>
+
+  <hr class="rule">
+
+  <h2>Three business emails, rebuilt as templates</h2>
+  <p class="sub">Calder &amp; Roe, an invented four-person advisory firm, sends the same three emails every week and writes each one from scratch. It had to keep working in Outlook and on a phone &mdash; no marketing platform, no HTML build, nothing anyone needs training for.</p>
+
+<div class="stage"><div class="canvas"><section id="caseC-compare" style="background:#FAF8F4;color:#1C2A39;font-family:'Public Sans', Verdana, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:60px;font-weight:700;line-height:1.15">The first approach email</h2>
+<div style="display:flex;gap:24px;align-items:flex-start">
+
+<div style="width:452px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#7C8793">Before</p>
+<div style="width:452px;height:600px;background:#FFFFFF;border:1px solid #CFC7BA;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="width:268px;height:26px;background:#BFBFBF"></div>
+<div style="width:412px;height:54px;background:#1F6FD0;display:flex;align-items:center;justify-content:center">
+<p style="font-size:24px;font-weight:700;color:#FFFFFF;letter-spacing:2px">NEWSLETTER</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="width:412px;height:7px;background:#B9B9B9"></div>
+<div style="width:412px;height:7px;background:#D2D2D2"></div>
+<div style="width:356px;height:7px;background:#B9B9B9"></div>
+<div style="width:412px;height:7px;background:#D2D2D2"></div>
+<div style="width:298px;height:7px;background:#B9B9B9"></div>
+</div>
+<p style="font-family:'Times New Roman', Georgia, serif;font-size:24px;font-weight:700;color:#1F6FD0;text-decoration:underline;line-height:1.2">CLICK HERE TO BOOK A CALL</p>
+<div style="display:flex;flex-direction:column;gap:2px">
+<p style="font-family:'Times New Roman', Georgia, serif;font-size:24px;font-weight:700;line-height:1.2">James Calder</p>
+<p style="font-family:Arial, sans-serif;font-size:24px;line-height:1.2;color:#1F6FD0">Senior Partner, Calder &amp; Roe</p>
+<p style="font-family:Arial, sans-serif;font-size:24px;line-height:1.2;color:#666666">Mobile · Office · Fax · Web</p>
+<p style="font-family:'Times New Roman', Georgia, serif;font-size:24px;line-height:1.2;color:#666666">Confidentiality notice follows</p>
+</div>
+<div style="display:flex;gap:6px">
+<div style="width:26px;height:26px;background:#C4C4C4"></div>
+<div style="width:26px;height:26px;background:#C4C4C4"></div>
+<div style="width:26px;height:26px;background:#C4C4C4"></div>
+<div style="width:26px;height:26px;background:#C4C4C4"></div>
+</div>
+<p style="font-size:24px;color:#9A9A9A;line-height:1.2">Unsubscribe</p>
+</div>
+</div>
+
+<div style="width:56px;height:600px;display:flex;flex-direction:column;justify-content:center;align-items:center;align-self:flex-end">
+<div style="width:56px;height:28px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:700;color:#A8431F">&rarr;</div>
+</div>
+
+<div style="width:452px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#A8431F">After</p>
+<div style="width:452px;height:600px;background:#FFFFFF;border:1px solid #DED7CB;padding:32px;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase">Calder &amp; Roe</p>
+<hr style="width:48px;border-top:3px solid #A8431F">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:30px;font-weight:700;line-height:1.25">Your Q1 reporting</p>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="width:388px;height:7px;background:#CDC6BA"></div>
+<div style="width:388px;height:7px;background:#CDC6BA"></div>
+<div style="width:388px;height:7px;background:#CDC6BA"></div>
+<div style="width:264px;height:7px;background:#CDC6BA"></div>
+</div>
+<div style="background:#A8431F;padding:12px 20px;border-radius:8px;align-self:flex-start">
+<p style="font-size:24px;font-weight:600;color:#FFFFFF;line-height:1.2">Book 20 minutes</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:2px">
+<p style="font-size:24px;font-weight:600;line-height:1.3">James Calder</p>
+<p style="font-size:24px;line-height:1.3;color:#6B7684">Partner · +44 20 0000 0000</p>
+</div>
+<p style="font-size:24px;color:#9AA3AE;line-height:1.3">Calder &amp; Roe, London · Unsubscribe</p>
+</div>
+</div>
+
+<div style="flex:1;display:flex;flex-direction:column;gap:20px">
+<h3 style="font-size:34px;font-weight:600;color:#A8431F">What changed</h3>
+<ul style="font-size:26px;line-height:1.5;color:#3A4756;padding:0 0 0 34px">
+<li>One column 600 px wide, so it holds together on a phone</li>
+<li>The wordmark set as text, so it can never be stretched again</li>
+<li>One accent colour, spent only on the button</li>
+<li>The ask is a real button, 44 px tall, sitting above the signature</li>
+<li>Signature cut from nine lines to two</li>
+<li>Three templates instead of one, each with its own job</li>
+</ul>
+</div>
+</div>
+
+</section></div></div>
+  <p class="cap">The first approach email, before and after. The stretched logo is the detail that gives a small firm away fastest, and it is fixed by not using an image at all.</p>
+
+<div class="stage"><div class="canvas"><section id="caseC-set" style="background:#EFEAE1;color:#1C2A39;font-family:'Public Sans', Verdana, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<h2 style="font-family:'Libre Baskerville', Georgia, serif;font-size:60px;font-weight:700;line-height:1.15">Three templates, three jobs</h2>
+<div style="display:flex;gap:64px;align-items:flex-start">
+
+<div style="width:500px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#A8431F">01 · First approach</p>
+<div style="width:500px;height:500px;background:#FFFFFF;border:1px solid #DED7CB;padding:28px;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase">Calder &amp; Roe</p>
+<hr style="width:48px;border-top:3px solid #A8431F">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:26px;font-weight:700;line-height:1.25">Your Q1 reporting</p>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="width:444px;height:7px;background:#CDC6BA"></div>
+<div style="width:444px;height:7px;background:#CDC6BA"></div>
+<div style="width:298px;height:7px;background:#CDC6BA"></div>
+</div>
+<p style="font-size:24px;line-height:1.35;color:#3A4756">Worth a short call, or is this the wrong month?</p>
+<div style="display:flex;flex-direction:column;gap:2px">
+<p style="font-size:24px;font-weight:600;line-height:1.3">James Calder</p>
+<p style="font-size:24px;line-height:1.3;color:#6B7684">Partner · +44 20 0000 0000</p>
+</div>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#5A6674">Ninety words, one question, no attachment. It is trying to earn a reply, not a meeting.</p>
+</div>
+
+<div style="width:500px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#A8431F">02 · Proposal follow-up</p>
+<div style="width:500px;height:500px;background:#FFFFFF;border:1px solid #DED7CB;padding:28px;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase">Calder &amp; Roe</p>
+<hr style="width:48px;border-top:3px solid #A8431F">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:26px;font-weight:700;line-height:1.25">Proposal: the next step</p>
+<div style="background:#F4F1EA;padding:16px;border-radius:8px;display:flex;justify-content:space-between">
+<p style="font-size:24px;font-weight:600">8,400 GBP</p>
+<p style="font-size:24px;color:#6B7684">Reply by 14 Mar</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:7px">
+<div style="width:444px;height:7px;background:#CDC6BA"></div>
+<div style="width:376px;height:7px;background:#CDC6BA"></div>
+</div>
+<div style="background:#A8431F;padding:12px 20px;border-radius:8px;align-self:flex-start">
+<p style="font-size:24px;font-weight:600;color:#FFFFFF;line-height:1.2">Approve and start</p>
+</div>
+<p style="font-size:24px;font-weight:600;line-height:1.3">James Calder</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#5A6674">The number and the date sit at the top, so someone skimming on a phone can still answer it.</p>
+</div>
+
+<div style="width:500px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#A8431F">03 · Monthly update</p>
+<div style="width:500px;height:500px;background:#FFFFFF;border:1px solid #DED7CB;padding:28px;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px;font-weight:700;letter-spacing:3px;text-transform:uppercase">Calder &amp; Roe</p>
+<hr style="width:48px;border-top:3px solid #A8431F">
+<p style="font-family:'Libre Baskerville', Georgia, serif;font-size:26px;font-weight:700;line-height:1.25">February in three lines</p>
+<ul style="font-size:24px;line-height:1.4;color:#3A4756;padding:0 0 0 30px">
+<li>Two filings closed early</li>
+<li>New rate table from April</li>
+<li>Office shut on the 18th</li>
+</ul>
+<p style="font-size:24px;font-weight:600;color:#A8431F;line-height:1.3">Read the rate table</p>
+<p style="font-size:24px;font-weight:600;line-height:1.3">James Calder</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#5A6674">Goes out whether or not there is news. A rhythm a client can rely on beats a good month.</p>
+</div>
+
+</div>
+
+</section></div></div>
+  <p class="cap">Three templates rather than one, because the three emails want different things: a reply, a decision, and a habit.</p>
+
+</div></main>
+
+<footer><div class="wrap">
+  Ivan K. &middot; Patra, Greece &middot; <a href="../">Back to portfolio</a><br>
+  Northwind Facilities and Calder &amp; Roe are invented companies, created for these studies. No client material appears on this page.
+</div></footer>
+
+<script>
+(function(){
+  function fit(){
+    document.querySelectorAll('.stage').forEach(function(s){
+      var c=s.querySelector('.canvas');
+      if(c) c.style.transform='scale('+(s.clientWidth/1920)+')';
+    });
+  }
+  window.addEventListener('resize',fit); window.addEventListener('load',fit); fit();
+})();
+</script>
+</body>
+</html>
